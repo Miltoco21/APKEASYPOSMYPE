@@ -83,7 +83,7 @@ import {
   Alert,
 } from "react-native";
 import Box from "../Componentes/Box"
-import { useRouter,Redirect } from "expo-router";
+import { useRouter } from "expo-router";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
