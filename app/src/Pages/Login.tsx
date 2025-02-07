@@ -81,14 +81,16 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  Image
 } from "react-native";
 import Box from "../Componentes/Box"
 import { useRouter } from "expo-router";
 import BaseConfig from "../definitions/BaseConfig";
 import BaseConfigModal from "../Modals/BaseConfigModal";
 import SelectedOptionsProvider, { SelectedOptionsContext } from '../Componentes/Context/SelectedOptionsProvider';
-
+import CONSTANTS from "../definitions/Constants";
 import Ionicons from "@expo/vector-icons/Ionicons"
+
 export default function Login() {
 
   const { userData } = useContext(SelectedOptionsContext);
@@ -122,6 +124,10 @@ export default function Login() {
   return (
     <Box style={styles.container}>
       <Text style={styles.title}>Iniciar Sesión</Text>
+      <Image style={styles.foto}
+        source={require('../../../app/src/assets/images/splash.png')}
+      
+      />
       <TextInput
         style={styles.input}
         placeholder="Correo electrónico"
@@ -153,6 +159,7 @@ export default function Login() {
           
        
         </TouchableOpacity>
+        <Text>{CONSTANTS.appName}{CONSTANTS.appVersion}</Text>
         <BaseConfigModal
         visible={showSettingsModal}
         onClose={() => setShowSettingsModal(false)}
@@ -191,10 +198,16 @@ const styles = StyleSheet.create({
     backgroundColor: "#007bff",
     alignItems: "center",
     borderRadius: 5,
+    marginBottom:5
   },
   buttonText: {
     color: "white",
     fontSize: 16,
     fontWeight: "bold",
   },
+  foto:{
+    width: "40%",
+    height: "40%",
+    resizeMode: 'contain',
+  }
 });

@@ -31,9 +31,9 @@ export default function HomeScreen() {
         />
         
         {/* Link manual funcionando */}
-        <Text style={styles.link}>
+        {/* <Text style={styles.link}>
           <Link href="/src/Pages/Login">Ir al Login manualmente</Link>
-        </Text>
+        </Text> */}
       </View>
     </Box>
   );
@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'gray',
+    backgroundColor: 'white',
   },
   image: {
     width: "80%",
