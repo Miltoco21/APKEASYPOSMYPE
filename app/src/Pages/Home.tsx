@@ -8,11 +8,11 @@ const Home = () => {
   return (
     <Box>
       <View>
-        <BoxContainer title="Sección 1">
+        <BoxContainer title="Bienvenidos">
        <BoxTop/>
         </BoxContainer>
 
-        <BoxContainer title="Sección 2">
+        <BoxContainer title="Búsqueda Productos">
           {/* Contenido de la sección 2 */}
         </BoxContainer>
 
