@@ -1,6 +1,6 @@
 const CONSTANTS =  {
-    appName: "EasyPOSMype",
-    appVersion: "1.0.3",
+    appName: "EasyPOSMypeAPK",
+    appVersion: "1.0.4",
 };
 
 export default CONSTANTS;
