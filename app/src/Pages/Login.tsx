@@ -72,7 +72,7 @@
 //     fontWeight: "bold",
 //   },
 // });
-import React, { useState } from "react";
+import React, { useState,useContext } from "react";
 import {
   SafeAreaView,
   View,
@@ -84,10 +84,24 @@ import {
 } from "react-native";
 import Box from "../Componentes/Box"
 import { useRouter } from "expo-router";
+import BaseConfig from "../definitions/BaseConfig";
+import BaseConfigModal from "../Modals/BaseConfigModal";
+import SelectedOptionsProvider, { SelectedOptionsContext } from '../Componentes/Context/SelectedOptionsProvider';
+
+import Ionicons from "@expo/vector-icons/Ionicons"
 export default function Login() {
+
+  const { userData } = useContext(SelectedOptionsContext);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [appConfig, setAppConfig] = useState({
+    ...BaseConfig,
+   
+  });
+
 
   const handleLogin = () => {
     if (!email || !password) {
@@ -97,6 +111,12 @@ export default function Login() {
     // Aquí puedes agregar la lógica de autenticación
     Alert.alert("Éxito", "Inicio de sesión exitoso.");
     router.push("/src/Pages/Home");
+  };
+  const handleSaveSettings = (newUrl) => {
+    // Aquí iría la lógica para guardar la URL
+   
+    setShowSettingsModal(false);
+    // Ejemplo: guardar en AsyncStorage o Contexto
   };
 
   return (
@@ -117,9 +137,28 @@ export default function Login() {
         onChangeText={setPassword}
         secureTextEntry
       />
+    
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Ingresar</Text>
       </TouchableOpacity>
+
+
+      <TouchableOpacity
+          style={styles.button}
+         
+          onPress={() => setShowSettingsModal(true)}
+         
+        >
+          <Text style={styles.buttonText}>Configuraciones     <Ionicons name="settings" size={17} color="white"/></Text>
+          
+       
+        </TouchableOpacity>
+        <BaseConfigModal
+        visible={showSettingsModal}
+        onClose={() => setShowSettingsModal(false)}
+        config={appConfig}
+        onSave={handleSaveSettings}
+      />
     </Box>
   );
 }
