@@ -94,7 +94,9 @@ class Product extends Model implements IProduct {
     callbackOk: (productos: Producto[], response: any) => void,
     callbackWrong: (error: any) => void
   ) {
+    console.log("findByDescriptionPaginado")
     const configs = ModelConfig.get();
+    console.log("findByDescriptionPaginado2")
     // var url = configs.urlBase +
     var url =
       BaseConfig.urlBase +
@@ -108,6 +110,7 @@ class Product extends Model implements IProduct {
     url += "&codigoSucursal=" + ModelConfig.get("sucursal");
     url += "&puntoVenta=" + ModelConfig.get("puntoVenta");
 
+    console.log("antes de enviar el endpoint.. url", url)
     EndPoint.sendGet(
       url,
       (responseData, response) => {

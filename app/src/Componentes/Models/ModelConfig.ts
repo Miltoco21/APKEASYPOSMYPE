@@ -22,7 +22,7 @@ class ModelConfig {
         try{
             var rs = ModelConfig.getInstance().sesion.cargar(1)
         }catch(err){
-
+            return BaseConfig[propName]
         }
 
         if(!rs){

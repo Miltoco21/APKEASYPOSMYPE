@@ -40,7 +40,7 @@
 //             setFilteredProducts(productos || []); 
 //             console.log(productos)
 //           },
-         
+
 //           (error) => {
 //             console.error("Error buscando productos:", error);
 //             setFilteredProducts([]);
@@ -76,7 +76,7 @@
 //       {filteredProducts && filteredProducts.length > 0 ? (
 //         <View>
 //           <FlatList
-           
+
 //             data={filteredProducts}
 //             keyboardShouldPersistTaps="handled" 
 //             keyExtractor={(item) => item.idProducto.toString()}
@@ -506,59 +506,59 @@ const BoxProducts = () => {
   const [hasMore, setHasMore] = useState(true);
 
 
-const handleSearch = async (searchValue, currentPage = 1) => {
+  const handleSearch = async (searchValue, currentPage = 1) => {
     if (!searchValue.trim() || loading) return;
 
     setLoading(true);
     try {
-        const isNumeric = /^\d+$/.test(searchValue);
-        const isCodigoBarras = isNumeric && (searchValue.length === 12 || searchValue.length === 13);
-        
-        if (isCodigoBarras) {
-            // Priorizar búsqueda por código de barras primero
-            await Product.getInstance().findByCodigoBarras(
-                { codigoProducto: searchValue, codigoCliente },
-                (productosBarras) => {
-                    if (productosBarras?.length > 0) {
-                        setFilteredProducts(productosBarras);
-                        setHasMore(false);
-                    } else {
-                        // Si no encuentra por código de barras, probar con código normal
-                        searchByCodigoProducto(searchValue);
-                    }
-                },
-                handleError
-            );
-        } else if (isNumeric) {
-            // Búsqueda numérica que no cumple formato de código de barras
-            searchByCodigoProducto(searchValue);
-        } else {
-            // Búsqueda por descripción
-            searchByDescription(searchValue, currentPage);
-        }
-    } catch (error) {
-        handleError(error);
-    } finally {
-        setLoading(false);
-    }
-};
+      const isNumeric = /^\d+$/.test(searchValue);
+      const isCodigoBarras = isNumeric && (searchValue.length === 12 || searchValue.length === 13);
 
-// Función auxiliar para búsqueda por código de producto
-const searchByCodigoProducto = async (codigo) => {
-    await Product.getInstance().findByCodigo(
-        { codigoProducto: codigo, codigoCliente },
-        (productos) => {
-            if (productos?.length > 0) {
-                setFilteredProducts(productos);
-                setHasMore(false);
+      if (isCodigoBarras) {
+        // Priorizar búsqueda por código de barras primero
+        await Product.getInstance().findByCodigoBarras(
+          { codigoProducto: searchValue, codigoCliente },
+          (productosBarras) => {
+            if (productosBarras?.length > 0) {
+              setFilteredProducts(productosBarras);
+              setHasMore(false);
             } else {
-                // Si no encuentra por código, intentar como descripción numérica
-                searchByDescription(codigo, 1);
+              // Si no encuentra por código de barras, probar con código normal
+              searchByCodigoProducto(searchValue);
             }
-        },
-        handleError
+          },
+          handleError
+        );
+      } else if (isNumeric) {
+        // Búsqueda numérica que no cumple formato de código de barras
+        searchByCodigoProducto(searchValue);
+      } else {
+        // Búsqueda por descripción
+        searchByDescription(searchValue, currentPage);
+      }
+    } catch (error) {
+      handleError(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Función auxiliar para búsqueda por código de producto
+  const searchByCodigoProducto = async (codigo) => {
+    await Product.getInstance().findByCodigo(
+      { codigoProducto: codigo, codigoCliente },
+      (productos) => {
+        if (productos?.length > 0) {
+          setFilteredProducts(productos);
+          setHasMore(false);
+        } else {
+          // Si no encuentra por código, intentar como descripción numérica
+          searchByDescription(codigo, 1);
+        }
+      },
+      handleError
     );
-};  // const handleSearch = async (searchValue, currentPage = 1) => {
+  };  // const handleSearch = async (searchValue, currentPage = 1) => {
   //   if (!searchValue.trim() || loading) return;
 
   //   setLoading(true);
@@ -602,7 +602,8 @@ const searchByCodigoProducto = async (codigo) => {
   //   }
   // };
 
-  const searchByDescription = (searchValue, currentPage) => {
+  const searchByDescription = async (searchValue, currentPage) => {
+    console.log("searchByDescription")
     Product.getInstance().findByDescriptionPaginado(
       {
         description: searchValue,
@@ -611,6 +612,8 @@ const searchByCodigoProducto = async (codigo) => {
         canPorPagina: 10
       },
       (productos, response) => {
+        // console.log("resultado de la busqueda", productos)
+        console.log("currentPage", currentPage)
         if (currentPage === 1) {
           setFilteredProducts(productos || []);
         } else {
@@ -656,7 +659,7 @@ const searchByCodigoProducto = async (codigo) => {
   };
 
   return (
-    <View style={styles.container}>
+    <View>
       <Text style={styles.headerText}>Buscar Productos</Text>
       <TextInput
         style={styles.searchInput}
@@ -668,16 +671,9 @@ const searchByCodigoProducto = async (codigo) => {
 
       {loading && <ActivityIndicator size="small" color="#283048" />}
 
-
-
-
-      
       {searchText.length > 0 && (
         <View style={styles.resultsContainer}>
 
-
-
-       
           <FlatList
             data={filteredProducts}
             keyExtractor={(item) => item.idProducto.toString()}
@@ -685,9 +681,8 @@ const searchByCodigoProducto = async (codigo) => {
               <View style={styles.productRow}>
                 <View style={styles.productInfo}>
                   <Text style={styles.productName}>{item.nombre}</Text>
-                  {item.codigoBarras && (
+                  {item.idProducto && (
                     <Text style={styles.productCode}>Código: {item.codigoBarras}{item.idProducto}
-                    
                     </Text>
                   )}
                 </View>
@@ -807,9 +802,9 @@ const styles = StyleSheet.create({
   selectedProductText: {
     fontSize: 16,
     color: '#333',
-  }, 
-  productPrice: { fontSize: 14, color: '#283048', fontWeight: 'bold' }, 
-  productCode: { fontSize: 12, color: '#666' }, 
+  },
+  productPrice: { fontSize: 14, color: '#283048', fontWeight: 'bold' },
+  productCode: { fontSize: 12, color: '#666' },
   productInfo: { flex: 1, marginRight: 10 },
 });
 

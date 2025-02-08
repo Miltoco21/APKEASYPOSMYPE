@@ -1,5 +1,5 @@
 import React from "react";
-import { View } from "react-native";
+import { Text, View } from "react-native";
 import Box from "../Componentes/Box";
 import BoxContainer from "../Componentes/BoxContainer";
 import BoxTop from "../Componentes/BoxContent/BoxTop";
@@ -9,15 +9,9 @@ const Home = () => {
   return (
     <Box>
       <View>
-      
-       <BoxTop/>
-       
 
-      
-         <BusquedaProductos/>
-       
-
-     
+        <BoxTop />
+        <BusquedaProductos />
       </View>
     </Box>
   );
