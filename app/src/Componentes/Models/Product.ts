@@ -5,6 +5,7 @@ import BaseConfig from "../../definitions/BaseConfig";
 import axios from "axios";
 import ModelConfig from "../Models/ModelConfig";
 import EndPoint from "./EndPoint";
+import Producto from "../Types/Producto";
 
 class Product extends Model implements IProduct {
   idProducto: number;
@@ -57,9 +58,12 @@ class Product extends Model implements IProduct {
   }
 
   async findByDescription(
-    { description, codigoCliente },
-    callbackOk,
-    callbackWrong
+    { description, codigoCliente }: { description: string; codigoCliente?: number },
+    callbackOk: (productos: Producto[], response: any) => void,
+    callbackWrong: (error: any) => void
+    // { description, codigoCliente },
+    // callbackOk,
+    // callbackWrong
   ) {
     const configs = ModelConfig.get();
     var url =
@@ -82,9 +86,13 @@ class Product extends Model implements IProduct {
   }
 
   async findByDescriptionPaginado(
-    { description, codigoCliente, canPorPagina = 10, pagina = 1 },
-    callbackOk,
-    callbackWrong
+    // { description, codigoCliente, canPorPagina = 10, pagina = 1 },
+    // callbackOk,
+    // callbackWrong
+    { description, codigoCliente, canPorPagina = 10, pagina = 1 }: 
+    { description: string; codigoCliente?:number ; canPorPagina?: number; pagina?: number },
+    callbackOk: (productos: Producto[], response: any) => void,
+    callbackWrong: (error: any) => void
   ) {
     const configs = ModelConfig.get();
     // var url = configs.urlBase +
@@ -139,9 +147,12 @@ class Product extends Model implements IProduct {
   }
 
   async findByCodigo(
-    { codigoProducto, codigoCliente },
-    callbackOk,
-    callbackWrong
+    { codigoProducto, codigoCliente }: { codigoProducto: string; codigoCliente?: number },
+    callbackOk: (productos: Producto[], response: any) => void,
+    callbackWrong: (error: any) => void
+    // { codigoProducto, codigoCliente },
+    // callbackOk,
+    // callbackWrong
   ) {
     const configs = ModelConfig.get();
     var url =
