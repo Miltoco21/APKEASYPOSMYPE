@@ -1,11 +1,11 @@
-import StorageSesion from '../Helpers/StorageSesion.ts';
-import IProduct from '../Types/IProduct.ts';
+import StorageSesion from '../Componentes/Helpers/StorageSesion';
+import IProduct from '../Componentes/Types/IProduct';
 import Model from './Model';
-import BaseConfig, { AfterLoginTypes } from "../definitions/BaseConfig.ts";
+import BaseConfig, { AfterLoginTypes } from "../definitions/BaseConfig";
 import axios from 'axios';
-import ModelConfig from './ModelConfig.ts';
-import Singleton from './Singleton.ts';
-import User from './User';
+import ModelConfig from '../Models/ModelConfig';
+import Singleton from '../Models/Singleton';
+import User from '../Models/User';
 
 
 class SoporteTicket extends Singleton {
