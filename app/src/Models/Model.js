@@ -1,8 +1,9 @@
-import StorageSesion from '../Helpers/StorageSesion.ts';
-
-import EndPoint from './EndPoint.ts';
-import ModelConfig from './ModelConfig.ts';
+import StorageSesion from '../Componentes/Helpers/StorageSesion';
+import BaseConfig from "../definitions/BaseConfig";
+import ModelConfig from '../Models/ModelConfig';
+import EndPoint from '../Models/EndPoint';
 import axios from 'axios';
+
 
 
 class Model{

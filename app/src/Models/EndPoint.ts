@@ -1,13 +1,12 @@
-import StorageSesion from '../Helpers/StorageSesion';
-import IProduct from '../Types/IProduct';
-import Model from '../Models/Model';
-// import BaseConfig from "../definitions/BaseConfig.ts";
-import BaseConfig from "../../definitions/BaseConfig"
+import StorageSesion from '../Helpers/StorageSesion.ts';
+import IProduct from '../Types/IProduct.ts';
+import Model from './Model';
+import BaseConfig from "../definitions/BaseConfig.ts";
 import axios from 'axios';
-import ModelConfig from '../Models/ModelConfig';
-import Singleton from '../Models/Singleton';
-import User from '../Models/User';
-import SoporteTicket from '../Models/SoporteTicket';
+import ModelConfig from './ModelConfig.ts';
+import Singleton from './Singleton.ts';
+import User from './User';
+import SoporteTicket from './SoporteTicket.ts';
 
 
 class EndPoint extends Singleton {

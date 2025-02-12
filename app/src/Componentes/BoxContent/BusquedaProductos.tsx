@@ -9,7 +9,7 @@ import {
   ActivityIndicator
 } from 'react-native';
 import { SelectedOptionsContext } from '../Context/SelectedOptionsProvider';
-import Product from "../Models/Product";
+import Product from "../../Models/Product";
 import Ionicons from "@expo/vector-icons/Ionicons"
 const BoxProducts = () => {
   //const { codigoCliente } = useContext(SelectedOptionsContext);

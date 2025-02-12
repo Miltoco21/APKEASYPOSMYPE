@@ -1,9 +1,13 @@
-import StorageSesion from '../Helpers/StorageSesion.ts';
+// import StorageSesion from '../Helpers/StorageSesion.ts';
 import axios from "axios";
-import ModelConfig from './ModelConfig.ts';
-import SoporteTicket from './SoporteTicket.ts';
-import EndPoint from './EndPoint.ts';
+// import ModelConfig from './ModelConfig.ts';
+// import SoporteTicket from './SoporteTicket.ts';
+// import EndPoint from './EndPoint.ts';
 
+import StorageSesion from '../Componentes/Helpers/StorageSesion';
+import ModelConfig from '../Models/ModelConfig';
+import SoporteTicket from '../Models/SoporteTicket';
+import EndPoint from '../Models/EndPoint';
 
 class User{
 

@@ -1,5 +1,5 @@
-import StorageSesion from '../Helpers/StorageSesion';
-import BaseConfig from "../../definitions/BaseConfig";
+import StorageSesion from '../Componentes/Helpers/StorageSesion';
+import BaseConfig from "../definitions/BaseConfig";
 
 
 class ModelConfig {
@@ -22,7 +22,7 @@ class ModelConfig {
         try{
             var rs = ModelConfig.getInstance().sesion.cargar(1)
         }catch(err){
-            return BaseConfig[propName]
+
         }
 
         if(!rs){
@@ -51,6 +51,12 @@ class ModelConfig {
         all[propName] = propValue;
         ModelConfig.getInstance().sesion.guardar(all); 
     }
+
+    static isEqual(name, value){
+        const current = ModelConfig.get(name)
+        return current == value
+    }
+
 
     getAll(){
         return this.sesion.cargarGuardados();

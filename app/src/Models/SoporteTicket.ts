@@ -1,10 +1,10 @@
-import StorageSesion from '../Helpers/StorageSesion';
-import IProduct from '../Types/IProduct';
+import StorageSesion from '../Helpers/StorageSesion.ts';
+import IProduct from '../Types/IProduct.ts';
 import Model from './Model';
-import BaseConfig, { AfterLoginTypes } from "../../definitions/BaseConfig";
+import BaseConfig, { AfterLoginTypes } from "../definitions/BaseConfig.ts";
 import axios from 'axios';
-import ModelConfig from './ModelConfig';
-import Singleton from './Singleton';
+import ModelConfig from './ModelConfig.ts';
+import Singleton from './Singleton.ts';
 import User from './User';
 
 
