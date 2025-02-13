@@ -34,11 +34,13 @@ class ModelConfig {
             if( rs[propName] != undefined ){
                 return rs[propName]
             }else{
-                console.log("no esta creada")
+                // console.log("no esta creada")
                 rs[propName] = BaseConfig[propName]
                 this.getInstance().sesion.guardar(rs);
                 return rs[propName]
             }
+        }else{
+            return BaseConfig
         }
 
         // console.log("get..")
