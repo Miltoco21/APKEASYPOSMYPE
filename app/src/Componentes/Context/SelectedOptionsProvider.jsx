@@ -47,7 +47,7 @@ import Confirm from "../Dialogs/Confirm";
 import Client from "../../Models/Client";
 import Alert from "../Dialogs/Alert";
 //import PedirSupervision from "../ScreenDialog/PedirSupervision";
-//import UserEvent from "../../Models/UserEvent";
+import UserEvent from "../../Models/UserEvent";
 //import ScreenDialogBuscarCliente from "../ScreenDialog/BuscarCliente";
 
 export const SelectedOptionsContext = React.createContext();
@@ -283,9 +283,9 @@ export const SelectedOptionsProvider = ({ children }) => {
           name: "agrega producto " + product.nombre,
         })
 
-        setTimeout(() => {
-          searchInputRef.current.focus()
-        }, 500);
+        // setTimeout(() => {
+        //   searchInputRef.current.focus()
+        // }, 500);
       }
     }
   };
@@ -390,9 +390,9 @@ export const SelectedOptionsProvider = ({ children }) => {
     })
     setSalesData(sales.removeFromIndex(index));
 
-    setTimeout(() => {
-      searchInputRef.current.focus()
-    }, 500);
+    // setTimeout(() => {
+    //   searchInputRef.current.focus()
+    // }, 500);
   };
 
 
