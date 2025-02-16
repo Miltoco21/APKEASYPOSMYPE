@@ -149,7 +149,7 @@ class Sales {
 
 
   addProduct(product, quantity: number | null = null): ProductSold[] {
-    // console.log("Sales: add product de sales", product)
+    console.log("Sales: add product de sales", product)
     const newPrice = product.precioVenta || 0;
     if (quantity == null && product.cantidad > 0) quantity = product.cantidad
     if (quantity == null) quantity = 1

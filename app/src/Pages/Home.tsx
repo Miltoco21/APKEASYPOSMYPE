@@ -5,6 +5,7 @@ import BoxContainer from "../Componentes/BoxContainer";
 import BoxTop from "../Componentes/BoxContent/BoxTop";
 import BusquedaProductos from "../Componentes/BoxContent/BusquedaProductos";
 import BottomButtons from "../Componentes/BoxContent/BottomButtons";
+import BoxTotales from "../Componentes/BoxContent/BoxTotales";
 
 const Home = () => {
   return (
@@ -12,6 +13,7 @@ const Home = () => {
       <View style={styles.mainContainer}>
         <BoxTop />
         <BusquedaProductos />
+        <BoxTotales/>
         
         <View style={styles.bottomWrapper}>
           <BottomButtons/>
@@ -26,11 +28,9 @@ const styles = StyleSheet.create({
     position: 'relative'
   },
   bottomWrapper: {
-    position: 'absolute',
-    bottom: 20,
-    left: 0,
-    right: 0,
-    zIndex: 2
+    flex: 1,
+    position: 'relative',
+    zIndex: 1
   }
 });
 export default Home;
