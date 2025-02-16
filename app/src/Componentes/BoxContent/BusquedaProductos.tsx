@@ -14,6 +14,7 @@ import { SelectedOptionsContext } from '../Context/SelectedOptionsProvider';
 import Product from "../../Models/Product";
 import Ionicons from "@expo/vector-icons/Ionicons"
 import Confirm from '../Dialogs/Confirm';
+import ProductList from '../ScreenContent/ProductList';
 
 const BoxProducts = () => {
   // Acceder al contexto
@@ -196,8 +197,19 @@ const BoxProducts = () => {
         </View>
       )}
 
-      {/* Se elimina el botón "borrar todo" del encabezado */}
-      <View style={[styles.selectedBox, { maxHeight: 369 }]}>
+<View style={[styles.selectedBox, { maxHeight: 369 }]}>
+        <Text style={styles.boxHeader}>Productos Seleccionados:</Text>
+        {salesData.length === 0 ? (
+          <Text style={styles.noProductsText}>No hay productos agregados.</Text>
+        ) : (
+          <ProductList
+            data={salesData}
+            onDeleteProduct={setSelectedProductToDelete}
+            onShowDeleteModal={setDeleteModalVisible}
+          />
+        )}
+      </View>
+      {/* <View style={[styles.selectedBox, { maxHeight: 369 }]}>
         <Text style={styles.boxHeader}>Productos Seleccionados:</Text>
         {salesData.length === 0 ? (
           <Text style={styles.noProductsText}>No hay productos agregados.</Text>
@@ -229,7 +241,7 @@ const BoxProducts = () => {
             )}
           />
         )}
-      </View>
+      </View> */}
 
       {/* Modales de confirmación */}
       <Confirm
@@ -253,116 +265,7 @@ const BoxProducts = () => {
       />
     </View>
   );
-//   return (
-//     <View>
-//       <Text style={styles.headerText}>Buscar Productos</Text>
-//       <TextInput
-//         style={styles.searchInput}
-//         placeholder="Buscar ..."
-//         placeholderTextColor="#999"
-//         value={searchText}
-//         onChangeText={setSearchText}
-//       />
 
-//       {loading && <ActivityIndicator size="small" color="#283048" />}
-
-//       {searchText.length > 0 && (
-//         <View style={styles.resultsContainer}>
-//           <FlatList
-//             data={filteredProducts}
-//             keyExtractor={(item) => item.idProducto.toString()}
-//             renderItem={({ item }) => (
-//               <View style={styles.productRow}>
-//                 <View style={styles.productInfo}>
-//                   <Text style={styles.productName}>{item.nombre}</Text>
-//                   {item.idProducto && (
-//                     <Text style={styles.productCode}>
-//                       Código: {item.codigoBarras}{item.idProducto}
-//                       TipoStock: {item.tipoStock}
-//                     </Text>
-//                   )}
-//                 </View>
-//                 <TouchableOpacity
-//                   style={styles.addButton}
-//                   onPress={() => handleAddProduct(item)}
-//                 >
-//                   <Text style={styles.addButtonText}>Agregar</Text>
-//                 </TouchableOpacity>
-//               </View>
-//             )}
-//             onEndReached={loadMoreProducts}
-//             onEndReachedThreshold={0.5}
-//           />
-//         </View>
-//       )}
-
-// <View style={[styles.selectedBox, { maxHeight: 369 }]}>
-//   <Text style={styles.boxHeader}>Productos Seleccionados:</Text>
-//   {salesData.length > 0 && (
-//     <TouchableOpacity
-//       style={styles.clearAllButton}
-//       onPress={() => setClearAllModalVisible(true)}
-//     >
-//       <Ionicons name="trash-bin" size={24} color="#661174" />
-//     </TouchableOpacity>
-//   )}
-
-//   {salesData.length === 0 ? (
-//     <Text style={styles.noProductsText}>No hay productos agregados.</Text>
-//   ) : (
-//     <FlatList
-//       data={salesData}
-//       keyExtractor={(item, index) => `${item.idProducto}_${index}`}
-//       extraData={salesDataTimestamp}
-//       contentContainerStyle={{ flexGrow: 1 }}
-//       renderItem={({ item, index }) => (
-//         <View style={styles.selectedProductRow}>
-//           <Text style={styles.selectedProductText}>
-//             {item.nombre} x{item.cantidad}
-//           </Text>
-//           {item.precioVenta && (
-//             <Text style={styles.productPrice}>
-//               ${(item.precioVenta * item.cantidad).toFixed(2)}
-//             </Text>
-//           )}
-//           <TouchableOpacity
-//             onPress={() => {
-//               console.log("Índice a eliminar:", index);
-//               setSelectedProductToDelete(index);
-//               setDeleteModalVisible(true);
-//             }}
-//           >
-//             <Ionicons name="trash" size={24} color="#ff4444" />
-//           </TouchableOpacity>
-//         </View>
-//       )}
-//     />
-//   )}
-// </View>
-    
-
-//       {/* Modales de confirmación */}
-//       <Confirm
-//         visible={deleteModalVisible}
-//         text="¿Eliminar este producto?"
-//         onConfirm={() => {
-//           handleDeleteProduct(selectedProductToDelete);
-//           setDeleteModalVisible(false);
-//         }}
-//         onCancel={() => setDeleteModalVisible(false)}
-//       />
-
-//       <Confirm
-//         visible={clearAllModalVisible}
-//         text="¿Eliminar todos los productos?"
-//         onConfirm={() => {
-//           handleClearAllProducts();
-//           setClearAllModalVisible(false);
-//         }}
-//         onCancel={() => setClearAllModalVisible(false)}
-//       />
-//     </View>
-//   );
 };
 
 // // Estilos permanecen iguales...
