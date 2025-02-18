@@ -206,6 +206,7 @@ const BoxProducts = () => {
             data={salesData}
             onDeleteProduct={setSelectedProductToDelete}
             onShowDeleteModal={setDeleteModalVisible}
+            
           />
         )}
       </View>

@@ -1,46 +1,62 @@
-import React from 'react';
-import { FlatList, View, Text, TouchableOpacity,StyleSheet } from 'react-native';
+import React, { useState, useEffect, useContext } from 'react';
+import { FlatList, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { SelectedOptionsContext } from '../Context/SelectedOptionsProvider';
 
-
-const ProductsList = ({ 
-  data, 
-  onDeleteProduct, 
-  onShowDeleteModal 
+const ProductsList = ({
+  data,
+  onDeleteProduct,
+  onShowDeleteModal
 }) => {
+   const {
+    
+      addToSalesData,
+      removeFromSalesData,
+      clearSalesData,
+      salesDataTimestamp
+    } = useContext(SelectedOptionsContext);
+
+  console.log(
+    "data",data)
   return (
     <FlatList
       data={data}
       keyExtractor={(item, index) => `${item.idProducto}_${index}`}
       contentContainerStyle={{ flexGrow: 1 }}
-      renderItem={({ item, index }) => (
-        <View style={styles.selectedProductRow}>
-          <Text style={styles.quantityText}>{item.cantidad}</Text>
-          <Text style={styles.selectedProductText}>{item.nombre}</Text>
-          <Text style={styles.priceText}>
-            {item.precioVenta ? `$${item.precioVenta}` : '-'}
-          </Text>
-          <Text style={styles.totalText}>
-            {item.precioVenta ? `$${(item.precioVenta * item.cantidad)}` : '-'}
-          </Text>
-          <TouchableOpacity
-            onPress={() => {
-              onDeleteProduct(index);
-              onShowDeleteModal(true);
-            }}
-          >
-            <Ionicons name="trash" size={21} color="#ff4444" />
-          </TouchableOpacity>
-        </View>
-      )}
+      renderItem={({ item, index }) => {
+        // Se usa 'quantity' si existe, sino se toma 'cantidad'
+        const currentQuantity = item.quantity || item.cantidad;
+        console.log(`Renderizando producto: ${item.nombre} - Cantidad: ${currentQuantity}`);
+        return (
+          <View style={styles.selectedProductRow}>
+            <Text style={styles.quantityText}>{currentQuantity}</Text>
+            <Text style={styles.selectedProductText}>{item.nombre}</Text>
+            <Text style={styles.priceText}>
+              {item.precioVenta ? `$${item.precioVenta}` : '-'}
+            </Text>
+            <Text style={styles.totalText}>
+              {item.precioVenta ? `$${(item.precioVenta * currentQuantity)}` : '-'}
+            </Text>
+            <TouchableOpacity
+              onPress={() => {
+                onDeleteProduct(index);
+                onShowDeleteModal(true);
+              }}
+            >
+              <Ionicons name="trash" size={21} color="#ff4444" />
+            </TouchableOpacity>
+          </View>
+        );
+      }}
     />
   );
 };
 
 export default ProductsList;
+
 const styles = StyleSheet.create({
   resultsContainer: {
-    maxHeight: 200,
+    maxHeight: 100,
     backgroundColor: '#fff',
     borderRadius: 8,
     padding: 8,
