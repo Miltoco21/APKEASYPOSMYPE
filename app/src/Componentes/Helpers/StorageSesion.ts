@@ -7,6 +7,8 @@ class StorageSesion {
     // this.nombreBasicoParaAlmacenado = "data";
     nombreBasicoParaAlmacenado = "";
     //BASICOS
+
+    guardados = []
     
     constructor(dataName){
         this.nombreBasicoParaAlmacenado = dataName
@@ -69,6 +71,8 @@ async guardarX(nombre: string, valor: string): Promise<void> {
     guardar(objeto) {
         var objetoGuardar = JSON.stringify(objeto);
         this.guardarX(this.getNombre(objeto),objetoGuardar);
+
+        this.guardados[this.getNombre(objeto)] = objeto
     }
 
     editar(objeto) {
@@ -190,6 +194,10 @@ async guardarX(nombre: string, valor: string): Promise<void> {
         }
     }
     async cargarGuardados<T>(): Promise<T[]> {
+
+        return Promise.all(this.guardados)
+
+
         try {
             const keys = await AsyncStorage.getAllKeys();
             const filteredKeys = keys.filter(key => key.includes(this.nombreBasicoParaAlmacenado));
