@@ -2,48 +2,78 @@ import React, { useState, useEffect, useContext } from 'react';
 import { FlatList, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SelectedOptionsContext } from '../Context/SelectedOptionsProvider';
-import ProductsItem from './ProductItem';
+import AsignarPrecio from '../ScreenDialog/AsignarPrecio';
+import AsignarPeso from '../ScreenDialog/AsignarPeso';
 
-const ProductsList = ({
-  data,
+const ProductsItem = ({
+  item,
+  index,
   onDeleteProduct,
   onShowDeleteModal,
   onRefresh = ()=>{}
 }) => {
   const {
-
     addToSalesData,
     removeFromSalesData,
     clearSalesData,
-    salesDataTimestamp
+    salesDataTimestamp,
+    replaceToSalesData,
+    sales
   } = useContext(SelectedOptionsContext);
 
-  // console.log("data", data)
-  return (
-    <FlatList
-      data={data}
-      keyExtractor={(item, index) => `${item.idProducto}_${index}`}
-      contentContainerStyle={{ flexGrow: 1 }}
-      renderItem={({ item, index }) => {
-        // Se usa 'quantity' si existe, sino se toma 'cantidad'
-        // console.log(`Renderizando producto: ${item.nombre} - Cantidad: ${currentQuantity}`);
-        return (
-          <ProductsItem
-            item={item}
-            index={index}
-            onDeleteProduct={onDeleteProduct}
-            onShowDeleteModal={onShowDeleteModal}
-            onRefresh={()=>{
+  const [currentQuantity, setCurrentQuantity] = useState(0)
+  const [showModalPeso, setShowModalPeso] = useState(false)
 
-            }}
-          />
-        );
-      }}
-    />
-  );
+
+  useEffect(() => {
+    setCurrentQuantity(item.quantity || item.cantidad)
+  }, [])
+
+  const actualizarPeso = (nuevoPeso)=>{
+    item.quantity = nuevoPeso
+    replaceToSalesData(index,item)
+    setCurrentQuantity(nuevoPeso)
+  }
+
+  return (
+
+    <View style={styles.selectedProductRow}>
+      <AsignarPeso
+        product={item}
+        onChange={(nuevoPeso) => {
+          actualizarPeso(nuevoPeso)
+        }}
+        openDialog={showModalPeso}
+        setOpenDialog={setShowModalPeso}
+        />
+      <TouchableOpacity
+        onPress={() => {
+          setShowModalPeso(true)
+        }}
+      >
+        <Text style={styles.quantityText}>{currentQuantity}</Text>
+      </TouchableOpacity>
+
+
+      <Text style={styles.selectedProductText}>{item.nombre || item.description}</Text>
+      <Text style={styles.priceText}>
+        {item.precioVenta ? `$${item.precioVenta}` : '-'}
+      </Text>
+      <Text style={styles.totalText}>
+        {item.precioVenta ? `$${(item.precioVenta * currentQuantity)}` : '-'}
+      </Text>
+      <TouchableOpacity
+        onPress={() => {
+          onDeleteProduct(index);
+          onShowDeleteModal(true);
+        }}
+      >
+        <Ionicons name="trash" size={21} color="#ff4444" />
+      </TouchableOpacity>
+    </View>)
 };
 
-export default ProductsList;
+export default ProductsItem;
 
 const styles = StyleSheet.create({
   resultsContainer: {

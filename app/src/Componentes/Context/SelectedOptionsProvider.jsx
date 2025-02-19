@@ -42,7 +42,7 @@ import Snackbar from 'react-native-paper';
 import Product from "../../Models/Product";
 import System from "../Helpers/System";
 //import NuevoProductoExpress from "../ScreenDialog/NuevoProductoExpress";
-//import AsignarPeso from "../ScreenDialog/";
+import AsignarPeso from "../ScreenDialog/AsignarPrecio";
 import Confirm from "../Dialogs/Confirm";
 import Client from "../../Models/Client";
 import Alert from "../Dialogs/Alert";
@@ -247,7 +247,7 @@ export const SelectedOptionsProvider = ({ children }) => {
     // console.log("")
     // console.log("")
     // console.log("")
-    console.log("addToSalesData", product, "..quantity", quantity)
+    // console.log("addToSalesData", product, "..quantity", quantity)
     if (!quantity && product.cantidad) quantity = product.cantidad
 
     const sePuedeVenderPrecio0 = ModelConfig.get("permitirVentaPrecio0")
@@ -256,22 +256,29 @@ export const SelectedOptionsProvider = ({ children }) => {
       setShowAsignarPrecio(true)
       setProductoSinPrecio(product)
     } else {
-      if (
-        (quantity === 1 || quantity == undefined)
-        && ProductSold.getInstance().esPesable(product)) {
-        setShowAsignarPeso(true)
-        setProductoSinPeso(product)
-      } else {
+      // if (
+      //   (quantity === 1 || quantity == undefined)
+      //   && ProductSold.getInstance().esPesable(product)) {
+      //   setShowAsignarPeso(true)
+      //   setProductoSinPeso(product)
+
+        
+      // } else {
+
+      if (!quantity && ProductSold.getInstance().esPesable(product)) {
+            product.quantity = 1
+        }
+        
         var totalAntesPrecio = sales.getTotal()
         var totalAntesCantidad = sales.getTotalCantidad()
         sales.addProduct(product, quantity);
         var totalDespuesPrecio = sales.getTotal()
         var totalDespuesCantidad = sales.getTotalCantidad()
 
-        console.log("totalAntesPrecio", totalAntesPrecio)
-        console.log("totalDespuesPrecio", totalDespuesPrecio)
-        console.log("totalAntesCantidad", totalAntesCantidad)
-        console.log("totalDespuesCantidad", totalDespuesCantidad)
+        // console.log("totalAntesPrecio", totalAntesPrecio)
+        // console.log("totalDespuesPrecio", totalDespuesPrecio)
+        // console.log("totalAntesCantidad", totalAntesCantidad)
+        // console.log("totalDespuesCantidad", totalDespuesCantidad)
 
         if (totalAntesPrecio != totalDespuesPrecio || totalAntesCantidad != totalDespuesCantidad) showMessage("Agregado correctamente")
         setGrandTotal(sales.getTotal())
@@ -286,7 +293,7 @@ export const SelectedOptionsProvider = ({ children }) => {
         // setTimeout(() => {
         //   searchInputRef.current.focus()
         // }, 500);
-      }
+      // }
     }
   };
 

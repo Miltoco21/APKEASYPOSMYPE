@@ -153,7 +153,7 @@ const BoxProducts = () => {
     clearSalesData();
   };
 
-  console.log("salesData",salesData);
+  // console.log("salesData",salesData);
   
   return (
     <View>
@@ -206,7 +206,9 @@ const BoxProducts = () => {
             data={salesData}
             onDeleteProduct={setSelectedProductToDelete}
             onShowDeleteModal={setDeleteModalVisible}
-            
+            onRefresh={()=>{
+              
+            }}
           />
         )}
       </View>

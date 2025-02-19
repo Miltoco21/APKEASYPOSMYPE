@@ -20,6 +20,10 @@ class Sales {
   }
 
   loadFromSesion() {
+
+    console.log("loadFromSesion")
+    console.log("productos", this.products)
+    return this.products
     if (!this.sesionProducts.hasOne()) return [];
     this.products = [];
     var prodsSession = this.sesionProducts.cargarGuardados()[0];
@@ -149,7 +153,7 @@ class Sales {
 
 
   addProduct(product, quantity: number | null = null): ProductSold[] {
-    console.log("Sales: add product de sales", product)
+    // console.log("Sales: add product de sales", product)
     const newPrice = product.precioVenta || 0;
     if (quantity == null && product.cantidad > 0) quantity = product.cantidad
     if (quantity == null) quantity = 1
@@ -229,6 +233,10 @@ class Sales {
   }
 
   removeFromIndex(index) {
+    // console.log("removeFromIndex")
+    // console.log("sales.productos", this.products)
+    // console.log("index", index)
+
     const productoAEliminar = this.products[index];
     if (ProductSold.tieneEnvases(productoAEliminar)) {
       this.products = this.products.filter((pro_, i) => {
@@ -252,8 +260,8 @@ class Sales {
     })
     this.products = copiaProducts
     this.sesionProducts.guardar(this.products)
-
-    this.loadFromSesion()
+    
+    // this.loadFromSesion()
     return this.products;
   }
 
