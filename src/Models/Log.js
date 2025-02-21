@@ -1,4 +1,11 @@
 export default function Log(title,jsonOriginal) {
+  // console.log("Log")
+  // console.log("Log title", title)
+  // console.log("Log jsonOriginal", jsonOriginal)
+  if(!jsonOriginal){
+    console.log("no hay datos para loguear, salgo")
+    return
+  }
     var json = JSON.stringify(jsonOriginal)
     // json = json.replaceAll("\\","")
     // json = json.replaceAll("{","{\n")

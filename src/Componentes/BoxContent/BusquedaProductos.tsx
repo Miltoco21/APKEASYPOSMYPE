@@ -15,6 +15,7 @@ import Product from "../../Models/Product";
 import Ionicons from "@expo/vector-icons/Ionicons"
 import Confirm from '../Dialogs/Confirm';
 import ProductList from '../ScreenContent/ProductList';
+import Log from 'src/Models/Log';
 
 const BoxProducts = () => {
   // Acceder al contexto
@@ -100,7 +101,7 @@ const BoxProducts = () => {
         canPorPagina: 10
       },
       (productos, response) => {
-        console.log("resultado de la busqueda", productos)
+        Log("resultado de la busqueda", productos)
         console.log("currentPage", currentPage)
         if (currentPage === 1) {
           setFilteredProducts(productos || []);

@@ -2,6 +2,9 @@ import { useEffect } from 'react';
 import { View, Image, StyleSheet, Animated, Text } from 'react-native';
 import { Link, router } from 'expo-router';
 import Box from '../src/Componentes/Box';
+import StorageSesion from 'src/Helpers/StorageSesion';
+import dayjs from 'dayjs';
+import Log from 'src/Models/Log';
 
 
 export default function HomeScreen() {
@@ -16,20 +19,15 @@ export default function HomeScreen() {
     }).start();
 
     const timer = setTimeout(() => {
-      //  router.push("./Pages/Login");
-       router.push("./Pages/Home");
+    //  router.push("./Pages/Login");
+     router.push("./Pages/Home");
     }, 2000);
 
     return () => clearTimeout(timer);
 
+
+
     
-    
-    // (async()=>{
-    //   console.log("carga completa de index.tsx");
-      // const ses = new StorageSesion("sinimportancia")
-      // ses.eliminarTodoStorage()
-      // ses.verTodos()
-    // })()
 
   }, []);
 
