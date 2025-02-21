@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { View, Image, StyleSheet, Animated, Text } from 'react-native';
 import { Link, router } from 'expo-router';
-import Box from './src/Componentes/Box';
+import Box from '../src/Componentes/Box';
 
 
 export default function HomeScreen() {
@@ -15,22 +15,32 @@ export default function HomeScreen() {
       useNativeDriver: true,
     }).start();
 
-    // const timer = setTimeout(() => {
-    //   //  router.push("/src/Pages/Login");
-    //    router.push("/src/Pages/Home");
-    // }, 3000);
+    const timer = setTimeout(() => {
+      //  router.push("./Pages/Login");
+       router.push("./Pages/Home");
+    }, 2000);
 
-    // return () => clearTimeout(timer);
+    return () => clearTimeout(timer);
+
+    
+    
+    // (async()=>{
+    //   console.log("carga completa de index.tsx");
+      // const ses = new StorageSesion("sinimportancia")
+      // ses.eliminarTodoStorage()
+      // ses.verTodos()
+    // })()
+
   }, []);
 
   return (
     <Box>
       <View style={styles.container}>
         <Animated.Image
-          source={require('../app/src/assets/images/splash.png')}
+          source={require('./../src/assets/images/splash.png')}
           style={[styles.image, { transform: [{ scale: imageScale }] }]}
         />
-        
+
         {/* Link manual funcionando */}
         {/* <Text style={styles.link}>
           <Link href="/src/Pages/Login">Ir al Login manualmente</Link>
