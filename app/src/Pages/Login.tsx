@@ -100,7 +100,7 @@ export default function Login() {
   const router = useRouter();
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [appConfig, setAppConfig] = useState({
-    ...BaseConfig,
+    
    
   });
 
@@ -163,7 +163,7 @@ export default function Login() {
         <BaseConfigModal
         visible={showSettingsModal}
         onClose={() => setShowSettingsModal(false)}
-        config={appConfig}
+       
         onSave={handleSaveSettings}
       />
     </Box>

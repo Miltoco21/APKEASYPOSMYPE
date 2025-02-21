@@ -15,12 +15,12 @@ export default function HomeScreen() {
       useNativeDriver: true,
     }).start();
 
-    const timer = setTimeout(() => {
-      //  router.push("/src/Pages/Login");
-       router.push("/src/Pages/Home");
-    }, 3000);
+    // const timer = setTimeout(() => {
+    //   //  router.push("/src/Pages/Login");
+    //    router.push("/src/Pages/Home");
+    // }, 3000);
 
-    return () => clearTimeout(timer);
+    // return () => clearTimeout(timer);
   }, []);
 
   return (

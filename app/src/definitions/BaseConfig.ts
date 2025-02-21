@@ -4,6 +4,9 @@ export const AfterLoginTypes = {
   PreVenta: 2,
 };
 
+console.log("apiurl",apiUrl);
+
+
 export const OrdenListado = {
   Ascendente: 1,
   Descendente: 2,
@@ -24,7 +27,7 @@ const BaseConfig = {
 
   cantidadProductosBusquedaRapida: 20,
 
-  showPrintButton: false,
+  //showPrintButton: false,
   delayBetwenPrints: "1", //in seconds
   sucursal: "1",
   sucursalNombre: "",
@@ -36,7 +39,7 @@ const BaseConfig = {
   widthPrint: "80px",
   buttonDelayClick: 1500, //en milisegundos
 
-  suspenderYRecuperar: true,
+  //suspenderYRecuperar: true,
   pedirDatosTransferencia: true,
   pagarConCuentaCorriente: true,
 
