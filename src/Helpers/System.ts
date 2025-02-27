@@ -1,6 +1,7 @@
 //import { Height } from "@mui/icons-material";
 import CONSTANTS from "../definitions/Constants";
-import dayjs from "dayjs"
+import dayjs from "dayjs";
+import ModelConfig from "../Models/ModelConfig";
 
 
 class System {
@@ -36,7 +37,7 @@ class System {
     }
 
     getMiddleHeigth() {
-        return this.getWindowHeight() - 200 - 76
+        return this.getWindowHeight() - 212 - 92 - 300 - 20
     }
 
     fechaYMD() {
@@ -228,6 +229,115 @@ class System {
         })
         return conEfectivo
     }
+
+
+    // ej 152000.157 ----> 152.000,15
+    static formatMonedaLocal(valorMoneda, conDecimales = true) {
+        if (isNaN(valorMoneda)) return "0,00"
+        // console.log("formatMonedaLocal", valorMoneda)
+        var monedaStr = valorMoneda + ""
+        var parteEntera = monedaStr
+        var parteDecimal = "00"
+        if (monedaStr.indexOf(".") > -1) {
+            const partes = monedaStr.split(".")
+            parteEntera = partes[0]
+            parteDecimal = partes[1]
+        }
+
+        if (parteDecimal.length < 2) parteDecimal += "0"
+        if (parteDecimal.length > 2) {
+            const x = parseFloat("0." + parteDecimal).toFixed(2)
+            parteDecimal = x.split(".")[1]
+        }
+
+        if (parteEntera.length > 3) {
+            // console.log("parteEntera.length>3")
+            var parteEntera2 = ""
+            for (let index = parteEntera.length; index > 0; index--) {
+                const current = parteEntera.length - index + 1
+                // console.log("current", current)
+                const digitoEntero = parteEntera[index - 1];
+                parteEntera2 = digitoEntero + parteEntera2
+                // console.log("digitoEntero", digitoEntero)
+                // console.log("index", index)
+                if ((current) % 3 === 0) {
+                    // console.log(index + " es divisor de 3")
+                    parteEntera2 = "." + parteEntera2
+                }
+            }
+
+            if (parteEntera2.substr(0, 1) === ".") {
+                parteEntera2 = parteEntera2.substr(1)
+            }
+
+            parteEntera = parteEntera2
+        }
+
+        // console.log("formatMonedaLocal devuelve", parteEntera + "," + parteDecimal)
+        if (conDecimales) {
+            return parteEntera + "," + parteDecimal
+        } else {
+            return parteEntera
+        }
+    }
+
+
+    // static configBoletaOk() {
+    //     const emitirBoleta = ModelConfig.get("emitirBoleta")
+    //     const tienePasarelaPago = ModelConfig.get("tienePasarelaPago")
+
+    //     return (emitirBoleta !== null && tienePasarelaPago !== null)
+    // }
+    static async configBoletaOk() { // Hacer el método async
+        const emitirBoleta = await ModelConfig.get("emitirBoleta"); // Esperar la resolución
+        const tienePasarelaPago = await ModelConfig.get("tienePasarelaPago");
+      
+        return (emitirBoleta !== null && tienePasarelaPago !== null);
+      }
+
+    static invertirProps(objeto) {
+        const objetoInvertido = {}
+
+        const keys = Object.keys(objeto)
+
+        keys.forEach((key) => {
+            const value = objeto[key]
+            objetoInvertido[value] = key
+        })
+
+        return objetoInvertido
+    }
+
+    static arrayFromObject(objeto, invert = false) {
+        if (invert) objeto = this.invertirProps(objeto)
+        const keys = Object.keys(objeto)
+        var ar = []
+
+        keys.forEach((key) => {
+            if (objeto[key]) {
+                ar[key] = objeto[key]
+            }
+        })
+
+        return ar
+    }
+
+
+    static arrayIdValueFromObject(objeto, invert) {
+        if (invert) objeto = this.invertirProps(objeto)
+        const keys = Object.keys(objeto)
+        var ar:any = []
+
+        keys.forEach((key) => {
+            ar.push({
+                id : key,
+                value: objeto[key]
+            })
+        })
+
+        return ar
+    }
+
 }
 
 

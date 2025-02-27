@@ -1,6 +1,13 @@
 import StorageSesion from '../Helpers/StorageSesion';
 import BaseConfig from "../definitions/BaseConfig";
 
+// Interface para tipado fuerte (agrega todas las propiedades necesarias)
+interface Config {
+  [key: string]: any;
+  emitirBoleta?: boolean;
+  tienePasarelaPago?: boolean;
+  urlBase?: string;
+}
 
 class ModelConfig {
     static instance: ModelConfig | null = null;
@@ -14,77 +21,60 @@ class ModelConfig {
         if (ModelConfig.instance == null) {
             ModelConfig.instance = new ModelConfig();
         }
-
         return ModelConfig.instance;
     }
 
-    static async get(propName = "") {
-        // console.log("get para ", propName)
-        var rs = null
+    static async get(propName: keyof Config = ""): Promise<any> {
         try {
-            rs = await ModelConfig.getInstance().sesion.cargar(1)
-            if (!rs || typeof (rs) != "object") throw Error("lo que cargo de sesion no es un objeto")
-            // console.log("carga de sesion", rs)
-            if (propName != "") {
-                if (rs[propName] != undefined) {
-                    // console.log("devuelve 1 de get ", rs[propName])
-                    return rs[propName]
-                } else {
-                    // console.log("no esta creada")
-                    rs[propName] = BaseConfig[propName]
-                    this.getInstance().sesion.guardar(rs);
-
-                    // console.log("devuelve 2 de get ", rs[propName])
-                    return rs[propName]
-                }
-            } else {
-
-                // console.log("devuelve 3 de get ", rs)
-                return rs
+            const rs: Config = await ModelConfig.getInstance().sesion.cargar(1);
+            
+            if (!rs || typeof rs !== "object") {
+                throw new Error("Lo cargado desde sesión no es un objeto");
             }
+
+            if (propName !== "") {
+                if (rs[propName] !== undefined) {
+                    return rs[propName];
+                } else {
+                    // Asegurar que la propiedad existe en BaseConfig
+                    if (propName in BaseConfig) {
+                        rs[propName] = BaseConfig[propName];
+                        await this.getInstance().sesion.guardar(rs);
+                        return rs[propName];
+                    }
+                    throw new Error(`Propiedad ${propName} no existe en la configuración`);
+                }
+            }
+            return rs;
 
         } catch (err) {
-            // console.log("catch ", err)
-
             await this.getInstance().sesion.guardar(BaseConfig);
-
-            if (propName != "") {
-                // console.log("devuelve 4 de get ")
-                // console.log(BaseConfig[propName])
-                return BaseConfig[propName]
-            } else {
-                // console.log("devuelve 5 de get ")
-                // console.log(BaseConfig)
-                return BaseConfig
-            }
+            return propName !== "" ? BaseConfig[propName] : BaseConfig;
         }
-
-
     }
 
-    static change(propName, propValue) {
-        var all = ModelConfig.get();
+    static async change(propName: keyof Config, propValue: any): Promise<void> {
+        const all: Config = await ModelConfig.get();
         all[propName] = propValue;
-        ModelConfig.getInstance().sesion.guardar(all);
+        await ModelConfig.getInstance().sesion.guardar(all);
     }
 
-    static isEqual(name, value) {
-        const current = ModelConfig.get(name)
-        return current == value
+    static async isEqual(name: keyof Config, value: any): Promise<boolean> {
+        const current = await ModelConfig.get(name);
+        return current === value;
     }
 
-
-    getAll() {
-        return this.sesion.cargarGuardados();
+    // Métodos adicionales mejorados
+    async getAll(): Promise<Config[]> {
+        return await this.sesion.cargarGuardados();
     }
 
-    getFirst() {
+    getFirst(): Config {
         if (!this.sesion.hasOne()) {
             this.sesion.guardar(BaseConfig);
         }
-        return (this.sesion.getFirst())
+        return this.sesion.getFirst();
     }
-
-};
+}
 
 export default ModelConfig;

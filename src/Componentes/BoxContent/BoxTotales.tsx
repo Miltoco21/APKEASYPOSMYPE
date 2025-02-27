@@ -3,9 +3,12 @@ import React, { useState, useEffect, useContext } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Surface, Title, Button } from 'react-native-paper';
 import { SelectedOptionsContext } from '../Context/SelectedOptionsProvider';
+import BoxBoleta from './BoxBoleta'
 
 
 const BoxTotales = ({
+
+  
 
   onPagarBoleta = () => {},
   onPagarFactura = () => {},
@@ -21,11 +24,16 @@ const BoxTotales = ({
       clearSalesData,
       salesDataTimestamp
     } = useContext(SelectedOptionsContext);
+
+
+
+    const [isBoletaVisible, setBoletaVisible] = useState(false);
+
   return (
     <Surface style={styles.container}>
       <Title style={styles.totalText}>TOTAL: ${grandTotal}</Title>
       <View style={styles.buttonRow}>
-        <Button mode="contained" style={styles.button} onPress={onPagarBoleta}>
+      <Button mode="contained" style={styles.button} onPress={() => setBoletaVisible(true)}>
           Boleta
         </Button>
         <Button mode="contained" style={styles.button} onPress={onPagarFactura}>
@@ -40,6 +48,7 @@ const BoxTotales = ({
           btn 2
         </Button>
       </View>
+      <BoxBoleta visible={isBoletaVisible} onClose={() => setBoletaVisible(false)} />
     </Surface>
   );
 };
