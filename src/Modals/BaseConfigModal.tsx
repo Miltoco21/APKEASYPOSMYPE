@@ -11,6 +11,7 @@ import InputCheckbox from 'src/Componentes/Elements/CompuestosMobile/InputCheckb
 import Typography from 'src/Componentes/Typography';
 import BoxOptionList from 'src/Componentes/BoxContent/BoxOptionList';
 import InputNumber from 'src/Componentes/Elements/CompuestosMobile/InputNumber';
+import Log from 'src/Models/Log';
 
 const BaseConfigModal = ({
   openDialog,
@@ -60,6 +61,7 @@ const BaseConfigModal = ({
     setPedirPermisoBorrarProducto(await ModelConfig.get("pedirPermisoBorrarProducto"))
     setPermitirVentaPrecio0(await ModelConfig.get("permitirVentaPrecio0"))
     setAgruparProductoLinea(await ModelConfig.get("agruparProductoLinea"))
+
   }
 
   const handleSave = async () => {
@@ -76,7 +78,7 @@ const BaseConfigModal = ({
     await ModelConfig.change("sucursal", sucursal)
     await ModelConfig.change("puntoVenta", puntoVenta)
 
-    setOpenDialog(false);
+    onClose()
   };
 
   const onClose = () => {
@@ -84,6 +86,7 @@ const BaseConfigModal = ({
   }
 
   useEffect(() => {
+    if(!openDialog)return
     loadConfigs()
     cargarOrdenesListados()
   }, [openDialog])
@@ -93,7 +96,7 @@ const BaseConfigModal = ({
       visible={openDialog}
       transparent={true}
       animationType="slide"
-      onRequestClose={() => { onClose }}
+      onRequestClose={ onClose }
     >
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>

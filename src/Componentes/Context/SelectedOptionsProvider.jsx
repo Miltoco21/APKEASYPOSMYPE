@@ -369,11 +369,11 @@ export const SelectedOptionsProvider = ({ children }) => {
     })
   }
 
-  const clearSessionData = () => {
-    User.getInstance().sesion.truncate();
+  const clearSessionData = async() => {
+    await User.getInstance().sesion.truncate();
     setUserData([])
     setCliente(null)
-    Client.getInstance().sesion.truncate();
+    await Client.getInstance().sesion.truncate();
     setUserData([])
     clearSalesData()
   };

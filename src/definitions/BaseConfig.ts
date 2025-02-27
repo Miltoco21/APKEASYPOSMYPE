@@ -46,6 +46,7 @@ const BaseConfig = {
   pedirPermisoBorrarProducto: false,
   permitirVentaPrecio0: false,
   cantidadTicketImprimir: 1,
+  agruparProductoLinea: true,
 
   ordenMostrarListado: OrdenListado.Descendente,
 

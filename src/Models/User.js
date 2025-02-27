@@ -105,7 +105,7 @@ class User extends Singleton {
     }
 
     async doLogoutInServer(callbackOk, callbackWrong) {
-        const configs = ModelConfig.get()
+        const configs = await ModelConfig.get()
         var url = configs.urlBase
             + "/api/Usuarios/LoginUsuarioSetInactivo"
 
@@ -113,10 +113,15 @@ class User extends Singleton {
             codigoUsuario: this.codigoUsuario,
         }
 
-        if (!data.codigoSucursal) data.codigoSucursal = ModelConfig.get("sucursal")
-        if (!data.puntoVenta) data.puntoVenta = ModelConfig.get("puntoVenta")
+        if (!data.codigoSucursal) data.codigoSucursal =await ModelConfig.get("sucursal")
+        if (!data.puntoVenta) data.puntoVenta =await ModelConfig.get("puntoVenta")
 
-        EndPoint.sendPost(url, data, (responseData, response) => {
+
+            // console.log("doLogoutInServer")
+            // console.log("url", url)
+            // console.log("data", data)
+
+        await EndPoint.sendPost(url, data, (responseData, response) => {
             callbackOk(response);
         }, callbackWrong)
     }

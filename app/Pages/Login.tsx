@@ -92,6 +92,7 @@ import CONSTANTS from "../../src/definitions/Constants";
 import Ionicons from "@expo/vector-icons/Ionicons"
 import User from "src/Models/User";
 import Log from "src/Models/Log";
+import ModelConfig from "src/Models/ModelConfig";
 
 export default function Login() {
 
@@ -134,7 +135,7 @@ export default function Login() {
       // if( ModelConfig.get("afterLogin") == TiposPasarela.PREVENTA  ){
         // navigate("/pre-venta");
       // }else{
-        router.push("./Home");
+        router.navigate("./Home");
       // }
       // hideLoading()
     }, (error)=> {
@@ -152,7 +153,7 @@ export default function Login() {
     
     const cargado = await User.getInstance().getFromSesion()
     if(cargado){
-      router.push("./Home");
+      router.navigate("./Home");
     }
 
     // Log("cargado",cargado)
@@ -205,7 +206,7 @@ export default function Login() {
         <BaseConfigModal
         openDialog={showSettingsModal}
         setOpenDialog={setShowSettingsModal}
-        onChange={()=>{
+        onChange={async()=>{
           console.log("cambio algo de la config")
         }}
       />
