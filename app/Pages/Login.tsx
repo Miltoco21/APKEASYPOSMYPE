@@ -72,7 +72,7 @@
 //     fontWeight: "bold",
 //   },
 // });
-import React, { useState,useContext } from "react";
+import React, { useState,useContext, useEffect } from "react";
 import {
   SafeAreaView,
   View,
@@ -90,12 +90,17 @@ import BaseConfigModal from "../../src/Modals/BaseConfigModal";
 import SelectedOptionsProvider, { SelectedOptionsContext } from '../../src/Componentes/Context/SelectedOptionsProvider';
 import CONSTANTS from "../../src/definitions/Constants";
 import Ionicons from "@expo/vector-icons/Ionicons"
+import User from "src/Models/User";
+import Log from "src/Models/Log";
 
 export default function Login() {
 
-  const { userData } = useContext(SelectedOptionsContext);
+  const { 
+    userData,
+    updateUserData
+  } = useContext(SelectedOptionsContext);
 
-  const [email, setEmail] = useState("");
+  const [rutOrCode, setRutOrCode] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
   const [showSettingsModal, setShowSettingsModal] = useState(false);
@@ -105,21 +110,58 @@ export default function Login() {
   });
 
 
-  const handleLogin = () => {
-    if (!email || !password) {
+  const handleLogin = async() => {
+    if (!rutOrCode || !password) {
       Alert.alert("Error", "Por favor, completa todos los campos.");
       return;
     }
     // Aquí puedes agregar la lógica de autenticación
-    Alert.alert("Éxito", "Inicio de sesión exitoso.");
-    router.push("/src/Pages/Home");
+
+    var user = new User();
+    user.setRutFrom(rutOrCode)
+    user.setUserCodeFrom(rutOrCode)
+    user.setPassword(password)
+
+    // Alert.alert("Ingresando al sistema...")
+
+    await user.doLoginInServer((info)=> {
+      // Actualizar userData después del inicio de sesión exitoso
+      
+      updateUserData(info.responseUsuario);
+
+
+      // Redirigir a la página de inicio
+      // if( ModelConfig.get("afterLogin") == TiposPasarela.PREVENTA  ){
+        // navigate("/pre-venta");
+      // }else{
+        router.push("./Home");
+      // }
+      // hideLoading()
+    }, (error)=> {
+      console.log("error", error)
+      Alert.alert(error)
+      // hideLoading()
+    })
   };
-  const handleSaveSettings = (newUrl) => {
-    // Aquí iría la lógica para guardar la URL
-   
-    setShowSettingsModal(false);
-    // Ejemplo: guardar en AsyncStorage o Contexto
-  };
+
+  const cargaInicial = async()=>{
+    // console.log("carga inicial")
+    const us = User.getInstance()
+    
+    // await us.sesion.eliminar({id:1})
+    
+    const cargado = await User.getInstance().getFromSesion()
+    if(cargado){
+      router.push("./Home");
+    }
+
+    // Log("cargado",cargado)
+  }
+
+  useEffect(()=>{
+    cargaInicial()
+  },[])
+  
 
   return (
     <Box style={styles.container}>
@@ -130,17 +172,17 @@ export default function Login() {
       />
       <TextInput
         style={styles.input}
-        placeholder="Correo electrónico"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
+        placeholder="Rut o Codigo de usuario"
+        value={rutOrCode}
+        onChangeText={setRutOrCode}
+        keyboardType="numeric"
       />
       <TextInput
         style={styles.input}
         placeholder="Contraseña"
         value={password}
         onChangeText={setPassword}
+        keyboardType="numeric"
         secureTextEntry
       />
     
@@ -161,10 +203,11 @@ export default function Login() {
         </TouchableOpacity>
         <Text>{CONSTANTS.appName}{CONSTANTS.appVersion}</Text>
         <BaseConfigModal
-        visible={showSettingsModal}
-        onClose={() => setShowSettingsModal(false)}
-       
-        onSave={handleSaveSettings}
+        openDialog={showSettingsModal}
+        setOpenDialog={setShowSettingsModal}
+        onChange={()=>{
+          console.log("cambio algo de la config")
+        }}
       />
     </Box>
   );

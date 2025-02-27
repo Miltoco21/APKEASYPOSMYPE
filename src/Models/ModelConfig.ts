@@ -62,8 +62,8 @@ class ModelConfig {
 
     }
 
-    static change(propName, propValue) {
-        var all = ModelConfig.get();
+    static async change(propName, propValue) {
+        var all = await ModelConfig.get();
         all[propName] = propValue;
         ModelConfig.getInstance().sesion.guardar(all);
     }
