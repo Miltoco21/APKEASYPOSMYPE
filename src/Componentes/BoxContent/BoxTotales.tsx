@@ -8,9 +8,6 @@ import PagarBoleta from '../ScreenDialog/PagarBoleta';
 
 
 const BoxTotales = ({
-
-  
-
   onPagarBoleta = () => {},
   onPagarFactura = () => {},
   onOpcion3 = () => {},
@@ -33,20 +30,20 @@ const BoxTotales = ({
       <Title style={styles.totalText}>TOTAL: ${grandTotal}</Title>
       <View style={styles.buttonRow}>
       <Button mode="contained" style={styles.button} onPress={() => setShowModalPagarBoleta(true)}>
-          Boleta
+          Hacer el pago
         </Button>
-        <Button mode="contained" style={styles.button} onPress={onPagarFactura}>
+        {/* <Button mode="contained" style={styles.button} onPress={onPagarFactura}>
          Factura
-        </Button>
+        </Button> */}
       </View>
-      <View style={styles.buttonRow}>
+      {/* <View style={styles.buttonRow}>
         <Button mode="contained" style={styles.button} onPress={onOpcion3}>
     btn 1
         </Button>
         <Button mode="contained" style={styles.button} onPress={onOpcion4}>
           btn 2
         </Button>
-      </View>
+      </View> */}
 
       <PagarBoleta openDialog={showModalPagarBoleta} setOpenDialog={setShowModalPagarBoleta}/>
     </Surface>
@@ -55,7 +52,7 @@ const BoxTotales = ({
 
 const styles = StyleSheet.create({
   container: {
-    margin: 1,
+    // marginTop: 100,
     padding: 5,
     elevation: 3,
     borderRadius: 8,

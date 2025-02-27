@@ -1,79 +1,25 @@
-
-// import React, { useContext, useState } from 'react';
-// import { BottomNavigation, useTheme } from 'react-native-paper';
-// import { SelectedOptionsContext } from '../Context/SelectedOptionsProvider';
-// import Ionicons from "@expo/vector-icons/Ionicons";
-
-// const BottomButtons = () => {
-//   const { clearSalesData } = useContext(SelectedOptionsContext);
-//   const [index, setIndex] = useState(0);
-//   const { colors } = useTheme();
-
-//   const routes = [
-//     { key: 'clear', title: 'Limpiar', icon: 'trash' as const },
-//     { key: 'familias', title: 'Familias', icon: 'shapes' as const },
-//     { key: 'search', title: 'Búsqueda', icon: 'search' as const },
-//     { key: 'config', title: 'Ajustes', icon: 'settings' as const }
-//   ];
-
-//   const renderScene = BottomNavigation.SceneMap({
-//     clear: () => null,
-//     familias: () => null,
-//     search: () => null,
-//     config: () => null,
-//   });
-
-
-// // ejemplo para abrir comnetes desde las rutas
-// // const renderScene = BottomNavigation.SceneMap({
-// //     clear: () => <ClearScreen />,
-// //     familias: () => <FamiliasScreen />,
-// //     search: () => <SearchScreen />,
-// //     config: () => <ConfigScreen />,
-// // });
-
-//   return (
-//     <BottomNavigation
-//       navigationState={{ index, routes }}
-//       onIndexChange={setIndex}
-//       renderScene={renderScene}
-//       renderIcon={({ route, color, focused }) => (
-//         <Ionicons
-//           name={route.icon}
-//           size={24}
-//           color={focused ? "#283048" : color}
-//         />
-//       )}
-//       shifting={false}
-//       barStyle={{ backgroundColor: colors.background }}
-//       onTabPress={({ route }) => {
-//         if (route.key === 'clear') {
-//           clearSalesData();
-//           setIndex(0);
-//         }
-//       }}
-//     />
-//   );
-// };
-
-//export default BottomButtons;
-
 import React, { useContext, useState } from 'react';
 import { BottomNavigation, useTheme, } from 'react-native-paper';
-import { Platform, StyleSheet } from 'react-native';
+import { Alert, Platform, StyleSheet } from 'react-native';
 import { SelectedOptionsContext } from '../Context/SelectedOptionsProvider';
 import Ionicons from "@expo/vector-icons/Ionicons";
+import BaseConfigModal from 'src/Modals/BaseConfigModal';
 
 const BottomButtons = () => {
   const { clearSalesData } = useContext(SelectedOptionsContext);
+
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+
+
+
   const [index, setIndex] = useState(0);
   const { colors } = useTheme();
 
   const routes = [
-    { key: 'clear', title: 'Limpiar', icon: 'trash'as const },
+    { key: 'clear', title: 'Limpiar', icon: 'trash' as const },
     { key: 'familias', title: 'Familias', icon: 'shapes' as const },
-    { key: 'search', title: 'Productos ', icon: 'search' as const},
-    { key: 'config', title: 'Ajustes', icon: 'settings'as const },
+    // { key: 'search', title: 'Productos ', icon: 'search' as const},
+    { key: 'config', title: 'Ajustes', icon: 'settings' as const },
     // { key: 'ventas', title: 'Ventas', icon: 'cart'as const },
     // { key: 'reportes', title: 'Reportes', icon: 'stats-chart'as const },
     // { key: 'usuarios', title: 'Usuarios', icon: 'people'as const },
@@ -91,30 +37,44 @@ const BottomButtons = () => {
     // mas: () => null,
   });
 
-  
+
   return (
-    <BottomNavigation
-      navigationState={{ index, routes }}
-      onIndexChange={setIndex}
-      renderScene={renderScene}
-      renderIcon={({ route, color, focused }) => {
-        return (
-          <Ionicons
-            name={route.icon}
-            size={24}
-            color={focused ? "#283048" : color}
-          />
-        );
-      }}
-      shifting={false} // Asegura que los íconos siempre sean visibles
-      barStyle={{ backgroundColor: colors.background }}
-      onTabPress={({ route }) => {
-        if (route.key === 'clear') {
-          clearSalesData();
-          setIndex(0);
-        }
-      }}
-    />
+    <>
+      <BottomNavigation
+        navigationState={{ index, routes }}
+        onIndexChange={setIndex}
+        renderScene={renderScene}
+        renderIcon={({ route, color, focused }) => {
+          return (
+            <Ionicons
+              name={route.icon}
+              size={24}
+              color={focused ? "#283048" : color}
+            />
+          );
+        }}
+        shifting={false} // Asegura que los íconos siempre sean visibles
+        barStyle={{ backgroundColor: colors.background }}
+        onTabPress={({ route }) => {
+          if (route.key === 'clear') {
+            clearSalesData();
+            setIndex(0);
+          } else if (route.key === 'config') {
+            setShowSettingsModal(true)
+          } else if (route.key === 'familias') {
+            Alert.alert("Proximamente")
+          }
+        }}
+      />
+      <BaseConfigModal
+        openDialog={showSettingsModal}
+        setOpenDialog={setShowSettingsModal}
+        onChange={async () => {
+          console.log("cambio algo de la config")
+        }}
+      />
+    </>
+
   );
 };
 

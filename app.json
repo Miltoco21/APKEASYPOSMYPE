@@ -1,30 +1,30 @@
 {
   "expo": {
-    "name": "APKEASYPOSMYPE",
-    "slug": "APKEASYPOSMYPE",
+    "name": "Mype EasyPos",
+    "slug": "Mype EasyPos",
     "version": "1.0.0",
     "scheme": "myapp",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./src/assets/images/splash.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./src/assets/images/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true,"bundleIdentifier": "com.wa2goose.APKEASYPOSMYPE"
+      "supportsTablet": true,"bundleIdentifier": "com.easypos.mype"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./src/assets/images/splash.png",
         "backgroundColor": "#ffffff"
       },"permissions": [
           "android.permission.CAMERA",
           "android.permission.RECORD_AUDIO"
         ],
-        "package": "com.wa2goose.APKEASYPOSMYPE"
+        "package": "com.easypos.mype"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -34,8 +34,8 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
-          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
+          "cameraPermission": "Permitir a $(PRODUCT_NAME) acceder a la camara",
+          "microphonePermission": "Permitir a $(PRODUCT_NAME) acceder al microfono",
           "recordAudioAndroid": true
         }
       ]
