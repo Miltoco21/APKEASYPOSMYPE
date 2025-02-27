@@ -100,16 +100,16 @@ class Model{
 
 
     static async getOfertas(callbackOk, callbackWrong){
-      const url = ModelConfig.get("urlBase") + "/api/Ofertas/GetOfertas"
-      EndPoint.sendGet(url,(responseData, response)=>{
+      const url = await ModelConfig.get("urlBase") + "/api/Ofertas/GetOfertas"
+      await EndPoint.sendGet(url,(responseData, response)=>{
         callbackOk(responseData.ofertas, response)
       },callbackWrong)
     }
 
 
     static async getServerConfigs(callbackOk, callbackWrong){
-      const url = ModelConfig.get("urlBase") + "/api/Configuracion/GetAllConfiguracionImpresion"
-      EndPoint.sendGet(url,(responseData, response)=>{
+      const url = await ModelConfig.get("urlBase") + "/api/Configuracion/GetAllConfiguracionImpresion"
+      await EndPoint.sendGet(url,(responseData, response)=>{
         callbackOk(responseData.configuracion, response)
       },callbackWrong)
     }

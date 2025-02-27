@@ -4,6 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import { Surface, Title, Button } from 'react-native-paper';
 import { SelectedOptionsContext } from '../Context/SelectedOptionsProvider';
 import BoxBoleta from './BoxBoleta'
+import PagarBoleta from '../ScreenDialog/PagarBoleta';
 
 
 const BoxTotales = ({
@@ -25,15 +26,13 @@ const BoxTotales = ({
       salesDataTimestamp
     } = useContext(SelectedOptionsContext);
 
-
-
-    const [isBoletaVisible, setBoletaVisible] = useState(false);
+    const [showModalPagarBoleta, setShowModalPagarBoleta] = useState(false);
 
   return (
     <Surface style={styles.container}>
       <Title style={styles.totalText}>TOTAL: ${grandTotal}</Title>
       <View style={styles.buttonRow}>
-      <Button mode="contained" style={styles.button} onPress={() => setBoletaVisible(true)}>
+      <Button mode="contained" style={styles.button} onPress={() => setShowModalPagarBoleta(true)}>
           Boleta
         </Button>
         <Button mode="contained" style={styles.button} onPress={onPagarFactura}>
@@ -48,7 +47,8 @@ const BoxTotales = ({
           btn 2
         </Button>
       </View>
-      <BoxBoleta visible={isBoletaVisible} onClose={() => setBoletaVisible(false)} />
+
+      <PagarBoleta openDialog={showModalPagarBoleta} setOpenDialog={setShowModalPagarBoleta}/>
     </Surface>
   );
 };

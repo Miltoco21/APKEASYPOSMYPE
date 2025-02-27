@@ -27,11 +27,11 @@ class Printer{
         return Printer.instance;
     }
 
-    static printSimple(imprimirTxt){
+    static async printSimple(imprimirTxt){
         console.log("print simple")
         console.log(imprimirTxt)
         let simplePrintWindow:any = window.open("about:blank", "printsimple", `scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no` +
-            `,width=` + ModelConfig.get("widthPrint") + `,left=0,top=0`);
+            `,width=` + await ModelConfig.get("widthPrint") + `,left=0,top=0`);
     
         simplePrintWindow.document.write(imprimirTxt)
         simplePrintWindow.document.write(
@@ -45,7 +45,7 @@ class Printer{
         );
     }
 
-    static printFlat(imprimirTxt){
+    static async printFlat(imprimirTxt){
         if(imprimirTxt.trim() == "") return
         // console.log("va a imprimir esto:")
         // console.log(imprimirTxt)
@@ -64,7 +64,7 @@ class Printer{
             `<script>
                 setTimeout(() => {
                     window.print();
-                }, ` + ( ModelConfig.get("delayCloseWindowPrints") * 1000 ) + `);
+                }, ` + (await ModelConfig.get("delayCloseWindowPrints") * 1000 ) + `);
             <\/script>`
         );
 
@@ -94,7 +94,7 @@ class Printer{
 
     }
 
-    static doPrints(){
+    static async doPrints(){
         var does = false
         // console.log("doPrints")
         // console.log(Object.keys(Printer.arrPrints))
@@ -114,7 +114,7 @@ class Printer{
                     setTimeout(() => {
                         console.log("cerrando")
                         window.close();
-                        }, ` + ( ModelConfig.get("delayCloseWindowPrints") * 1000 ) + `);
+                        }, ` + (await ModelConfig.get("delayCloseWindowPrints") * 1000 ) + `);
                         <\/script>`
                 );
             }
@@ -124,7 +124,7 @@ class Printer{
 
             return
         }
-        keyItems.forEach((itPrint)=>{
+        keyItems.forEach(async(itPrint)=>{
             if(itPrint!= undefined && !does){
                 does = true
                 // console.log("do print item: ")
@@ -140,7 +140,7 @@ class Printer{
 
                 setTimeout(() => {
                     Printer.doPrints()
-                }, ModelConfig.get("delayBetwenPrints") * 1000);
+                }, (await ModelConfig.get("delayBetwenPrints")) * 1000);
                 return
             }
         })

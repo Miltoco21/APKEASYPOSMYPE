@@ -1,6 +1,4 @@
 import React, { useContext, useState, useEffect } from "react";
-
-import React, { useState, useEffect } from "react";
 import { TouchableOpacity, Text, View, StyleSheet } from "react-native";
 import ModelConfig from "../../Models/ModelConfig";
 
@@ -24,19 +22,23 @@ const BoxSelectPayMethod = ({ onChange, metodoPago, excludes = [] }) => {
         ]}
         onPress={() => onChange(value)}
       >
-        {" "}
-        <Text style={styles.text}>{label}</Text>{" "}
+        <Text style={styles.text}>
+          <Text style={styles.text}>
+            {label}
+          </Text>
+        </Text>
+
       </TouchableOpacity>
     );
   };
 
   return (
     <View style={styles.container}>
-      {" "}
-      {renderButton("Efectivo", "EFECTIVO")} {renderButton("Débito", "DEBITO")}{" "}
-      {renderButton("Crédito", "CREDITO")}{" "}
-      {renderButton("Transferencia", "TRANSFERENCIA")}{" "}
-      {renderButton("Cuenta Corriente", "CUENTACORRIENTE")}{" "}
+      {renderButton("Efectivo", "EFECTIVO")}
+      {renderButton("Débito", "DEBITO")}
+      {renderButton("Crédito", "CREDITO")}
+      {renderButton("Transferencia", "TRANSFERENCIA")}
+      {renderButton("Cuenta Corriente", "CUENTACORRIENTE")}
     </View>
   );
 };
@@ -50,7 +52,7 @@ const styles = StyleSheet.create({
   },
   button: {
     height: 60,
-    width: "48%",
+    width: "100%",
     justifyContent: "center",
     alignItems: "center",
     margin: 5,
@@ -62,7 +64,13 @@ const styles = StyleSheet.create({
     borderColor: "#007bff",
     backgroundColor: "white",
   },
-  text: { fontSize: 16, fontWeight: "bold", color: "black" },
+  text: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "black",
+    width:"100%",
+    textAlign:"center"
+  },
 });
 
 export default BoxSelectPayMethod;

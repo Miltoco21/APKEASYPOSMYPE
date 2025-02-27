@@ -3,6 +3,7 @@ import { View, Text, FlatList, TouchableOpacity, Alert, StyleSheet } from "react
 import { IconButton } from "react-native-paper";
 import { SelectedOptionsContext } from "../Context/SelectedOptionsProvider";
 import Product from "../../Models/Product";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const BoxPagos = ({ pagos, setPagos, totalPagos, setTotalPagos, onRemove = (pagoEliminado: any) => {} }) => {
   const { showConfirm } = useContext(SelectedOptionsContext);
@@ -55,7 +56,7 @@ const BoxPagos = ({ pagos, setPagos, totalPagos, setTotalPagos, onRemove = (pago
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       {totalPagos > 0 && (
         <View>
           <Text style={styles.title}>Pagos</Text>
@@ -77,7 +78,7 @@ const BoxPagos = ({ pagos, setPagos, totalPagos, setTotalPagos, onRemove = (pago
           />
         </View>
       )}
-    </View>
+    </SafeAreaView>
   );
 };
 

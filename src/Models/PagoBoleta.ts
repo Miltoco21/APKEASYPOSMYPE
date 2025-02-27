@@ -8,6 +8,7 @@ import ModelConfig from './ModelConfig';
 import EndPoint from './EndPoint';
 import MetodosPago from '../definitions/MetodosPago';
 import System from '../Helpers/System';
+import Log from './Log';
 
 
 class PagoBoleta extends Model implements IPagoBoleta {
@@ -25,30 +26,30 @@ class PagoBoleta extends Model implements IPagoBoleta {
     const tienePasarelaPago = await (ModelConfig.get("tienePasarelaPago"))
     const excluirMediosEnBoleta = await (ModelConfig.get("excluirMediosEnBoleta"))
 
-    if(!emitirBoleta){
+    if (!emitirBoleta) {
       return false
     }
 
-    if(!tienePasarelaPago){
+    if (!tienePasarelaPago) {
       return true
     }
 
-    const metodosArr:any = System.arrayFromObject(MetodosPago, true)
+    const metodosArr: any = System.arrayFromObject(MetodosPago, true)
 
     var algunExcluido = false
-    infoAEnviar.pagos.forEach((pago)=>{
+    infoAEnviar.pagos.forEach((pago) => {
 
       var metodoAdaptado = pago.metodoPago
-      if(pago.metodoPago == "TARJETA"){
+      if (pago.metodoPago == "TARJETA") {
         metodoAdaptado = pago.tipoTarjeta
       }
 
-      if(pago.metodoPago == "CUENTACORRIENTE"){
+      if (pago.metodoPago == "CUENTACORRIENTE") {
         metodoAdaptado = "CUENTA_CORRIENTE"
       }
 
       var index = metodosArr.indexOf(metodoAdaptado)
-      if(index != -1 && excluirMediosEnBoleta.includes(index)) {
+      if (index != -1 && excluirMediosEnBoleta.includes(index)) {
         algunExcluido = true
       }
     })
@@ -56,17 +57,16 @@ class PagoBoleta extends Model implements IPagoBoleta {
     return !algunExcluido
   }
 
-  static analizarSiEsModoAvion(infoAEnviar){
+  static analizarSiEsModoAvion(infoAEnviar) {
     return !this.analizarSiHaceBoleta(infoAEnviar)
   }
 
   async hacerPago(data, modo_avion, callbackOk, callbackWrong) {
-    console.log("modo avion?" + (modo_avion ? "si" : "no"))
+    // console.log("modo avion?" + (modo_avion ? "si" : "no"))
     // const configs = ModelConfig.get()
     // var url = configs.urlBase
 
     var url = await ModelConfig.get("urlBase");
-console.log(url.includes("https"))
     if (modo_avion) {
       // url += "/api/Ventas/RedelcomImprimirTicket"
       // url += "/api/Imprimir/Ticket"
@@ -75,12 +75,13 @@ console.log(url.includes("https"))
       url += "/api/Imprimir/Boleta"
     }
 
-    if (!data.codigoSucursal) data.codigoSucursal = ModelConfig.get("sucursal")
+    if (!data.codigoSucursal) data.codigoSucursal = await ModelConfig.get("sucursal")
     if (!data.codigoClienteSucursal) data.codigoClienteSucursal = "0"
-    if (!data.puntoVenta) data.puntoVenta = ModelConfig.get("puntoVenta")
+    if (!data.puntoVenta) data.puntoVenta = await ModelConfig.get("puntoVenta")
 
-
-    EndPoint.sendPost(url, data, (responseData, response) => {
+    // Log("url", url)
+    // Log("datos a enviar", data)
+    await EndPoint.sendPost(url, data, (responseData, response) => {
       callbackOk(responseData, response);
     }, callbackWrong)
   }

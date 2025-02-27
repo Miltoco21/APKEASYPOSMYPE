@@ -8,7 +8,7 @@ import BoxSelectPayMethod from "./BoxSelectPayMethod"
 import BotonClienteOUsuario from "./BotonClienteOUsuario";
 import BuscarUsuario from "./BuscarUsuario";
 import Client from "../../Models/Client";
-import PagoTransferencia from "../ScreenDialog/PagoTransferencia";
+// import PagoTransferencia from "../ScreenDialog/PagoTransferencia";
 import ModelConfig from "../../Models/ModelConfig";
 import Product from "../../Models/Product";
 
@@ -111,6 +111,8 @@ const BoxMultiPago = ({
   }
 
   const confirmarPagoEfectivo = (nuevoMonto) => {
+    console.log("confirmarPagoEfectivo")
+    console.log("nuevoMonto", nuevoMonto)
     var yaTenia1 = false
 
     var totalPagosx = 0
@@ -159,9 +161,7 @@ const BoxMultiPago = ({
 
 
 
-  const checkPayMethod = (metodoPago) => {
-    // console.log("checkPayMethod")
-    // console.log("metodoPago",metodoPago)
+  const checkPayMethod = async(metodoPago) => {
     setMetodoPago(metodoPago)
     if (metodoPago == "EFECTIVO") {
       confirmarPagoEfectivo(parseFloat(pagarCon))
@@ -185,7 +185,7 @@ const BoxMultiPago = ({
         setShowSelectClientUser(true)//mostrar alert
       } else if (metodoPago == "TRANSFERENCIA") {
 
-        if (ModelConfig.get("pedirDatosTransferencia")) {
+        if (await ModelConfig.get("pedirDatosTransferencia")) {
           setOpenTransferenciaModal(true);
         } else {
           confirmPagoTransferencia({
@@ -259,13 +259,15 @@ const BoxMultiPago = ({
   useEffect(() => {
     // console.log("cambio pagarCon", pagarCon)
     if (pagarCon > totalYDescuentoYRedondeo + 20000) {
+      console.log("correccion 1")
       setPagarCon(totalYDescuentoYRedondeo)
       alert("monto incorrecto");
     }
-
-    if (!cambioManualTeclado && pagarCon > totalYDescuentoYRedondeo) {
-      setPagarCon(totalYDescuentoYRedondeo)
-    }
+    
+    // if (!cambioManualTeclado && pagarCon > totalYDescuentoYRedondeo) {
+      // console.log("correccion 2")
+      // setPagarCon(totalYDescuentoYRedondeo)
+    // }
 
   }, [pagarCon]);
 
@@ -421,12 +423,12 @@ const BoxMultiPago = ({
           setUsuario(usuario)
         }}
       />
-      <View container spacing={2} style={{
-        marginLeft: "-20px",
-        padding: "20px",
+      <View  style={{
+        marginLeft: -20,
+        padding: 20,
       }}>
 
-        <View item xs={12} sm={12} md={8} lg={8}>
+        <View>
           <BoxSelectPayMethod
             metodoPago={metodoPago}
             onChange={onChangePayMethod}
@@ -436,7 +438,7 @@ const BoxMultiPago = ({
 
       </View>
 
-      <PagoTransferencia
+      {/* <PagoTransferencia
         openDialog={openTransferenciaModal}
         setOpenDialog={setOpenTransferenciaModal}
         onConfirm={(data) => {
@@ -444,7 +446,7 @@ const BoxMultiPago = ({
 
           confirmPagoTransferencia(data)
         }}
-      />
+      /> */}
     </>
   );
 };

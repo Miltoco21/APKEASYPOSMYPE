@@ -47,9 +47,9 @@ class LastSale{
         })
     }
 
-    static confirm(dataResponse){
+    static async confirm(dataResponse){
         var me = LastSale.getInstance()
-        var carga1 = me.sesion.cargar(1)
+        var carga1 = await me.sesion.cargar(1)
         console.log("carga1")
         console.log(carga1)
         if(carga1){

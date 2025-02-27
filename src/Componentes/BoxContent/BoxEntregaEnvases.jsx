@@ -1,242 +1,122 @@
-
-
 import React, { useContext, useState, useEffect } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import dayjs from "dayjs";
-import {
-  Paper,
-  Avatar,
-  Box,
-  Grid,
-  Stack,
-  InputLabel,
-  Typography,
-  CircularProgress,
-  Snackbar,
-  Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  MenuItem,
-  TableHead,
-  TableRow,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  Checkbox,
-  DialogActions,
-  TextField,
-} from "@mui/material";
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from "react-native";
 import { SelectedOptionsContext } from "../Context/SelectedOptionsProvider";
 import System from "../../Helpers/System";
-import PagoBoleta from "../../Models/PagoBoleta";
-import TecladoPagoCaja from "../Teclados/TecladoPagoCaja"
-import BoxSelectPayMethod from "./BoxSelectPayMethod"
-import BotonClienteOUsuario from "../ScreenDialog/BotonClienteOUsuario";
-import BuscarUsuario from "../ScreenDialog/BuscarUsuario";
 import ProductSold from "../../Models/ProductSold";
 import Validator from "../../Helpers/Validator";
-import SmallButton from "../Elements/SmallButton";
-import Client from "../../Models/Client";
-import Printer from "../../Models/Printer";
-import LastSale from "../../Models/LastSale";
-import PagoTransferencia from "../ScreenDialog/PagoTransferencia";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const BoxEntregaEnvases = ({
-
-  tieneEnvases, settieneEnvases,
+  tieneEnvases,
+  settieneEnvases,
   products,
-  productosConEnvases, setProductosConEnvases,
-  descuentoEnvases, setDescuentoEnvases,
-
-  reload = false
+  productosConEnvases,
+  setProductosConEnvases,
+  descuentoEnvases,
+  setDescuentoEnvases,
 }) => {
-  const {
-    userData,
-    salesData,
-    sales,
-    addToSalesData,
-    setPrecioData,
-    grandTotal,
-    ventaData,
-    setVentaData,
-    searchResults,
-    // setSearchResults,
-    updateSearchResults,
-    selectedUser,
-    setSelectedUser,
-    // selectedCodigoCliente,
-    // setSelectedCodigoCliente,
-    // selectedCodigoClienteSucursal,
-    // setSelectedCodigoClienteSucursal,
-    // setSelectedChipIndex,
-    // selectedChipIndex,
-    searchText,
-    setTextSearchProducts,
-    clearSalesData,
-
-    cliente,
-    setCliente,
-    askLastSale,
-    setAskLastSale,
-    showMessage,
-    showConfirm,
-    showDialogSelectClient,
-    setShowDialogSelectClient,
-    modoAvion,
-    ultimoVuelto,
-    setUltimoVuelto
-  } = useContext(SelectedOptionsContext);
-
+  useEffect(() => {
+    if (products.length < 1) return;
+    checkEnvases();
+  }, [products]);
 
   const updateDescuentosEnvases = (productos) => {
-    var descuentos = 0
-    productos.forEach((pro) => {
-      if (pro.isEnvase) {
-        descuentos += pro.total
-      }
-    })
-    setDescuentoEnvases(descuentos)
-    // setVuelto(calcularVuelto());
-  }
+    let descuentos = productos.reduce((acc, pro) => (pro.isEnvase ? acc + pro.total : acc), 0);
+    setDescuentoEnvases(descuentos);
+  };
 
   const checkEnvases = () => {
-    var tieneAlguno = false
-    var descuentosDeEnvases = 0
+    let tieneAlguno = products.some((pro) => pro.isEnvase);
+    let descuentosDeEnvases = products.reduce((acc, pro) => (pro.isEnvase ? acc + pro.total : acc), 0);
 
-    var copiaSales = JSON.parse(JSON.stringify(products))
-    console.log("checkEnvases de prods", copiaSales)
-
-    copiaSales.forEach((pro) => {
-      if (pro.isEnvase) {
-        tieneAlguno = true
-        // pro.quantity = 0
-        // pro.updateSubtotal()
-        descuentosDeEnvases += pro.total
-      }
-    })
-
-    settieneEnvases(tieneAlguno)
-    setProductosConEnvases(copiaSales)
-    setDescuentoEnvases(descuentosDeEnvases)
-  }
+    settieneEnvases(tieneAlguno);
+    setProductosConEnvases([...products]);
+    setDescuentoEnvases(descuentosDeEnvases);
+  };
 
   const changeQuantityIfEnvase = (prod, index, newQuantity) => {
-    if (!prod.isEnvase) return
-    if (newQuantity !== 0 && !Validator.isCantidad(newQuantity)) return false
+    if (!prod.isEnvase || newQuantity < 0 || !Validator.isCantidad(newQuantity)) return;
 
-    const orig = ProductSold.getOwnerByEnvase(prod, productosConEnvases)
-    if (newQuantity > orig.quantity || newQuantity < 0) {
-      return
-    }
+    const orig = ProductSold.getOwnerByEnvase(prod, productosConEnvases);
+    if (newQuantity > orig.quantity) return;
 
-    const prods = productosConEnvases
-    var stSold = ProductSold.getInstance()
-    prods[index].quantity = newQuantity
-    stSold.fill(prods[index])
-    prods[index].total = stSold.getSubTotal()
+    const updatedProds = [...productosConEnvases];
+    updatedProds[index].quantity = newQuantity;
+    updatedProds[index].total = newQuantity * orig.total / orig.quantity;
 
-    setProductosConEnvases(prods)
-    updateDescuentosEnvases(prods)
-
-  }
-
-
-  // OBSERVERS
-
-  useEffect(() => {
-
-    console.log("useefect de Envases", System.clone(products))
-    if (products.length < 1) {
-      return
-    }
-    checkEnvases()
-  }, [products]);
-  // }, [reload]);
-
-
+    setProductosConEnvases(updatedProds);
+    updateDescuentosEnvases(updatedProds);
+  };
 
   return (
-    <table width="100%" cellPadding={5} cellSpacing={0} style={{
-      border: "0px solid #1b1b1ba3"
-    }}>
-      <tbody>
-        {tieneEnvases && (
-          <tr>
-            <td colSpan={10} style={{
-              textAlign: "left"
-            }}>Envases que entrega el cliente</td>
-          </tr>
+    <SafeAreaView style={styles.container}>
+      {tieneEnvases && <Text style={styles.header}>Envases que entrega el cliente</Text>}
+      <FlatList
+        data={productosConEnvases.filter((prod) => prod.isEnvase)}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({ item, index }) => (
+          <View style={[styles.row, { backgroundColor: index % 2 === 0 ? "#f3f3f3" : "#dfdfdf" }]}>            
+            <Text style={styles.quantity}>{item.quantity}</Text>
+            <TouchableOpacity onPress={() => changeQuantityIfEnvase(item, index, item.quantity - 1)} style={styles.button}>
+              <Text style={styles.buttonText}>-</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => changeQuantityIfEnvase(item, index, item.quantity + 1)} style={styles.button}>
+              <Text style={styles.buttonText}>+</Text>
+            </TouchableOpacity>
+            <Text style={styles.description}>{item.description}</Text>
+            <Text style={styles.total}>${System.getInstance().en2Decimales(item.total)}</Text>
+          </View>
         )}
-
-        {productosConEnvases.map((prod, index) => {
-          if (prod.isEnvase) {
-            const original = ProductSold.getOwnerByEnvase(prod, productosConEnvases)
-            return (
-              <tr key={index} style={{
-                backgroundColor: (index % 2 == 0 ? "#f3f3f3" : "#dfdfdf")
-              }}>
-                <td>
-                  <Typography
-                    style={{
-                      width: "60px",
-                      height: "60px",
-                      border: "1px solid #a09797",
-                      borderRadius: "5px",
-                      alignContent: "center",
-                      backgroundColor: "#f5f5f5",
-                      textAlign: "center"
-                    }}
-                  >{prod.quantity === 0 ? "0" : prod.quantity}</Typography>
-                </td>
-                <td style={{ textAlign: "left" }}>
-                  <SmallButton style={{
-                    height: "45px",
-                    width: "45px",
-                    backgroundColor: "#6c6ce7",
-                    fontSize: "25px",
-                    margin: "0",
-
-                    color: "white"
-                  }}
-                    withDelay={false}
-                    actionButton={() => {
-                      changeQuantityIfEnvase(prod, index, prod.quantity - 1)
-                    }}
-                    textButton={"-"} />
-                </td>
-                <td style={{ textAlign: "left" }}>
-                  <SmallButton style={{
-                    height: "45px",
-                    width: "45px",
-                    backgroundColor: "#6c6ce7",
-                    fontSize: "25px",
-                    margin: "0",
-                    color: "white"
-                  }}
-                    withDelay={false}
-                    actionButton={() => {
-                      changeQuantityIfEnvase(prod, index, prod.quantity + 1)
-                    }}
-                    textButton={"+"} />
-                </td>
-
-                <td style={{ textAlign: "left" }}>
-                  <Typography>{prod.description}</Typography>
-                </td>
-                <td>
-                  ${System.getInstance().en2Decimales(prod.total)}
-                </td>
-              </tr>
-            )
-          }
-        }
-        )}
-      </tbody>
-    </table>
+      />
+    </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 10,
+  },
+  header: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 10,
+    borderRadius: 5,
+    marginVertical: 5,
+  },
+  quantity: {
+    width: 50,
+    height: 50,
+    textAlign: "center",
+    textAlignVertical: "center",
+    borderWidth: 1,
+    borderRadius: 5,
+    backgroundColor: "#f5f5f5",
+  },
+  button: {
+    width: 40,
+    height: 40,
+    backgroundColor: "#6c6ce7",
+    alignItems: "center",
+    justifyContent: "center",
+    marginHorizontal: 5,
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 20,
+  },
+  description: {
+    flex: 1,
+    marginLeft: 10,
+  },
+  total: {
+    fontWeight: "bold",
+  },
+});
 
 export default BoxEntregaEnvases;

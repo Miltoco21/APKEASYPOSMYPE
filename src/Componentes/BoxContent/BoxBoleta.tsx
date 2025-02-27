@@ -6,7 +6,8 @@ import {
   TouchableOpacity, 
   ActivityIndicator, 
   ScrollView, 
-  StyleSheet 
+  StyleSheet, 
+  Alert
 } from 'react-native';
 import axios from 'axios';
 import dayjs from 'dayjs';
@@ -27,6 +28,8 @@ import UserEvent from '../../Models/UserEvent';
 import Model from '../../Models/Model';
 import Oferta5 from '../../Models/Oferta5';
 import ProductSold from '../../Models/ProductSold';
+import { Button } from 'react-native-paper';
+import Log from 'src/Models/Log';
 
 const BoxBoleta = ({ onClose, visible }) => {
   const {
@@ -71,9 +74,12 @@ const BoxBoleta = ({ onClose, visible }) => {
   const [showNombreComanda, setShowNombreComanda] = useState(false);
 
   // Función para aplicar ofertas
-  const aplicarOfertas = () => {
-    console.log("aplicando ofertas");
-    Model.getOfertas((ofertas) => {
+  const aplicarOfertas = async() => {
+    // console.log("aplicando ofertas");
+    // Log("salesData", salesData)
+
+
+    await Model.getOfertas((ofertas) => {
       if (ofertas.length > 0) {
         ofertas.forEach((ofer) => {
           if (ofer.tipo === 5) {
@@ -89,35 +95,37 @@ const BoxBoleta = ({ onClose, visible }) => {
               resultadoOfertas.productosQueAplican = resultadoOfertas.productosQueAplican.concat(resultadoAplicar.productosQueAplican);
               resultadoOfertas.productosQueNoAplican = resultadoAplicar.productosQueNoAplican;
             }
-
+            
             let totalVentasx = 0;
             let productosVendidosx = [];
-
+            
             resultadoOfertas.productosQueAplican.forEach((prod) => {
               totalVentasx += prod.total;
               productosVendidosx.push(prod);
             });
-
+            
             resultadoOfertas.productosQueNoAplican.forEach((prod) => {
               totalVentasx += prod.total;
               productosVendidosx.push(prod);
             });
 
-            console.log("total de las ventas aplicando ofertas es $", totalVentasx);
+            // console.log("total de las ventas aplicando ofertas es $", totalVentasx);
             setTotalVentas(totalVentasx);
             setProductosVendidos(productosVendidosx);
           }
         });
       } else {
+        // console.log("no hay ofertas")
         setProductosVendidos(salesData);
         setTotalVentas(grandTotal);
       }
-    }, () => {
+    }, (err) => {
+      // console.log("error de ofertas", err)
       setProductosVendidos(salesData);
       setTotalVentas(grandTotal);
     });
 
-    Model.getServerConfigs((serverConfigs) => {
+   await Model.getServerConfigs((serverConfigs) => {
       serverConfigs.forEach((serverConfig) => {
         if (
           serverConfig.grupo === "Ticket" &&
@@ -136,9 +144,9 @@ const BoxBoleta = ({ onClose, visible }) => {
 
   // Función para procesar el pago
   const handlePagoBoleta = async () => {
-    console.log("totalPagos", totalPagos);
-    console.log("totalYDescuentoYRedondeo", totalYDescuentoYRedondeo);
-    console.log("redondeo", redondeo);
+    // console.log("totalPagos", totalPagos);
+    // console.log("totalYDescuentoYRedondeo", totalYDescuentoYRedondeo);
+    // console.log("redondeo", redondeo);
 
     if (totalPagos === 0 && grandTotal === 0) {
       showMessage("No se puede hacer una venta con valor 0");
@@ -238,38 +246,38 @@ const BoxBoleta = ({ onClose, visible }) => {
     console.log("cancelando");
     setLoading(false);
 
-    const esModoAvion = await PagoBoleta.analizarSiEsModoAvion(requestBody); // Esperar resolución
+    const esModoAvion = true // await PagoBoleta.analizarSiEsModoAvion(requestBody); // Esperar resolución
 
 
-    MPago.hacerPago(
+    await MPago.hacerPago(
       requestBody, 
-      // PagoBoleta.analizarSiEsModoAvion(requestBody), 
       esModoAvion,
       async (responsex) => {
         let response = { ...responsex };
-        hideLoading();
-        showMessage(response.descripcion);
+        
+        // hideLoading();
+        // showMessage(response.descripcion);
         clearSalesData();
         setVuelto(0);
         setSelectedUser(null);
         setTextSearchProducts("");
         setCliente(null);
-
+        
         if (response.imprimirResponse === undefined) {
           response.imprimirResponse = {};
           response.imprimirResponse.test = "";
         }
         LastSale.confirm(response);
-
+        
         const cantidad = await ModelConfig.get("cantidadTicketImprimir");
         const cantAImprimir = parseInt(cantidad);
         Printer.printAll(response, cantAImprimir);
         
         
-
+        
         // const cantAImprimir = parseInt(ModelConfig.get("cantidadTicketImprimir"));
         // Printer.printAll(response, cantAImprimir);
-
+        
         setUltimoVuelto(vuelto);
         setTimeout(() => {
           onClose();
@@ -277,15 +285,15 @@ const BoxBoleta = ({ onClose, visible }) => {
             name: "realiza venta",
             info: JSON.stringify(requestBody)
           });
-          setLoading(false);
+          // setLoading(false);
         }, 500);
       },
       (error, response) => {
-        hideLoading();
-        setError(error);
-        setLoading(false);
+        // hideLoading();
+        Alert.alert(error);
+        // setLoading(false);
         if (response && response.status === 409) {
-          showAlert("Intento de pago", error);
+          Alert.alert("Intento de pago", error);
         }
       }
     );
@@ -313,8 +321,9 @@ const BoxBoleta = ({ onClose, visible }) => {
               style={styles.textInput}
               placeholder="Pagar con"
               keyboardType="numeric"
-              value={pagarCon.toString()}
+              value={pagarCon}
               onChangeText={(value) => {
+                // console.log("cambio pagar con ", value)
                 if (!value.trim()) {
                   setPagarCon(0);
                 } else {
@@ -322,6 +331,8 @@ const BoxBoleta = ({ onClose, visible }) => {
                   if (numValue > 0) {
                     setPagarCon(numValue);
                   }
+
+                  // console.log("numValue", numValue)
                 }
               }}
             />
@@ -348,7 +359,7 @@ const BoxBoleta = ({ onClose, visible }) => {
               </Text>
             )}
             <Text style={styles.infoText}>
-              Vuelto: $ {parseFloat(vuelto + "").toLocaleString()}
+              Vuelto: $ {(vuelto + "")}
             </Text>
           </View>
 
@@ -395,7 +406,7 @@ const BoxBoleta = ({ onClose, visible }) => {
         </View>
 
         {/* Sección lateral con el teclado para el pago */}
-        <View style={styles.sideSection}>
+        {/* <View style={styles.sideSection}>
           <TecladoPagoCaja
           
           
@@ -408,7 +419,7 @@ const BoxBoleta = ({ onClose, visible }) => {
             onEnter={() => {}}
             esPrimeraTecla={!cambioManualTeclado}
           />
-        </View>
+        </View> */}
       </View>
 
       {/* Pie de página con el botón final y datos de comanda */}
@@ -430,6 +441,18 @@ const BoxBoleta = ({ onClose, visible }) => {
           ) : (
             <Text style={styles.buttonText}>Finalizar</Text>
           )}
+        </TouchableOpacity>
+
+        <TouchableOpacity  onPress={onClose}>
+            <Text style={{
+              width:"100%",
+              padding:10,
+              textAlign:"center",
+              color:"black",
+              backgroundColor:"#ccc",
+              marginVertical:5,
+              fontWeight:"bold"
+            }}>Volver</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

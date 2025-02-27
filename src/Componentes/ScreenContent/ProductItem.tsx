@@ -31,6 +31,8 @@ const ProductsItem = ({
 
   const actualizarPeso = (nuevoPeso)=>{
     item.quantity = nuevoPeso
+    item.cantidad = item.quantity
+    item.updateSubtotal()
     replaceToSalesData(index,item)
     setCurrentQuantity(nuevoPeso)
   }
@@ -128,6 +130,10 @@ const styles = StyleSheet.create({
     color: '#333',
     textAlign: 'center',
     fontWeight: 'bold',
+    borderWidth:1,
+    borderRadius:4,
+    padding:5,
+    width: 30
   },
   selectedProductText: {
     flex: 2,

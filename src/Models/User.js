@@ -116,14 +116,14 @@ class User{
     }
 
     async getAllFromServer(callbackOk, callbackWrong){
-        const configs = ModelConfig.get()
+        const configs = await ModelConfig.get()
         var url = configs.urlBase
         +"/api/Usuarios/GetAllUsuarios"
 
         url += "?codigoSucursal=" + ModelConfig.get("sucursal")
         url += "&puntoVenta=" + ModelConfig.get("puntoVenta")
         
-        EndPoint.sendGet(url,(responseData, response)=>{
+        await EndPoint.sendGet(url,(responseData, response)=>{
             callbackOk(responseData.usuarios, response);
         },callbackWrong)
     }

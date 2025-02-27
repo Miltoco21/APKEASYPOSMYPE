@@ -8,24 +8,24 @@ import User from './User';
 
 
 
-export default class UserEvent extends Singleton{
-    constructor(){
+export default class UserEvent extends Singleton {
+    constructor() {
         this.sesion = new StorageSesion("UserEvent");
     }
 
-    fill(values){
-        for(var campo in values){
+    fill(values) {
+        for (var campo in values) {
             const valor = values[campo]
             this[campo] = valor;
         }
     }
 
-    getFillables(){
+    getFillables() {
         var values = {};
-        for(var prop in this){
-            if(typeof(this[prop]) != 'object'
+        for (var prop in this) {
+            if (typeof (this[prop]) != 'object'
                 && this[prop] != undefined
-            ){
+            ) {
                 values[prop] = this[prop]
             }
         }
@@ -34,13 +34,13 @@ export default class UserEvent extends Singleton{
 
 
 
-    saveInSesion(data){
+    saveInSesion(data) {
         this.sesion.guardar(data)
         // localStorage.setItem('userData', JSON.stringify(data));
         return data;
     }
 
-    getFromSesion(){
+    getFromSesion() {
         return this.sesion.cargar(1)
         // var dt = localStorage.getItem('userData') || "{}";
         // return JSON.parse(dt);
@@ -49,10 +49,10 @@ export default class UserEvent extends Singleton{
     static async send({
         name,
         info = ""
-    }, callbackOk, callbackWrong){
-        const configs = ModelConfig.get()
+    }, callbackOk, callbackWrong) {
+        const configs = await ModelConfig.get()
         var url = "https://softus.com.ar/" +
-        "easypos/add-event"
+            "easypos/add-event"
         /* + 
         "?name=agregar%20producto" + 
         "&user=1414diego" + 
@@ -67,24 +67,24 @@ export default class UserEvent extends Singleton{
             project: window.location.href
         }
 
-        const userInfo = User.getInstance().getFromSesion()
+        const userInfo = await User.getInstance().getFromSesion()
         // console.log("userInfo", userInfo)
-        if( userInfo ){
+        if (userInfo) {
             data.user = JSON.stringify(userInfo)
         }
 
         // console.log("se enviara esta info como evento", data)
 
-        try{
-            const response = await axios.post(url,data);
+        try {
+            const response = await axios.post(url, data);
             if (response.data.statusCode === 200 || response.data.statusCode === 201) {
-              if(callbackOk != undefined) callbackOk(response.data, response)
-            }else{
+                if (callbackOk != undefined) callbackOk(response.data, response)
+            } else {
                 //deberia guardar para enviar mas tarde
             }
-          }catch(error){
-          }
-        
+        } catch (error) {
+        }
+
     }
 
 };

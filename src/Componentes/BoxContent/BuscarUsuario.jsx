@@ -1,21 +1,29 @@
 import React, { useState, useEffect } from "react";
 import { Modal, View, Text, TouchableOpacity, FlatList, StyleSheet } from "react-native";
 import User from "../../Models/User";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const BuscarUsuario = ({ openDialog, setOpenDialog, onSelect }) => {
   const [usuarios, setUsuarios] = useState([]);
 
-  useEffect(() => {
+
+  const buscarUsuariosServidor = async()=>{
+
     console.log("Buscando trabajadores del servidor");
-    User.getInstance().getAllFromServer(
+    await User.getInstance().getAllFromServer(
       (all) => setUsuarios(all),
       () => setUsuarios([])
     );
+  }
+
+
+  useEffect(() => {
+    buscarUsuariosServidor()
   }, []);
 
   return (
     <Modal visible={openDialog} transparent animationType="slide">
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <View style={styles.modalContent}>
           <Text style={styles.title}>Seleccionar Usuario</Text>
           <FlatList
@@ -31,7 +39,7 @@ const BuscarUsuario = ({ openDialog, setOpenDialog, onSelect }) => {
             <Text style={styles.closeButtonText}>Cerrar</Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </SafeAreaView>
     </Modal>
   );
 };

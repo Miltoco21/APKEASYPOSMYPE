@@ -20,6 +20,11 @@ class ProductSold extends Product implements IProduct {
     ocultarEnListado: boolean | undefined;
     extras: any | undefined;
 
+    constructor(){
+        super()
+        this.sesion = new StorageSesion("productovendido");
+    }
+
 
     static instance: ProductSold | null = null;
     static getInstance():ProductSold{

@@ -68,137 +68,141 @@ const TecladoPagoCaja = ({
   if (!showFlag) return null;
 
   return (
-    <View style={styles.container}>
-      <View style={styles.row}>
-        <TouchableOpacity
-          style={styles.limpiarButton}
-          onPress={() => handleKeyButton("LIMPIAR")}
-        >
-          <Text style={styles.limpiarText}>LIMPIAR</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.borrarButton}
-          onPress={() => handleKeyButton("borrar")}
-        >
-          <Text style={styles.buttonText}>Borrar</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.specialButton}
-          onPress={() => handleKeyButton("20.000")}
-        >
-          <Text style={styles.buttonText}>20.000</Text>
-        </TouchableOpacity>
-      </View>
+    <View>
 
-      <View style={styles.row}>
-        <TouchableOpacity
-          style={styles.numberButton}
-          onPress={() => handleKeyButton("1")}
-        >
-          <Text style={styles.buttonText}>1</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.numberButton}
-          onPress={() => handleKeyButton("2")}
-        >
-          <Text style={styles.buttonText}>2</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.numberButton}
-          onPress={() => handleKeyButton("3")}
-        >
-          <Text style={styles.buttonText}>3</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.specialButton}
-          onPress={() => handleKeyButton("10.000")}
-        >
-          <Text style={styles.buttonText}>10.000</Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.row}>
-        <TouchableOpacity
-          style={styles.numberButton}
-          onPress={() => handleKeyButton("4")}
-        >
-          <Text style={styles.buttonText}>4</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.numberButton}
-          onPress={() => handleKeyButton("5")}
-        >
-          <Text style={styles.buttonText}>5</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.numberButton}
-          onPress={() => handleKeyButton("6")}
-        >
-          <Text style={styles.buttonText}>6</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.specialButton}
-          onPress={() => handleKeyButton("5.000")}
-        >
-          <Text style={styles.buttonText}>5.000</Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.row}>
-        <TouchableOpacity
-          style={styles.numberButton}
-          onPress={() => handleKeyButton("7")}
-        >
-          <Text style={styles.buttonText}>7</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.numberButton}
-          onPress={() => handleKeyButton("8")}
-        >
-          <Text style={styles.buttonText}>8</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.numberButton}
-          onPress={() => handleKeyButton("9")}
-        >
-          <Text style={styles.buttonText}>9</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.specialButton}
-          onPress={() => handleKeyButton("2.000")}
-        >
-          <Text style={styles.buttonText}>2.000</Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.row}>
-        <TouchableOpacity
-          style={styles.numberButton}
-          onPress={() => handleKeyButton("0")}
-        >
-          <Text style={styles.buttonText}>0</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.numberButton}
-          onPress={() => handleKeyButton("00")}
-        >
-          <Text style={styles.buttonText}>00</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.numberButton}
-          onPress={() => handleKeyButton("000")}
-        >
-          <Text style={styles.buttonText}>000</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.specialButton}
-          onPress={() => handleKeyButton("1.000")}
-        >
-          <Text style={styles.buttonText}>1.000</Text>
-        </TouchableOpacity>
-      </View>
     </View>
-  );
+  )
+    // < View style = { styles.container } >
+    //   <View style={styles.row}>
+    //     <TouchableOpacity
+    //       style={styles.limpiarButton}
+    //       onPress={() => handleKeyButton("LIMPIAR")}
+    //     >
+    //       <Text style={styles.limpiarText}>LIMPIAR</Text>
+    //     </TouchableOpacity>
+    //     <TouchableOpacity
+    //       style={styles.borrarButton}
+    //       onPress={() => handleKeyButton("borrar")}
+    //     >
+    //       <Text style={styles.buttonText}>Borrar</Text>
+    //     </TouchableOpacity>
+    //     <TouchableOpacity
+    //       style={styles.specialButton}
+    //       onPress={() => handleKeyButton("20.000")}
+    //     >
+    //       <Text style={styles.buttonText}>20.000</Text>
+    //     </TouchableOpacity>
+    //   </View>
+
+    //   <View style={styles.row}>
+    //     <TouchableOpacity
+    //       style={styles.numberButton}
+    //       onPress={() => handleKeyButton("1")}
+    //     >
+    //       <Text style={styles.buttonText}>1</Text>
+    //     </TouchableOpacity>
+    //     <TouchableOpacity
+    //       style={styles.numberButton}
+    //       onPress={() => handleKeyButton("2")}
+    //     >
+    //       <Text style={styles.buttonText}>2</Text>
+    //     </TouchableOpacity>
+    //     <TouchableOpacity
+    //       style={styles.numberButton}
+    //       onPress={() => handleKeyButton("3")}
+    //     >
+    //       <Text style={styles.buttonText}>3</Text>
+    //     </TouchableOpacity>
+    //     <TouchableOpacity
+    //       style={styles.specialButton}
+    //       onPress={() => handleKeyButton("10.000")}
+    //     >
+    //       <Text style={styles.buttonText}>10.000</Text>
+    //     </TouchableOpacity>
+    //   </View>
+
+    //   <View style={styles.row}>
+    //     <TouchableOpacity
+    //       style={styles.numberButton}
+    //       onPress={() => handleKeyButton("4")}
+    //     >
+    //       <Text style={styles.buttonText}>4</Text>
+    //     </TouchableOpacity>
+    //     <TouchableOpacity
+    //       style={styles.numberButton}
+    //       onPress={() => handleKeyButton("5")}
+    //     >
+    //       <Text style={styles.buttonText}>5</Text>
+    //     </TouchableOpacity>
+    //     <TouchableOpacity
+    //       style={styles.numberButton}
+    //       onPress={() => handleKeyButton("6")}
+    //     >
+    //       <Text style={styles.buttonText}>6</Text>
+    //     </TouchableOpacity>
+    //     <TouchableOpacity
+    //       style={styles.specialButton}
+    //       onPress={() => handleKeyButton("5.000")}
+    //     >
+    //       <Text style={styles.buttonText}>5.000</Text>
+    //     </TouchableOpacity>
+    //   </View>
+
+    //   <View style={styles.row}>
+    //     <TouchableOpacity
+    //       style={styles.numberButton}
+    //       onPress={() => handleKeyButton("7")}
+    //     >
+    //       <Text style={styles.buttonText}>7</Text>
+    //     </TouchableOpacity>
+    //     <TouchableOpacity
+    //       style={styles.numberButton}
+    //       onPress={() => handleKeyButton("8")}
+    //     >
+    //       <Text style={styles.buttonText}>8</Text>
+    //     </TouchableOpacity>
+    //     <TouchableOpacity
+    //       style={styles.numberButton}
+    //       onPress={() => handleKeyButton("9")}
+    //     >
+    //       <Text style={styles.buttonText}>9</Text>
+    //     </TouchableOpacity>
+    //     <TouchableOpacity
+    //       style={styles.specialButton}
+    //       onPress={() => handleKeyButton("2.000")}
+    //     >
+    //       <Text style={styles.buttonText}>2.000</Text>
+    //     </TouchableOpacity>
+    //   </View>
+
+    //   <View style={styles.row}>
+    //     <TouchableOpacity
+    //       style={styles.numberButton}
+    //       onPress={() => handleKeyButton("0")}
+    //     >
+    //       <Text style={styles.buttonText}>0</Text>
+    //     </TouchableOpacity>
+    //     <TouchableOpacity
+    //       style={styles.numberButton}
+    //       onPress={() => handleKeyButton("00")}
+    //     >
+    //       <Text style={styles.buttonText}>00</Text>
+    //     </TouchableOpacity>
+    //     <TouchableOpacity
+    //       style={styles.numberButton}
+    //       onPress={() => handleKeyButton("000")}
+    //     >
+    //       <Text style={styles.buttonText}>000</Text>
+    //     </TouchableOpacity>
+    //     <TouchableOpacity
+    //       style={styles.specialButton}
+    //       onPress={() => handleKeyButton("1.000")}
+    //     >
+    //       <Text style={styles.buttonText}>1.000</Text>
+    //     </TouchableOpacity>
+    //   </View>
+    // </View >
+  // );
 };
 
 const styles = StyleSheet.create({
