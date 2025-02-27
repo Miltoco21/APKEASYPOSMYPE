@@ -4,7 +4,7 @@ export const AfterLoginTypes = {
   PreVenta: 2,
 };
 
-console.log("apiurl",apiUrl);
+// console.log("apiurl",apiUrl);
 
 
 export const OrdenListado = {

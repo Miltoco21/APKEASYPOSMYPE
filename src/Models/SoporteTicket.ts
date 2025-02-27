@@ -16,7 +16,7 @@ class SoporteTicket extends Singleton {
     console.log("capturando request desde SoporteTicket", requestData)
 
     var data:any = {
-      urlCliente: window.location.href,
+      // urlCliente: window.location.href,
       // usuarioLogueado: User.getInstance().sesion.cargarGuardados()[0],
       usuarioLogueado,
       configDispositivoCliente : ModelConfig.getInstance().getAll()[0],

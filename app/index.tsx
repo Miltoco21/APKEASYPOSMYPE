@@ -19,8 +19,8 @@ export default function HomeScreen() {
     }).start();
 
     const timer = setTimeout(() => {
-    //  router.push("./Pages/Login");
-     router.push("./Pages/Home");
+     router.push("./Pages/Login");
+    //  router.push("./Pages/Home");
     }, 2000);
 
     return () => clearTimeout(timer);
