@@ -1,12 +1,12 @@
 import React, { useContext, useState, useEffect } from "react";
 import {
-  Grid,
-} from "@mui/material";
+  View,
+} from "react-native";
 import { SelectedOptionsContext } from "../Context/SelectedOptionsProvider";
 import System from "../../Helpers/System";
 import BoxSelectPayMethod from "./BoxSelectPayMethod"
-import BotonClienteOUsuario from "../ScreenDialog/BotonClienteOUsuario";
-import BuscarUsuario from "../ScreenDialog/BuscarUsuario";
+import BotonClienteOUsuario from "./BotonClienteOUsuario";
+import BuscarUsuario from "./BuscarUsuario";
 import Client from "../../Models/Client";
 import PagoTransferencia from "../ScreenDialog/PagoTransferencia";
 import ModelConfig from "../../Models/ModelConfig";
@@ -421,20 +421,20 @@ const BoxMultiPago = ({
           setUsuario(usuario)
         }}
       />
-      <Grid container spacing={2} style={{
+      <View container spacing={2} style={{
         marginLeft: "-20px",
         padding: "20px",
       }}>
 
-        <Grid item xs={12} sm={12} md={8} lg={8}>
+        <View item xs={12} sm={12} md={8} lg={8}>
           <BoxSelectPayMethod
             metodoPago={metodoPago}
             onChange={onChangePayMethod}
             excludes={excluirMetodos}
           />
-        </Grid>
+        </View>
 
-      </Grid>
+      </View>
 
       <PagoTransferencia
         openDialog={openTransferenciaModal}
