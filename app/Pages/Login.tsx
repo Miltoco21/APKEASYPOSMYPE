@@ -72,7 +72,7 @@
 //     fontWeight: "bold",
 //   },
 // });
-import React, { useState,useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import {
   SafeAreaView,
   View,
@@ -96,22 +96,19 @@ import ModelConfig from "src/Models/ModelConfig";
 
 export default function Login() {
 
-  const { 
+  const {
     userData,
     updateUserData
   } = useContext(SelectedOptionsContext);
 
-  const [rutOrCode, setRutOrCode] = useState("");
-  const [password, setPassword] = useState("");
+  const [rutOrCode, setRutOrCode] = useState("1515");
+  const [password, setPassword] = useState("1122");
   const router = useRouter();
   const [showSettingsModal, setShowSettingsModal] = useState(false);
-  const [appConfig, setAppConfig] = useState({
-    
-   
-  });
+  const [reintentarPorSesionActiva, setReintentarPorSesionActiva] = useState(false);
 
-
-  const handleLogin = async() => {
+  const handleLogin = async () => {
+    // console.log("haciendo login..")
     if (!rutOrCode || !password) {
       Alert.alert("Error", "Por favor, completa todos los campos.");
       return;
@@ -125,51 +122,111 @@ export default function Login() {
 
     // Alert.alert("Ingresando al sistema...")
 
-    await user.doLoginInServer((info)=> {
+    await user.doLoginInServer((info) => {
       // Actualizar userData después del inicio de sesión exitoso
-      
+
       updateUserData(info.responseUsuario);
 
 
       // Redirigir a la página de inicio
       // if( ModelConfig.get("afterLogin") == TiposPasarela.PREVENTA  ){
-        // navigate("/pre-venta");
+      // navigate("/pre-venta");
       // }else{
-        router.navigate("./Home");
+      router.navigate("./Home");
       // }
       // hideLoading()
-    }, (error)=> {
+    }, async (error) => {
       console.log("error", error)
-      Alert.alert(error)
-      // hideLoading()
+      if (
+        error === "El Usuario tiene una Sesión activa."
+        && !reintentarPorSesionActiva
+      ) {
+        setReintentarPorSesionActiva(true)
+      } else {
+        Alert.alert(error)
+        // hideLoading()
+      }
     })
   };
 
-  const cargaInicial = async()=>{
+  const intentarLogout = async () => {
+    // console.log("intentarLogout")
+    var user = new User();
+    user.setRutFrom(rutOrCode)
+    user.setUserCodeFrom(rutOrCode)
+    user.setPassword(password)
+
+    if (user.codigoUsuario === 0) {
+      // console.log("buscando usuario por rut", rutOrCode)
+      await User.getByRut(rutOrCode, async(usuarios) => {
+        const usuario = usuarios[0]
+
+        const user2 = new User()
+        user2.codigoUsuario = usuario.codigoUsuario
+
+        await user2.doLogoutInServer(async (response) => {
+          // console.log("listo 2 el logout..intentamos hacer login")
+          handleLogin()
+        }, async (error) => {
+
+          // console.log("no se pudo 2 hacer logout..", error)
+          // Alert.alert(error)
+
+          // }
+        })
+
+      }, (error) => {
+
+      })
+    } else {
+      await user.doLogoutInServer(async (response) => {
+        // console.log("listo el logout..intentamos hacer login")
+        handleLogin()
+      }, async (error) => {
+
+        // console.log("no se pudo hacer logout..", error)
+        // Alert.alert(error)
+
+        // }
+      })
+
+
+    }
+
+
+  }
+
+  useEffect(() => {
+    if (reintentarPorSesionActiva) {
+      intentarLogout()
+    }
+  }, [reintentarPorSesionActiva])
+
+  const cargaInicial = async () => {
     // console.log("carga inicial")
     const us = User.getInstance()
-    
+
     // await us.sesion.eliminar({id:1})
-    
+
     const cargado = await User.getInstance().getFromSesion()
-    if(cargado){
+    if (cargado) {
       router.navigate("./Home");
     }
 
     // Log("cargado",cargado)
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     cargaInicial()
-  },[])
-  
+  }, [])
+
 
   return (
     <Box style={styles.container}>
       <Text style={styles.title}>Iniciar Sesión</Text>
       <Image style={styles.foto}
         source={require('../../src/assets/images/splash.png')}
-      
+
       />
       <TextInput
         style={styles.input}
@@ -186,28 +243,28 @@ export default function Login() {
         keyboardType="numeric"
         secureTextEntry
       />
-    
+
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Ingresar</Text>
       </TouchableOpacity>
 
 
       <TouchableOpacity
-          style={styles.button}
-         
-          onPress={() => setShowSettingsModal(true)}
-         
-        >
-          <Text style={styles.buttonText}>Configuraciones     <Ionicons name="settings" size={17} color="white"/></Text>
-          
-       
-        </TouchableOpacity>
-        <Text>{CONSTANTS.appName}{CONSTANTS.appVersion}</Text>
-        <BaseConfigModal
+        style={styles.button}
+
+        onPress={() => setShowSettingsModal(true)}
+
+      >
+        <Text style={styles.buttonText}>Configuraciones     <Ionicons name="settings" size={17} color="white" /></Text>
+
+
+      </TouchableOpacity>
+      <Text>{CONSTANTS.appName}{CONSTANTS.appVersion}</Text>
+      <BaseConfigModal
         openDialog={showSettingsModal}
         setOpenDialog={setShowSettingsModal}
-        onChange={async()=>{
-          console.log("cambio algo de la config")
+        onChange={async () => {
+          // console.log("cambio algo de la config")
         }}
       />
     </Box>
@@ -242,14 +299,14 @@ const styles = StyleSheet.create({
     backgroundColor: "#007bff",
     alignItems: "center",
     borderRadius: 5,
-    marginBottom:5
+    marginBottom: 5
   },
   buttonText: {
     color: "white",
     fontSize: 16,
     fontWeight: "bold",
   },
-  foto:{
+  foto: {
     width: "40%",
     height: "40%",
     resizeMode: 'contain',

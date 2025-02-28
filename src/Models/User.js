@@ -113,28 +113,28 @@ class User extends Singleton {
             codigoUsuario: this.codigoUsuario,
         }
 
-        if (!data.codigoSucursal) data.codigoSucursal =await ModelConfig.get("sucursal")
-        if (!data.puntoVenta) data.puntoVenta =await ModelConfig.get("puntoVenta")
+        if (!data.codigoSucursal) data.codigoSucursal = await ModelConfig.get("sucursal")
+        if (!data.puntoVenta) data.puntoVenta = await ModelConfig.get("puntoVenta")
 
 
-            // console.log("doLogoutInServer")
-            // console.log("url", url)
-            // console.log("data", data)
+        // console.log("doLogoutInServer")
+        // console.log("url", url)
+        // console.log("data", data)
 
         await EndPoint.sendPost(url, data, (responseData, response) => {
             callbackOk(response);
         }, callbackWrong)
     }
 
-    async getAllFromServer(callbackOk, callbackWrong){
+    async getAllFromServer(callbackOk, callbackWrong) {
         const configs = await ModelConfig.get()
         var url = configs.urlBase
             + "/api/Usuarios/GetAllUsuarios"
 
         url += "?codigoSucursal=" + ModelConfig.get("sucursal")
         url += "&puntoVenta=" + ModelConfig.get("puntoVenta")
-        
-        await EndPoint.sendGet(url,(responseData, response)=>{
+
+        await EndPoint.sendGet(url, (responseData, response) => {
             callbackOk(responseData.usuarios, response);
         }, callbackWrong)
     }
@@ -149,6 +149,23 @@ class User extends Singleton {
 
         EndPoint.sendGet(url, (responseData, response) => {
             callbackOk(responseData.usuarioDeudas, response);
+        }, callbackWrong)
+    }
+
+    static async getByRut(rut,callbackOk, callbackWrong) {
+        const configs = await ModelConfig.get()
+        var url = configs.urlBase
+            + "/api/Usuarios/GetUsuarioByRut"
+
+        url += "?codigoSucursal=" + await ModelConfig.get("sucursal")
+        url += "&puntoVenta=" + await ModelConfig.get("puntoVenta")
+        url += "&rutUsuario=" + rut
+
+        // console.log("getByRut..")
+        // console.log("url..", url)
+
+        await EndPoint.sendGet(url, (responseData, response) => {
+            callbackOk(responseData.usuarios, response);
         }, callbackWrong)
     }
 

@@ -12,14 +12,14 @@ class SoporteTicket extends Singleton {
   
   static reportarError = true
 
-  static catchRequest(requestData, usuarioLogueado = null){
+  static async catchRequest(requestData, usuarioLogueado = null){
     console.log("capturando request desde SoporteTicket", requestData)
 
     var data:any = {
       // urlCliente: window.location.href,
       // usuarioLogueado: User.getInstance().sesion.cargarGuardados()[0],
       usuarioLogueado,
-      configDispositivoCliente : ModelConfig.getInstance().getAll()[0],
+      configDispositivoCliente : await ModelConfig.getInstance().getAll()[0],
       endpointUrl: requestData.config.url,
       datosEnviados:requestData.config.data,
       cabeceraEnvio : {
@@ -48,7 +48,7 @@ class SoporteTicket extends Singleton {
     this.enviarError(data, ()=>{}, ()=>{})
   }
   
-  static catchRequestError(error:any, usuarioLogueado = null){
+  static async catchRequestError(error:any, usuarioLogueado = null){
     console.log("capturando error desde SoporteTicket catch", error)
 
     // const us = new User()
@@ -58,7 +58,7 @@ class SoporteTicket extends Singleton {
       urlCliente: window.location.href,
       // usuarioLogueado: userSesionData,
       usuarioLogueado,
-      configDispositivoCliente : ModelConfig.getInstance().getAll()[0],
+      configDispositivoCliente : await ModelConfig.getInstance().getAll()[0],
       endpointUrl: error.config.url,
       datosEnviados:error.config.data,
       cabeceraEnvio : {

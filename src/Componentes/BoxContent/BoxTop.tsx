@@ -68,17 +68,18 @@ const BoxTop = () => {
   const logout = async () => {
     const user = new User()
     user.fill(userData)
+    // console.log("logout")
 
-    await user.doLogoutInServer(async(response) => {
+    const callbackLogout = async() => {
       await clearSessionData();
-      router.navigate("./Login");
-    }, async(error) => {
-      if (error === "No existe sesión para eliminar.") {
-        await clearSessionData();
-        router.navigate("./Login");
-      } else {
-        Alert.alert(error)
-      }
+      router.push("./Login")
+    }
+    await user.doLogoutInServer(async (response) => {
+      callbackLogout()
+    }, async (error) => {
+      // Alert.alert(error)
+      callbackLogout()
+      // }
     })
 
   }
