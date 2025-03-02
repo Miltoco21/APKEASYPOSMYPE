@@ -20,16 +20,27 @@ const BoxTotales = ({
       addToSalesData,
       removeFromSalesData,
       clearSalesData,
-      salesDataTimestamp
+      salesDataTimestamp,
+      showMessage,
+      showSnackbarMessage, 
+      hideSnackbar
     } = useContext(SelectedOptionsContext);
 
     const [showModalPagarBoleta, setShowModalPagarBoleta] = useState(false);
-
+    const handlePagarBoleta = () => {
+      if (grandTotal === 0) {
+        console.log("Attempting to show snackbar message");
+        showSnackbarMessage("El total es cero. Agrega productos para continuar.");
+        console.log("After showing snackbar message");
+        return;
+      }
+      setShowModalPagarBoleta(true);
+    };
   return (
     <Surface style={styles.container}>
       <Title style={styles.totalText}>TOTAL: ${grandTotal}</Title>
       <View style={styles.buttonRow}>
-      <Button mode="contained" style={styles.button} onPress={() => setShowModalPagarBoleta(true)}>
+      <Button mode="contained" style={styles.button}     onPress={handlePagarBoleta}>
           Hacer el pago
         </Button>
         {/* <Button mode="contained" style={styles.button} onPress={onPagarFactura}>
