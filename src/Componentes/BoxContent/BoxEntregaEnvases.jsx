@@ -5,6 +5,7 @@ import System from "../../Helpers/System";
 import ProductSold from "../../Models/ProductSold";
 import Validator from "../../Helpers/Validator";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Log from "src/Models/Log";
 
 const BoxEntregaEnvases = ({
   tieneEnvases,
@@ -22,6 +23,7 @@ const BoxEntregaEnvases = ({
 
   const updateDescuentosEnvases = (productos) => {
     let descuentos = productos.reduce((acc, pro) => (pro.isEnvase ? acc + pro.total : acc), 0);
+    // console.log("el descuento queda asi", descuentos)
     setDescuentoEnvases(descuentos);
   };
 
@@ -34,16 +36,21 @@ const BoxEntregaEnvases = ({
     setDescuentoEnvases(descuentosDeEnvases);
   };
 
-  const changeQuantityIfEnvase = (prod, index, newQuantity) => {
-    if (!prod.isEnvase || newQuantity < 0 || !Validator.isCantidad(newQuantity)) return;
+  const changeQuantityIfEnvase = (envase, index, newQuantity) => {
+    // console.log("cambiando changeQuantityIfEnvase newQuantity ", newQuantity)
+    // console.log("cambiando changeQuantityIfEnvase envase ", envase)
+    // console.log("cambiando changeQuantityIfEnvase index ", index)
+    if (!envase.isEnvase || newQuantity < 0 || !Validator.isCantidad(newQuantity)) return;
 
-    const orig = ProductSold.getOwnerByEnvase(prod, productosConEnvases);
+    const orig = ProductSold.getOwnerByEnvase(envase, productosConEnvases);
+    // Log("orig, ",orig)
     if (newQuantity > orig.quantity) return;
 
     const updatedProds = [...productosConEnvases];
     updatedProds[index].quantity = newQuantity;
-    updatedProds[index].total = newQuantity * orig.total / orig.quantity;
+    updatedProds[index].total = newQuantity * envase.precioCosto;
 
+    // Log("actualizado queda asi", updatedProds)
     setProductosConEnvases(updatedProds);
     updateDescuentosEnvases(updatedProds);
   };
@@ -52,9 +59,12 @@ const BoxEntregaEnvases = ({
     <SafeAreaView style={styles.container}>
       {tieneEnvases && <Text style={styles.header}>Envases que entrega el cliente</Text>}
       <FlatList
-        data={productosConEnvases.filter((prod) => prod.isEnvase)}
+        // data={productosConEnvases.filter((prod) => prod.isEnvase)}
+        data={productosConEnvases}
         keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item, index }) => (
+        renderItem={({ item, index }) => {
+          if(!item.isEnvase) return (<></>)
+          return(
           <View style={[styles.row, { backgroundColor: index % 2 === 0 ? "#f3f3f3" : "#dfdfdf" }]}>            
             <Text style={styles.quantity}>{item.quantity}</Text>
             <TouchableOpacity onPress={() => changeQuantityIfEnvase(item, index, item.quantity - 1)} style={styles.button}>
@@ -66,7 +76,7 @@ const BoxEntregaEnvases = ({
             <Text style={styles.description}>{item.description}</Text>
             <Text style={styles.total}>${System.getInstance().en2Decimales(item.total)}</Text>
           </View>
-        )}
+        )}}
       />
     </SafeAreaView>
   );

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Text, View, StyleSheet, } from "react-native";
 import Box from "../../src/Componentes/Box";
 import BoxContainer from "../../src/Componentes/BoxContainer";
@@ -7,16 +7,32 @@ import BusquedaProductos from "../../src/Componentes/BoxContent/BusquedaProducto
 import BottomButtons from "../../src/Componentes/BoxContent/BottomButtons";
 import BoxTotales from "../../src/Componentes/BoxContent/BoxTotales";
 
-const Home = () => {
+import { SelectedOptionsContext } from '../../src/Componentes/Context/SelectedOptionsProvider';
+
+
+const Home = ({
+
+}) => {
+  
+  const {
+    userData,
+    updateUserData,
+    showLoading,
+    hideLoading,
+    GeneralElements,
+    showAlert
+  } = useContext(SelectedOptionsContext);
+
   return (
     <Box>
+      <GeneralElements />
       <View style={styles.mainContainer}>
         <BoxTop />
         <BusquedaProductos />
-        <BoxTotales/>
-        
+        <BoxTotales />
+
         <View style={styles.bottomWrapper}>
-          <BottomButtons/>
+          <BottomButtons />
         </View>
       </View>
     </Box>

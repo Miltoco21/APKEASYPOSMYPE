@@ -1,66 +1,6 @@
-// import React, { useState, useContext, useEffect } from "react";
-
-// import {
-//   Paper,
-//   Card,
-//   CardContent,
-//   Table,
-//   TableHead,
-//   TableBody,
-//   TableCell,
-//   TableRow,
-//   Avatar,
-//   TableContainer,
-//   Grid,
-//   Container,
-//   useTheme,
-//   useMediaQuery,
-
-//   IconButton,
-//   Menu,
-//   TextField,
-//   Chip,
-//   Box,
-//   Typography,
-//   MenuItem,
-//   Dialog,
-//   DialogTitle,
-//   DialogContent,
-//   DialogContentText,
-//   DialogActions,
-//   Button,
-//   CircularProgress,
-//   ToggleButton,
-//   ToggleButtonGroup
-
-// } from "@mui/material";
-// import { useNavigate } from "react-router-dom";
-// import { SelectedOptionsContext } from "../Context/SelectedOptionsProvider";
-
-// const Alert = ({openDialog, setOpenDialog, message, title = ""}) => {
-//   return (
-//     <Dialog
-//         open={openDialog}
-//         onClose={ ()=> {
-//           // setOpenDialog(false)
-//         } }
-//       >
-//         <DialogTitle>{title}</DialogTitle>
-//         <DialogContent>
-//           <Typography >{message}</Typography>
-//         </DialogContent>
-//         <DialogActions>
-//           <Button onClick={ ()=>{ setOpenDialog(false) } }>Aceptar</Button>
-//         </DialogActions>
-//       </Dialog>
-//   );
-// };
-
-// export default Alert;
-
 import React from 'react';
-import { StyleSheet } from 'react-native';
-import { Portal, Modal, Text, Button, Surface } from 'react-native-paper';
+import { StyleSheet, Modal, View } from 'react-native';
+import { Portal, Text, Button, Surface } from 'react-native-paper';
 
 interface AlertProps {
   openDialog: boolean;
@@ -76,14 +16,13 @@ const Alert: React.FC<AlertProps> = ({
   title = ""
 }) => {
   return (
-    <Portal>
-      <Modal
-        visible={openDialog}
-        onDismiss={() => {}}
-        contentContainerStyle={styles.containerStyle}
-        dismissable={false}
-      >
-        <Surface style={styles.surface} elevation={2}>
+    <Modal
+      visible={openDialog}
+      transparent={true}
+    // animationType="slide"
+    >
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalContent}>
           {title && (
             <Text style={styles.title} variant="headlineSmall">
               {title}
@@ -99,13 +38,27 @@ const Alert: React.FC<AlertProps> = ({
           >
             Aceptar
           </Button>
-        </Surface>
-      </Modal>
-    </Portal>
+
+        </View>
+      </View>
+    </Modal >
   );
 };
 
 const styles = StyleSheet.create({
+
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    width: '50%',
+  },
   containerStyle: {
     padding: 20,
     marginHorizontal: 20,

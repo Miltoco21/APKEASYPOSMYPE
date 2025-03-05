@@ -1,13 +1,25 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { View, StyleSheet, Modal } from "react-native";
 import { Dialog, Portal, Button, Text, TextInput } from "react-native-paper";
 import TecladoPrecio from "../Teclados/TecladoPrecio";
 import BoxBoleta from "../BoxContent/BoxBoleta";
 
+import { SelectedOptionsContext } from '../Context/SelectedOptionsProvider';
+
 const PagarBoleta = ({
   openDialog,
   setOpenDialog
 }) => {
+
+  const {
+    userData,
+    salesData,
+    updateUserData,
+    showLoading,
+    hideLoading,
+    GeneralElements,
+    showAlert
+  } = useContext(SelectedOptionsContext);
 
   
 
@@ -21,14 +33,14 @@ const PagarBoleta = ({
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
 
-          <Text>Pagar Boleta</Text>    
+          <Text>Pagar Boleta</Text>
 
           <View>
             <BoxBoleta
-            onClose={()=>{ setOpenDialog(false) }}
-            visible={true} />
-            </View>      
-          
+              onClose={() => { setOpenDialog(false) }}
+              visible={true} />
+          </View>
+
           <Button onPress={() => setOpenDialog(false)}>Volver</Button>
         </View>
       </View>

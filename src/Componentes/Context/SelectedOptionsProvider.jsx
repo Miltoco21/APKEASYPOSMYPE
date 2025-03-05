@@ -1,16 +1,14 @@
-/* eslint-disable no-undef */
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable react/prop-types */
-/* eslint-disable no-unused-vars */
-
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import ModelConfig from "../../Models/ModelConfig";
 import User from "../../Models/User";
 import ModelSales from "../../Models/Sales";
 import ProductSold from "../../Models/ProductSold";
 import LoadingDialog from "../Dialogs/LoadingDialog";
-import AsignarPrecio from "../ScreenDialog/AsignarPrecio";
+
 import TecladoAlfaNumerico from "../Teclados/TecladoAlfaNumerico";
+
+
+
 import {
   SafeAreaView,
   View,
@@ -31,6 +29,7 @@ import Alert from "../Dialogs/Alert";
 //import PedirSupervision from "../ScreenDialog/PedirSupervision";
 import UserEvent from "../../Models/UserEvent";
 import StorageSesion from "src/Helpers/StorageSesion";
+import dayjs from "dayjs";
 //import ScreenDialogBuscarCliente from "../ScreenDialog/BuscarCliente";
 
 export const SelectedOptionsContext = React.createContext();
@@ -78,6 +77,11 @@ export const SelectedOptionsProvider = ({ children }) => {
     setVisibleSnackbar(true);
     console.log("Set visible to true");
   };
+
+  const showMessage = (message) => {
+    setSnackMessage(message)
+    setVisibleSnackbar(true)
+  }
 
   const hideSnackbar = () => {
     setVisibleSnackbar(false);
@@ -396,6 +400,8 @@ export const SelectedOptionsProvider = ({ children }) => {
   };
 
   const removeFromSalesData = (index) => {
+    console.log("removeFromSalesData")
+
     UserEvent.send({
       name: "quita producto " + sales.products[index].description,
     });
@@ -424,6 +430,12 @@ export const SelectedOptionsProvider = ({ children }) => {
   //   })
   // };
 
+
+
+  useEffect(() => {
+    console.log("cambio showLoadingDialog", showLoadingDialog)
+  }, [showLoadingDialog])
+
   const GeneralElements = () => {
     return (
       <>
@@ -439,7 +451,7 @@ export const SelectedOptionsProvider = ({ children }) => {
         >
           {snackMessage}
         </Snackbar>
-        <TecladoAlfaNumerico
+        {/* <TecladoAlfaNumerico
           onEnter={() => {
             setBuscarCodigoProducto(true);
           }}
@@ -465,11 +477,21 @@ export const SelectedOptionsProvider = ({ children }) => {
         />
       )}
 
-        <LoadingDialog
-          openDialog={showLoadingDialog}
-          text={loadingDialogText}
-        />
-        <AsignarPrecio
+        <Snackbar
+          visible={visibleSnackbar}
+          onDismiss={()=>{setVisibleSnackbar(false)}}
+          duration={3000}
+          action={{
+            label: "OK",
+            onPress: ()=>{setVisibleSnackbar(false)},
+          }}
+        >
+          {snackMessage}
+        </Snackbar>; */}
+
+
+        <LoadingDialog openDialog={showLoadingDialog} text={loadingDialogText} />
+        {/* <AsignarPrecio
           openDialog={showAsignarPrecio}
           setOpenDialog={setShowAsignarPrecio}
           product={productoSinPrecio}
@@ -481,7 +503,7 @@ export const SelectedOptionsProvider = ({ children }) => {
           setOpenDialog={setShowAsignarPeso}
           product={productoSinPeso}
           onAsignWeight={onAsignWeight}
-        />
+        /> */}
 
         {/* <NuevoProductoExpress
           openDialog={showNuevoExpress}

@@ -6,8 +6,6 @@ import ProductsItem from './ProductItem';
 
 const ProductsList = ({
   data,
-  onDeleteProduct,
-  onShowDeleteModal,
   onRefresh = ()=>{}
 }) => {
   const {
@@ -31,10 +29,7 @@ const ProductsList = ({
           <ProductsItem
             item={item}
             index={index}
-            onDeleteProduct={onDeleteProduct}
-            onShowDeleteModal={onShowDeleteModal}
             onRefresh={()=>{
-
             }}
           />
         );

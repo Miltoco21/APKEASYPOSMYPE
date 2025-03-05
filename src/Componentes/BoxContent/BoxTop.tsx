@@ -11,7 +11,11 @@ import Log from "src/Models/Log";
 
 const BoxTop = () => {
 
-  const { clearSessionData } = useContext(SelectedOptionsContext);
+  const { 
+    clearSessionData,
+    showLoading,
+    hideLoading
+   } = useContext(SelectedOptionsContext);
 
 
   const [currentTime, setCurrentTime] = useState("");
@@ -74,11 +78,16 @@ const BoxTop = () => {
       await clearSessionData();
       router.push("./Login")
     }
+
+    showLoading("cerrando sesion")
+    
     await user.doLogoutInServer(async (response) => {
       callbackLogout()
+      hideLoading()
     }, async (error) => {
       // Alert.alert(error)
       callbackLogout()
+      hideLoading()
       // }
     })
 

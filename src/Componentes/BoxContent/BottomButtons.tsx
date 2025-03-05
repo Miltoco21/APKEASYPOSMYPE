@@ -6,7 +6,10 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import BaseConfigModal from 'src/Modals/BaseConfigModal';
 
 const BottomButtons = () => {
-  const { clearSalesData } = useContext(SelectedOptionsContext);
+  const { 
+    clearSalesData,
+    showConfirm
+   } = useContext(SelectedOptionsContext);
 
   const [showSettingsModal, setShowSettingsModal] = useState(false);
 
@@ -57,8 +60,11 @@ const BottomButtons = () => {
         barStyle={{ backgroundColor: colors.background }}
         onTabPress={({ route }) => {
           if (route.key === 'clear') {
-            clearSalesData();
-            setIndex(0);
+
+            showConfirm("Eliminar todos?",()=>{
+              clearSalesData();
+              setIndex(0);
+            })
           } else if (route.key === 'config') {
             setShowSettingsModal(true)
           } else if (route.key === 'familias') {

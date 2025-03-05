@@ -248,15 +248,16 @@ const BoxBoleta = ({ onClose, visible }) => {
 
     const esModoAvion = true // await PagoBoleta.analizarSiEsModoAvion(requestBody); // Esperar resolución
 
-
+    showLoading("Haciendo el pago")
     await MPago.hacerPago(
       requestBody, 
       esModoAvion,
       async (responsex) => {
         let response = { ...responsex };
         
-        // hideLoading();
-        // showMessage(response.descripcion);
+        hideLoading();
+        // showAlert(response.descripcion);
+        showAlert("Realizado correctamente");
         clearSalesData();
         setVuelto(0);
         setSelectedUser(null);
@@ -287,14 +288,16 @@ const BoxBoleta = ({ onClose, visible }) => {
           });
           // setLoading(false);
         }, 500);
+
+
       },
       (error, response) => {
-        // hideLoading();
+        hideLoading();
         Alert.alert(error);
         // setLoading(false);
-        if (response && response.status === 409) {
-          Alert.alert("Intento de pago", error);
-        }
+        // if (response && response.status === 409) {
+        //   Alert.alert("Intento de pago", error);
+        // }
       }
     );
   };
@@ -402,6 +405,11 @@ const BoxBoleta = ({ onClose, visible }) => {
             setAplicaRedondeo={setAplicaRedondeo}
             setFaltaPagar={setFaltaPagar}
             setTotalFinal={setTotalFinal}
+
+            excluirMetodos={[
+              "TRANSFERENCIA",
+              "CUENTACORRIENTE"
+            ]}
           />
         </View>
 

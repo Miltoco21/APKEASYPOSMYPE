@@ -1,89 +1,47 @@
-// import React from "react";
-
-// import {
-//   Dialog,
-//   DialogTitle,
-//   DialogContent,
-//   DialogContentText,
-//   DialogActions,
-//   Button,
-//   Typography,
-//   CircularProgress,
-// } from "@mui/material";
-// const LoadingDialog = ({openDialog, text}) => {
-//     /**
-//   How to use:
-  
-//   import LoadingDialog from "../Components/Dialogs/LoadingDialog";
-
-//   ...
-
-//   <LoadingDialog openDialog = {openLoadingDialog} text={loadingDialogText} />
-
-//   ...
-  
-//   <Button
-//     onClick={()=>{ 
-//       setOpenLoadingDialog(true)
-//       setTimeout(() => {
-//         setOpenLoadingDialog(false)
-//       }, 2000);
-//     }}
-//   >
-//     Test loading dialog
-//   </Button>
-      
-//   */
-//   return (
-//     <Dialog
-//       open={openDialog}
-//       onClose={ () => {} }
-//     >
-//       <DialogContent style={{
-//         textAlign: "center"
-//       }}>
-//         <CircularProgress/>
-//         <Typography>{text}</Typography>
-//       </DialogContent>
-//     </Dialog>
-//   );
-// };
-
-// export default LoadingDialog;
-
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import { Portal, Modal, Text, ActivityIndicator, Surface } from 'react-native-paper';
+import { StyleSheet, View, Modal } from 'react-native';
+import { Portal, Text, ActivityIndicator, Surface } from 'react-native-paper';
 
 interface LoadingDialogProps {
-  visible: boolean;
+  openDialog: boolean;
   text?: string;
 }
 
 const LoadingDialog: React.FC<LoadingDialogProps> = ({
-  visible,
+  openDialog,
   text = 'Loading...'
 }) => {
   return (
-    <Portal>
-      <Modal
-        visible={visible}
-        onDismiss={() => {}}
-        contentContainerStyle={styles.containerStyle}
-        dismissable={false}
-      >
-        <Surface style={styles.surface} elevation={2}>
+    <Modal
+      visible={openDialog}
+      transparent={true}
+      // animationType="slide"
+    >
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalContent}>
           <ActivityIndicator size="large" style={styles.spinner} />
           <Text style={styles.text} variant="bodyLarge">
             {text}
           </Text>
-        </Surface>
-      </Modal>
-    </Portal>
+        </View>
+      </View>
+    </Modal>
   );
 };
 
 const styles = StyleSheet.create({
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    width: '50%',
+  },
   containerStyle: {
     padding: 20,
     marginHorizontal: 20,
@@ -99,6 +57,7 @@ const styles = StyleSheet.create({
   },
   text: {
     textAlign: 'center',
+    // color: "red"
   },
 });
 

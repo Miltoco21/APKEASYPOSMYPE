@@ -5,6 +5,7 @@ import { Surface, Title, Button } from 'react-native-paper';
 import { SelectedOptionsContext } from '../Context/SelectedOptionsProvider';
 import BoxBoleta from './BoxBoleta'
 import PagarBoleta from '../ScreenDialog/PagarBoleta';
+import Log from 'src/Models/Log';
 
 
 const BoxTotales = ({
@@ -21,26 +22,26 @@ const BoxTotales = ({
       removeFromSalesData,
       clearSalesData,
       salesDataTimestamp,
-      showMessage,
-      showSnackbarMessage, 
-      hideSnackbar
+      showAlert
     } = useContext(SelectedOptionsContext);
 
     const [showModalPagarBoleta, setShowModalPagarBoleta] = useState(false);
-    const handlePagarBoleta = () => {
-      if (grandTotal === 0) {
-        console.log("Attempting to show snackbar message");
-        showSnackbarMessage("El total es cero. Agrega productos para continuar.");
-        console.log("After showing snackbar message");
-        return;
+
+    const abrirBoleta = ()=>{
+      if(salesData.length < 1){
+        showAlert("No hay productos en el listado")
+        return
       }
-      setShowModalPagarBoleta(true);
-    };
+
+      Log("ventas", salesData)
+      setShowModalPagarBoleta(true)
+    }
+
   return (
     <Surface style={styles.container}>
       <Title style={styles.totalText}>TOTAL: ${grandTotal}</Title>
       <View style={styles.buttonRow}>
-      <Button mode="contained" style={styles.button}     onPress={handlePagarBoleta}>
+      <Button mode="contained" style={styles.button} onPress={abrirBoleta}>
           Hacer el pago
         </Button>
         {/* <Button mode="contained" style={styles.button} onPress={onPagarFactura}>

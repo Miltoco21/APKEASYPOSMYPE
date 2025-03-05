@@ -1,6 +1,4 @@
-
-
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import {
   View,
   Text,
@@ -8,12 +6,11 @@ import {
   TextInput,
   TouchableOpacity,
   FlatList,
-  ActivityIndicator
+  ActivityIndicator,
+  InteractionManager
 } from 'react-native';
 import { SelectedOptionsContext } from '../Context/SelectedOptionsProvider';
 import Product from "../../Models/Product";
-import Ionicons from "@expo/vector-icons/Ionicons"
-import Confirm from '../Dialogs/Confirm';
 import ProductList from '../ScreenContent/ProductList';
 import Log from 'src/Models/Log';
 
@@ -24,8 +21,13 @@ const BoxProducts = () => {
     addToSalesData,
     removeFromSalesData,
     clearSalesData,
-    salesDataTimestamp
+    salesDataTimestamp,
+    showLoading,
+    hideLoading,
+    showMessage
   } = useContext(SelectedOptionsContext);
+
+  const refInputBuscar = useRef(null)
 
   const [searchText, setSearchText] = useState('');
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -93,7 +95,8 @@ const BoxProducts = () => {
   };
   const searchByDescription = async (searchValue, currentPage) => {
     console.log("searchByDescription")
-    Product.getInstance().findByDescriptionPaginado(
+    // showLoading("Buscando por descripcion")
+    await Product.getInstance().findByDescriptionPaginado(
       {
         description: searchValue,
         codigoCliente: 0,
@@ -109,8 +112,17 @@ const BoxProducts = () => {
           setFilteredProducts(prev => [...prev, ...(productos || [])]);
         }
         setHasMore(productos?.length === 10);
-      },
-      handleError
+
+        // hideLoading()
+        // refInputBuscar.current.blur()
+        // setTimeout(() => {
+        //   refInputBuscar.current.focus()
+        // }, 500);
+
+      }, (err) => {
+        // hideLoading()
+        handleError(err)
+      }
     );
   };
 
@@ -143,18 +155,9 @@ const BoxProducts = () => {
   // Manejo de productos seleccionados usando contexto
   const handleAddProduct = (product) => {
     addToSalesData(product);
-
+    setSearchText("")
   };
 
-  const handleDeleteProduct = (index) => {
-    removeFromSalesData(index);
-  };
-
-  const handleClearAllProducts = () => {
-    clearSalesData();
-  };
-
-  // console.log("salesData",salesData);
 
   return (
     <View>
@@ -165,9 +168,8 @@ const BoxProducts = () => {
         placeholderTextColor="#999"
         value={searchText}
         onChangeText={setSearchText}
+        ref={refInputBuscar}
       />
-
-      {loading && <ActivityIndicator size="small" color="#283048" />}
 
       {searchText.length > 0 && (
         <View style={styles.resultsContainer}>
@@ -205,68 +207,12 @@ const BoxProducts = () => {
         ) : (
           <ProductList
             data={salesData}
-            onDeleteProduct={setSelectedProductToDelete}
-            onShowDeleteModal={setDeleteModalVisible}
             onRefresh={() => {
 
             }}
           />
         )}
       </View>
-      {/* <View style={[styles.selectedBox, { maxHeight: 369 }]}>
-        <Text style={styles.boxHeader}>Productos Seleccionados:</Text>
-        {salesData.length === 0 ? (
-          <Text style={styles.noProductsText}>No hay productos agregados.</Text>
-        ) : (
-          <FlatList
-            data={salesData}
-            keyExtractor={(item, index) => `${item.idProducto}_${index}`}
-            extraData={salesDataTimestamp}
-            contentContainerStyle={{ flexGrow: 1 }}
-            renderItem={({ item, index }) => (
-              <View style={styles.selectedProductRow}>
-                <Text style={styles.quantityText}>{item.cantidad}</Text>
-                <Text style={styles.selectedProductText}>{item.nombre}</Text>
-                <Text style={styles.priceText}>
-                  {item.precioVenta ? `$${item.precioVenta}` : '-'}
-                </Text>
-                <Text style={styles.totalText}>
-                  {item.precioVenta ? `$${(item.precioVenta * item.cantidad)}` : '-'}
-                </Text>
-                <TouchableOpacity
-                  onPress={() => {
-                    setSelectedProductToDelete(index);
-                    setDeleteModalVisible(true);
-                  }}
-                >
-                  <Ionicons name="trash" size={21} color="#ff4444" />
-                </TouchableOpacity>
-              </View>
-            )}
-          />
-        )}
-      </View> */}
-
-      {/* Modales de confirmación */}
-      <Confirm
-        visible={deleteModalVisible}
-        text="¿Eliminar este producto?"
-        onConfirm={() => {
-          handleDeleteProduct(selectedProductToDelete);
-          setDeleteModalVisible(false);
-        }}
-        onCancel={() => setDeleteModalVisible(false)}
-      />
-
-      <Confirm
-        visible={clearAllModalVisible}
-        text="¿Eliminar todos los productos?"
-        onConfirm={() => {
-          handleClearAllProducts();
-          setClearAllModalVisible(false);
-        }}
-        onCancel={() => setClearAllModalVisible(false)}
-      />
     </View>
   );
 

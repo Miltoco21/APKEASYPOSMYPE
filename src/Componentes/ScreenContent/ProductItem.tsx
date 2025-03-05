@@ -8,8 +8,6 @@ import AsignarPeso from '../ScreenDialog/AsignarPeso';
 const ProductsItem = ({
   item,
   index,
-  onDeleteProduct,
-  onShowDeleteModal,
   onRefresh = ()=>{}
 }) => {
   const {
@@ -18,7 +16,8 @@ const ProductsItem = ({
     clearSalesData,
     salesDataTimestamp,
     replaceToSalesData,
-    sales
+    sales,
+    showConfirm
   } = useContext(SelectedOptionsContext);
 
   const [currentQuantity, setCurrentQuantity] = useState(0)
@@ -66,8 +65,11 @@ const ProductsItem = ({
       </Text>
       <TouchableOpacity
         onPress={() => {
-          onDeleteProduct(index);
-          onShowDeleteModal(true);
+          console.log("click en eliminar producto")
+          showConfirm("¿Eliminar " + item.description + "?", ()=>{
+            console.log("confirma eliminar producto")
+            removeFromSalesData(index);
+          })
         }}
       >
         <Ionicons name="trash" size={21} color="#ff4444" />
