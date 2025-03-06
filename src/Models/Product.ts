@@ -159,20 +159,43 @@ class Product extends Model implements IProduct {
     }
 
 
-    async getCategories(callbackOk, callbackWrong) {
-        const configs = await ModelConfig.get()
-        var url = configs.urlBase
-            + "/api/NivelMercadoLogicos/GetAllCategorias"
+//     async getCategories(callbackOk, callbackWrong) {
 
-        url += "?codigoSucursal=" + await ModelConfig.get("sucursal")
-        url += "&puntoVenta=" + await ModelConfig.get("puntoVenta")
+//         const sucursal = await ModelConfig.get("sucursal");
+// const puntoVenta = await ModelConfig.get("puntoVenta");
+// console.log("Sucursal:", sucursal);
+// console.log("Punto de Venta:", puntoVenta);
 
 
-        await EndPoint.sendGet(url, (responseData, response) => {
-            callbackOk(response.data.categorias, response);
-        }, callbackWrong)
-    }
+//         const configs = await ModelConfig.get()
+//         var url = configs.urlBase
+//             + "/api/NivelMercadoLogicos/GetAllCategorias"
 
+//         url += "?codigoSucursal=" + await ModelConfig.get("sucursal")
+//         url += "&puntoVenta=" + await ModelConfig.get("puntoVenta")
+
+
+//         await EndPoint.sendGet(url, (responseData, response) => {
+//             callbackOk(response.data.categorias, response);
+//         }, callbackWrong)
+//     }
+
+async getCategories(callbackOk, callbackWrong) {
+    const sucursal =  await ModelConfig.get("sucursal");
+    const puntoVenta =  await ModelConfig.get("puntoVenta");
+    console.log("Sucursal:", sucursal);
+    console.log("Punto de Venta:", puntoVenta);
+
+    const configs = await ModelConfig.get();
+    let url = configs.urlBase + "/api/NivelMercadoLogicos/GetAllCategorias";
+    // url += "?codigoSucursal=" + sucursal;
+    // url += "&puntoVenta=" + puntoVenta;
+
+
+    await EndPoint.sendGet(url, (responseData, response) => {
+        callbackOk(response.data.categorias, response);
+    }, callbackWrong);
+}
 
     async getSubCategories(categoriaId, callbackOk, callbackWrong) {
         const configs = await ModelConfig.get()

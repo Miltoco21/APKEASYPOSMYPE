@@ -1,18 +1,16 @@
 import React, { useContext, useState } from 'react';
 import { BottomNavigation, useTheme, } from 'react-native-paper';
-import { Alert, Platform, StyleSheet } from 'react-native';
+import { Platform, StyleSheet, Modal, View, TouchableOpacity, Text } from 'react-native';
 import { SelectedOptionsContext } from '../Context/SelectedOptionsProvider';
 import Ionicons from "@expo/vector-icons/Ionicons";
 import BaseConfigModal from 'src/Modals/BaseConfigModal';
+import BoxProductoFamilia from '../BoxContent/BoxProductoFamilia';
 
 const BottomButtons = () => {
-  const { 
-    clearSalesData,
-    showConfirm
-   } = useContext(SelectedOptionsContext);
+  const { clearSalesData } = useContext(SelectedOptionsContext);
 
   const [showSettingsModal, setShowSettingsModal] = useState(false);
-
+  const [showFamiliasModal, setShowFamiliasModal] = useState(false);
 
 
   const [index, setIndex] = useState(0);
@@ -60,15 +58,13 @@ const BottomButtons = () => {
         barStyle={{ backgroundColor: colors.background }}
         onTabPress={({ route }) => {
           if (route.key === 'clear') {
-
-            showConfirm("Eliminar todos?",()=>{
-              clearSalesData();
-              setIndex(0);
-            })
+            clearSalesData();
+            setIndex(0);
           } else if (route.key === 'config') {
             setShowSettingsModal(true)
           } else if (route.key === 'familias') {
-            Alert.alert("Proximamente")
+            //Alert.alert("Proximamente")
+            setShowFamiliasModal(true);
           }
         }}
       />
@@ -79,6 +75,21 @@ const BottomButtons = () => {
           console.log("cambio algo de la config")
         }}
       />
+            <Modal
+        visible={showFamiliasModal}
+        animationType="slide"
+        onRequestClose={() => setShowFamiliasModal(false)}
+      >
+        <View style={styles.modalContainer}>
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={() => setShowFamiliasModal(false)}
+          >
+            <Text style={styles.closeButtonText}>Cerrar</Text>
+          </TouchableOpacity>
+          <BoxProductoFamilia />
+        </View>
+      </Modal>
     </>
 
   );
@@ -86,6 +97,19 @@ const BottomButtons = () => {
 
 export default BottomButtons;
 const styles = StyleSheet.create({
+  modalContainer: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: 'white',
+  },
+  closeButton: {
+    alignSelf: 'flex-end',
+    marginBottom: 10,
+  },
+  closeButtonText: {
+    fontSize: 18,
+    color: 'blue',
+  },
   bar: {
     height: Platform.OS === 'ios' ? 85 : 65,
     paddingBottom: Platform.OS === 'ios' ? 25 : 12,
