@@ -38,7 +38,7 @@ const TableSelecCategory = ({ show, onSelect, title = "Elegir categoria" }) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 10,
+    padding: 3,
   },
   title: {
     fontSize: 18,
