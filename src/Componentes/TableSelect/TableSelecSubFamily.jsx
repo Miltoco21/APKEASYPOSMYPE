@@ -49,7 +49,7 @@ const TableSelecSubFamily = ({
             key={index}
             textButton={subfamily.descripcion}
             actionButton={() => onSelect(subfamily)}
-            style={{ minHeight: 80 }}
+            style={{ minHeight: 55 }}
           />
         ))}
     </View>
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: 1,
   },
 });
 

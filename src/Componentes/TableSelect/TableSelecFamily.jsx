@@ -48,7 +48,8 @@ const TableSelecFamily = ({
             key={index}
             textButton={family.descripcion}
             actionButton={() => onSelect(family)}
-            style={{ minHeight: 80 }}
+            style={{ minHeight: 56,margin:2,padding:3 }}
+            
           />
         ))
       }
@@ -58,12 +59,12 @@ const TableSelecFamily = ({
 
 const styles = StyleSheet.create({
   container: {
-    padding: 10,
+    padding: 3,
   },
   title: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: 2,
   },
 });
 

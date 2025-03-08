@@ -42,7 +42,7 @@ const TableSelecSubCategory = ({
             key={index}
             textButton={subcategory.descripcion}
             actionButton={() => onSelect(subcategory)}
-            style={{ minHeight: 80 }}
+            style={{ minHeight: 56, padding:2 }}
           />
         ))
       }
@@ -55,9 +55,9 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   title: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: 3,
   },
 });
 

@@ -117,7 +117,7 @@ const TableSelecProductNML = ({
                 key={index}
                 textButton={textButton}
                 actionButton={() => onSelect(System.clone(product))}
-                style={{ minHeight: 80 }}
+                style={{ minHeight: 55,padding:3 }}
                 animateBackgroundColor={true}
               />
             ) : null
@@ -129,12 +129,12 @@ const TableSelecProductNML = ({
 
 const styles = StyleSheet.create({
   container: {
-    padding: 10,
+    padding: 1,
   },
   title: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: 3,
   },
 });
 
