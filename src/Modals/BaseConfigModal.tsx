@@ -19,7 +19,7 @@ const BaseConfigModal = ({
   onChange,
 }) => {
   const [urlBase, setUrlBase] = useState("")
-
+  const [cantBusqRap, setCantBusqRap] = useState(20);
   const [pedirDatosTransferencia, setPedirDatosTransferencia] = useState(false)
   const [pagarConCuentaCorriente, setPagarConCuentaCorriente] = useState(false)
 
@@ -53,7 +53,8 @@ const BaseConfigModal = ({
     setUrlBase(await ModelConfig.get("urlBase"))
     setPedirDatosTransferencia(await ModelConfig.get("pedirDatosTransferencia"))
     setPagarConCuentaCorriente(await ModelConfig.get("pagarConCuentaCorriente"))
-    
+    setCantBusqRap(await ModelConfig.get("cantidadProductosBusquedaRapida"))
+
     setSucursal(await ModelConfig.get("sucursal"))
     setPuntoVenta(await ModelConfig.get("puntoVenta"))
 
@@ -68,7 +69,7 @@ const BaseConfigModal = ({
     await ModelConfig.change("urlBase", urlBase);
     await ModelConfig.change("pedirDatosTransferencia", pedirDatosTransferencia)
     await ModelConfig.change("pagarConCuentaCorriente", pagarConCuentaCorriente)
-
+    await ModelConfig.change("cantidadProductosBusquedaRapida", cantBusqRap)
     await ModelConfig.change("ordenMostrarListado", ordenMostrarListado)
     await ModelConfig.change("pedirPermisoBorrarProducto", pedirPermisoBorrarProducto)
     await ModelConfig.change("permitirVentaPrecio0", permitirVentaPrecio0)
@@ -153,6 +154,13 @@ const BaseConfigModal = ({
                 setOrdenMostrarListado(e)
               }}
               options={ordenesMostrarListado}
+            />
+          </Grid>
+
+          <Grid>
+            <InputNumber
+              inputState={[cantBusqRap, setCantBusqRap]}
+              label={"Cantidad productos busqueda rapida"}
             />
           </Grid>
 

@@ -5,12 +5,14 @@ import { SelectedOptionsContext } from '../Context/SelectedOptionsProvider';
 import Ionicons from "@expo/vector-icons/Ionicons";
 import BaseConfigModal from 'src/Modals/BaseConfigModal';
 import BoxProductoFamilia from '../BoxContent/BoxProductoFamilia';
+import BoxBusquedaRapida from './BoxBusquedaRapida';
 
 const BottomButtons = () => {
   const { clearSalesData } = useContext(SelectedOptionsContext);
 
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showFamiliasModal, setShowFamiliasModal] = useState(false);
+  const [showBusquedaRapidaModal, setShowBusquedaRapidaModal] = useState(false);
 
 
   const [index, setIndex] = useState(0);
@@ -19,7 +21,7 @@ const BottomButtons = () => {
   const routes = [
     { key: 'clear', title: 'Limpiar', icon: 'trash' as const },
     { key: 'familias', title: 'Familias', icon: 'shapes' as const },
-    // { key: 'search', title: 'Productos ', icon: 'search' as const},
+   { key: 'busquedarapida', title: 'Productos ', icon: 'search' as const},
     { key: 'config', title: 'Ajustes', icon: 'settings' as const },
     // { key: 'ventas', title: 'Ventas', icon: 'cart'as const },
     // { key: 'reportes', title: 'Reportes', icon: 'stats-chart'as const },
@@ -30,7 +32,7 @@ const BottomButtons = () => {
   const renderScene = BottomNavigation.SceneMap({
     clear: () => null,
     familias: () => null,
-    search: () => null,
+    busquedarapida: () => null,
     config: () => null,
     // ventas: () => null,
     // reportes: () => null,
@@ -61,6 +63,8 @@ const BottomButtons = () => {
             setShowSettingsModal(true);
           } else if (route.key === 'familias') {
             setShowFamiliasModal(true);
+          }else if (route.key === 'busquedarapida') {
+            setShowBusquedaRapidaModal(true);
           }
         }}
       />
@@ -89,59 +93,25 @@ const BottomButtons = () => {
         <BoxProductoFamilia />
       </SafeAreaView>
     </Modal>
-  </SafeAreaView>
-    // <>
-    //   <BottomNavigation
-    //     navigationState={{ index, routes }}
-    //     onIndexChange={setIndex}
-    //     renderScene={renderScene}
-    //     renderIcon={({ route, color, focused }) => {
-    //       return (
-    //         <Ionicons
-    //           name={route.icon}
-    //           size={24}
-    //           color={focused ? "#283048" : color}
-    //         />
-    //       );
-    //     }}
-    //     shifting={false} // Asegura que los íconos siempre sean visibles
-    //     barStyle={{ backgroundColor: colors.background }}
-    //     onTabPress={({ route }) => {
-    //       if (route.key === 'clear') {
-    //         clearSalesData();
-    //         setIndex(0);
-    //       } else if (route.key === 'config') {
-    //         setShowSettingsModal(true)
-    //       } else if (route.key === 'familias') {
-    //         //Alert.alert("Proximamente")
-    //         setShowFamiliasModal(true);
-    //       }
-    //     }}
-    //   />
-    //   <BaseConfigModal
-    //     openDialog={showSettingsModal}
-    //     setOpenDialog={setShowSettingsModal}
-    //     onChange={async () => {
-    //       console.log("cambio algo de la config")
-    //     }}
-    //   />
-    //         <Modal
-    //     visible={showFamiliasModal}
-    //     animationType="slide"
-    //     onRequestClose={() => setShowFamiliasModal(false)}
-    //   >
-    //     <View style={styles.modalContainer}>
-    //       <TouchableOpacity
-    //         style={styles.closeButton}
-    //         onPress={() => setShowFamiliasModal(false)}
-    //       >
-    //         <Text style={styles.closeButtonText}>Cerrar</Text>
-    //       </TouchableOpacity>
-    //       <BoxProductoFamilia />
-    //     </View>
-    //   </Modal>
-    // </>
+    <Modal
+        visible={showBusquedaRapidaModal}
+        animationType="slide"
+        onRequestClose={() => setShowBusquedaRapidaModal(false)}
+      >
+        <SafeAreaView style={styles.modalContainer}>
+          <TouchableOpacity style={styles.closeButton} onPress={() => setShowBusquedaRapidaModal(false)}>
+            <Text style={styles.closeButtonText}>Cerrar</Text>
 
+          </TouchableOpacity>
+         
+          <Text style={{ fontSize: 18, textAlign: 'center', margin: 20 }}>Búsqueda Rápida</Text>
+
+          <BoxBusquedaRapida/>
+        </SafeAreaView>
+      </Modal>
+
+  </SafeAreaView>
+   
   );
 };
 
