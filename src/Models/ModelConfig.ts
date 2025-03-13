@@ -80,3 +80,4 @@ class ModelConfig {
 }
 
 export default ModelConfig;
+

@@ -2,10 +2,10 @@ import React, { useState, useContext, useEffect } from "react";
 import { View, Button, StyleSheet } from "react-native";
 import { SelectedOptionsContext } from "../Context/SelectedOptionsProvider";
 import TableSelecCategory from "../TableSelect/TableSelecCategory";
-// import TableSelecSubCategory from "../BoxOptionsLite/TableSelect/TableSelecSubCategory";
-// import TableSelecFamily from "../BoxOptionsLite/TableSelect/TableSelecFamily";
-// import TableSelecSubFamily from "../BoxOptionsLite/TableSelect/TableSelecSubFamily";
-// import TableSelecProductNML from "../BoxOptionsLite/TableSelect/TableSelecProductNML";
+import TableSelecSubCategory from "../TableSelect/TableSelecSubCategory";
+import TableSelecFamily from "../TableSelect/TableSelecFamily";
+import TableSelecSubFamily from "../TableSelect/TableSelecSubFamily";
+import TableSelecProductNML from "../TableSelect/TableSelecProductNML";
 
 const BoxFamilias = ({ onSelect }) => {
   const { userData, addToSalesData } = useContext(SelectedOptionsContext);
@@ -161,15 +161,15 @@ const BoxFamilias = ({ onSelect }) => {
         show={showCategory}
         onSelect={handleSelectCategory}
       />
-{/* 
+
       <TableSelecSubCategory
         title={"Elegir subcategoría para '" + recorrido + "'"}
         show={showSubcategory}
         categoryId={categoryId}
         onSelect={handleSelectSubCategory}
         onNotSubcategoriesFound={handleOnNotSubcategoriesFound}
-      /> */}
-{/* 
+      />
+
       <TableSelecFamily
         title={"Elegir familia para '" + recorrido + "'"}
         show={showFamily}
@@ -177,9 +177,9 @@ const BoxFamilias = ({ onSelect }) => {
         subcategoryId={subcategoryId}
         onSelect={handleSelectfamily}
         onNotFamiliesFound={handleOnNotFamiliesFound}
-      /> */}
+      />
 
-      {/* <TableSelecSubFamily
+      <TableSelecSubFamily
         title={"Elegir subfamilia para '" + recorrido + "'"}
         show={showSubfamily}
         categoryId={categoryId}
@@ -187,9 +187,9 @@ const BoxFamilias = ({ onSelect }) => {
         familyId={familyId}
         onSelect={handleSelectSubfamily}
         onNotSubfamiliesFound={handleOnNotSubfamiliesFound}
-      /> */}
+      />
 
-      {/* <TableSelecProductNML
+      <TableSelecProductNML
         title={"Elegir producto para '" + recorrido + "'"}
         show={showProduct}
         categoryId={categoryId}
@@ -198,13 +198,13 @@ const BoxFamilias = ({ onSelect }) => {
         subfamilyId={subfamilyId}
         onSelect={handleSelectProduct}
         excludeIfText={["AGREGA", "SIN"]}
-      /> */}
+      />
 
-      {/* {!showCategory && (
+      {!showCategory && (
         <View style={styles.buttonContainer}>
           <Button title="Previo" onPress={handlePrevClick} />
         </View>
-      )} */}
+      )}
     </View>
   );
 };
