@@ -7,7 +7,11 @@ import BaseConfigModal from 'src/Modals/BaseConfigModal';
 import BoxProductoFamilia from '../BoxContent/BoxProductoFamilia';
 
 const BottomButtons = () => {
-  const { clearSalesData } = useContext(SelectedOptionsContext);
+  const {
+    salesData,
+    clearSalesData,
+    showAlert
+  } = useContext(SelectedOptionsContext);
 
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showFamiliasModal, setShowFamiliasModal] = useState(false);
@@ -58,12 +62,16 @@ const BottomButtons = () => {
         barStyle={{ backgroundColor: colors.background }}
         onTabPress={({ route }) => {
           if (route.key === 'clear') {
+            if(salesData.length < 1){
+              showAlert("No hay elementos en la lista")
+              return
+            }
             clearSalesData();
             setIndex(0);
           } else if (route.key === 'config') {
             setShowSettingsModal(true)
           } else if (route.key === 'familias') {
-            //Alert.alert("Proximamente")
+            // showAlert("Proximamente")
             setShowFamiliasModal(true);
           }
         }}
@@ -75,7 +83,7 @@ const BottomButtons = () => {
           console.log("cambio algo de la config")
         }}
       />
-            <Modal
+      <Modal
         visible={showFamiliasModal}
         animationType="slide"
         onRequestClose={() => setShowFamiliasModal(false)}

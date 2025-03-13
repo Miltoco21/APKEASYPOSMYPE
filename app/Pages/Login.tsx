@@ -40,7 +40,7 @@ export default function Login() {
   const handleLogin = async () => {
     // console.log("haciendo login..")
     if (!rutOrCode || !password) {
-      showAlert("Error", "Por favor, completa todos los campos.")
+      showAlert("Login incompleto", "Por favor, completa todos los campos.")
       return;
     }
     // Aquí puedes agregar la lógica de autenticación

@@ -1,12 +1,12 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { 
-  View, 
-  Text, 
-  TextInput, 
-  TouchableOpacity, 
-  ActivityIndicator, 
-  ScrollView, 
-  StyleSheet, 
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ActivityIndicator,
+  ScrollView,
+  StyleSheet,
   Alert
 } from 'react-native';
 import axios from 'axios';
@@ -74,7 +74,7 @@ const BoxBoleta = ({ onClose, visible }) => {
   const [showNombreComanda, setShowNombreComanda] = useState(false);
 
   // Función para aplicar ofertas
-  const aplicarOfertas = async() => {
+  const aplicarOfertas = async () => {
     // console.log("aplicando ofertas");
     // Log("salesData", salesData)
 
@@ -95,15 +95,15 @@ const BoxBoleta = ({ onClose, visible }) => {
               resultadoOfertas.productosQueAplican = resultadoOfertas.productosQueAplican.concat(resultadoAplicar.productosQueAplican);
               resultadoOfertas.productosQueNoAplican = resultadoAplicar.productosQueNoAplican;
             }
-            
+
             let totalVentasx = 0;
             let productosVendidosx = [];
-            
+
             resultadoOfertas.productosQueAplican.forEach((prod) => {
               totalVentasx += prod.total;
               productosVendidosx.push(prod);
             });
-            
+
             resultadoOfertas.productosQueNoAplican.forEach((prod) => {
               totalVentasx += prod.total;
               productosVendidosx.push(prod);
@@ -125,7 +125,7 @@ const BoxBoleta = ({ onClose, visible }) => {
       setTotalVentas(grandTotal);
     });
 
-   await Model.getServerConfigs((serverConfigs) => {
+    await Model.getServerConfigs((serverConfigs) => {
       serverConfigs.forEach((serverConfig) => {
         if (
           serverConfig.grupo === "Ticket" &&
@@ -149,7 +149,7 @@ const BoxBoleta = ({ onClose, visible }) => {
     // console.log("redondeo", redondeo);
 
     if (totalPagos === 0 && grandTotal === 0) {
-      showMessage("No se puede hacer una venta con valor 0");
+      showAlert("No se puede hacer una venta con valor 0");
       return;
     }
 
@@ -158,12 +158,12 @@ const BoxBoleta = ({ onClose, visible }) => {
 
     if ((totalPagos < (totalYDescuentoYRedondeo + redondeo - 10) && pagaConEfectivo) ||
       (!pagaConEfectivo && totalPagos < totalYDescuentoYRedondeo)) {
-      showMessage("Debe completar los pagos para continuar");
+      showAlert("Debe completar los pagos para continuar");
       return;
     }
-
+    console.log("el pago esta completo")
     if (trabajaConComanda && nombreClienteComanda.length < 1) {
-      showMessage("Debe completar el nombre de la comanda");
+      showAlert("Debe completar el nombre de la comanda");
       return;
     }
 
@@ -212,7 +212,7 @@ const BoxBoleta = ({ onClose, visible }) => {
       pagos: pagos,
       preVentaID: algunaPreventa,
       nombreClienteComanda: nombreClienteComanda,
-      transferencias: {} 
+      transferencias: {}
 
     };
 
@@ -233,7 +233,7 @@ const BoxBoleta = ({ onClose, visible }) => {
       }
     });
 
-    
+
     requestBody.transferencias = transferenciaDatos;
     setError(null);
 
@@ -250,11 +250,11 @@ const BoxBoleta = ({ onClose, visible }) => {
 
     showLoading("Haciendo el pago")
     await MPago.hacerPago(
-      requestBody, 
+      requestBody,
       esModoAvion,
       async (responsex) => {
         let response = { ...responsex };
-        
+
         hideLoading();
         // showAlert(response.descripcion);
         showAlert("Realizado correctamente");
@@ -263,22 +263,22 @@ const BoxBoleta = ({ onClose, visible }) => {
         setSelectedUser(null);
         setTextSearchProducts("");
         setCliente(null);
-        
+
         if (response.imprimirResponse === undefined) {
           response.imprimirResponse = {};
           response.imprimirResponse.test = "";
         }
         LastSale.confirm(response);
-        
+
         const cantidad = await ModelConfig.get("cantidadTicketImprimir");
         const cantAImprimir = parseInt(cantidad);
         Printer.printAll(response, cantAImprimir);
-        
-        
-        
+
+
+
         // const cantAImprimir = parseInt(ModelConfig.get("cantidadTicketImprimir"));
         // Printer.printAll(response, cantAImprimir);
-        
+
         setUltimoVuelto(vuelto);
         setTimeout(() => {
           onClose();
@@ -303,7 +303,7 @@ const BoxBoleta = ({ onClose, visible }) => {
   };
 
   return (
-    
+
     <ScrollView contentContainerStyle={styles.container}>
       {/* Modal o diálogo para ingresar el nombre de la comanda */}
       {/* <IngresarTexto
@@ -366,16 +366,16 @@ const BoxBoleta = ({ onClose, visible }) => {
             </Text>
           </View>
 
-           <BoxEntregaEnvases
+          <BoxEntregaEnvases
             tieneEnvases={tieneEnvases}
-            
+
             settieneEnvases={settieneEnvases}
             products={productosVendidos}
             productosConEnvases={productosConEnvases}
             setProductosConEnvases={setProductosConEnvases}
             descuentoEnvases={descuentoEnvases}
             setDescuentoEnvases={setDescuentoEnvases}
-          /> 
+          />
 
           <BoxPagos
             pagos={pagos}
@@ -451,16 +451,16 @@ const BoxBoleta = ({ onClose, visible }) => {
           )}
         </TouchableOpacity>
 
-        <TouchableOpacity  onPress={onClose}>
-            <Text style={{
-              width:"100%",
-              padding:10,
-              textAlign:"center",
-              color:"black",
-              backgroundColor:"#ccc",
-              marginVertical:5,
-              fontWeight:"bold"
-            }}>Volver</Text>
+        <TouchableOpacity onPress={onClose}>
+          <Text style={{
+            width: "100%",
+            padding: 10,
+            textAlign: "center",
+            color: "black",
+            backgroundColor: "#ccc",
+            marginVertical: 5,
+            fontWeight: "bold"
+          }}>Volver</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
