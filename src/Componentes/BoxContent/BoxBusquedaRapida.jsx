@@ -13,7 +13,7 @@ import { SelectedOptionsContext } from '../Context/SelectedOptionsProvider';
 import TableSelecProduct from '../TableSelect/TableSelecProduct';
 import Product from '../../Models/Product';
 import ModelConfig from '../../Models/ModelConfig';
-//import ConfirmOption from '../Dialogs/ConfirmOption';
+import ConfirmOption from '../Dialogs/ConfirmOption';
 
 const BoxBusquedaRapida = () => {
   const {
@@ -226,6 +226,7 @@ const BoxBusquedaRapida = () => {
             alignItems: 'center',
             marginBottom: 10,
             borderRadius: 5,
+             width: '48%',
           };
 
           return (
@@ -238,6 +239,8 @@ const BoxBusquedaRapida = () => {
                 if (product.codigoProducto) {
                   setSettingProduct(product);
                   setShowConfirmOption(true);
+                 
+                  
                 }
               }}
             >
@@ -251,7 +254,7 @@ const BoxBusquedaRapida = () => {
         onSelect={handleSelectProduct}
       />
 
-      {/* <ConfirmOption
+      <ConfirmOption
         openDialog={showConfirmOption}
         setOpenDialog={setShowConfirmOption}
         textTitle={`Opciones del botón ${
@@ -273,7 +276,7 @@ const BoxBusquedaRapida = () => {
           }
         }}
         buttonOptions={['Modificar', 'Liberar']}
-      /> */}
+      />
     </ScrollView>
   );}
   const styles = StyleSheet.create({
@@ -281,6 +284,9 @@ const BoxBusquedaRapida = () => {
       flexGrow: 1,
       padding: 15,
       backgroundColor: '#f5f5f5',
+      flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
     },
     buttonContainer: {
       minHeight: 80,
@@ -294,12 +300,13 @@ const BoxBusquedaRapida = () => {
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.1,
       shadowRadius: 4,
+      
     },
     inactiveButton: {
       backgroundColor: '#465379',
     },
     buttonText: {
-      fontSize: 16,
+      fontSize: 14,
       fontWeight: '500',
       color: '#333',
       textAlign: 'center',
