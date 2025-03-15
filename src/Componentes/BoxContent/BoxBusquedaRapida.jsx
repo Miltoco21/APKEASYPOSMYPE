@@ -250,6 +250,7 @@ const BoxBusquedaRapida = () => {
         })}
 
       <TableSelecProduct
+      style={styles.containerProducts}
         show={showSearchProduct}
         onSelect={handleSelectProduct}
       />
@@ -344,6 +345,12 @@ const BoxBusquedaRapida = () => {
       marginLeft: 15,
       paddingVertical: 8,
       paddingHorizontal: 15,
+    },
+    containerProducts : {
+      flexGrow: 1,
+      padding: 15,
+      backgroundColor: '#f5f5f5',
+   
     },
   });
   
