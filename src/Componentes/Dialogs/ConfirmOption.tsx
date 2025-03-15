@@ -95,8 +95,8 @@ import { StyleSheet, View } from 'react-native';
 import { Portal, Modal, Button, Text, Surface } from 'react-native-paper';
 
 interface ConfirmOptionProps {
-  visible: boolean;
-  hideDialog: (value: boolean) => void;
+  openDialog: boolean;
+  setOpenDialog: (value: boolean) => void;
   textTitle?: string;
   textConfirm: string;
   onClick: (index: number) => void;
@@ -104,48 +104,46 @@ interface ConfirmOptionProps {
 }
 
 const ConfirmOption: React.FC<ConfirmOptionProps> = ({
-  visible,
-  hideDialog,
+  openDialog,
+  setOpenDialog,
   textTitle = "Confirmar",
   textConfirm,
   onClick,
   buttonOptions
 }) => {
   return (
-    <Portal>
-      <Modal
-        visible={visible}
-        onDismiss={() => hideDialog(false)}
-        contentContainerStyle={styles.containerStyle}
-      >
-        <Surface style={styles.surface} elevation={2}>
-          <Text style={styles.title} variant="headlineMedium">
-            {textTitle}
-          </Text>
-          
-          <Text style={styles.confirmText} variant="titleMedium">
-            {textConfirm}
-          </Text>
+    <Modal
+      visible={openDialog}
+      onDismiss={() => setOpenDialog(false)}
+      contentContainerStyle={styles.containerStyle}
+    >
+      <Surface style={styles.surface} elevation={2}>
+        <Text style={styles.title} variant="headlineMedium">
+          {textTitle}
+        </Text>
 
-          <View style={styles.buttonContainer}>
-            {buttonOptions.map((option, ix) => (
-              <Button
-                key={ix}
-                mode="contained"
-                onPress={() => {
-                  onClick(ix);
-                  hideDialog(false);
-                }}
-                style={styles.button}
-                labelStyle={styles.buttonLabel}
-              >
-                {option}
-              </Button>
-            ))}
-          </View>
-        </Surface>
-      </Modal>
-    </Portal>
+        <Text style={styles.confirmText} variant="titleMedium">
+          {textConfirm}
+        </Text>
+
+        <View style={styles.buttonContainer}>
+          {buttonOptions.map((option, ix) => (
+            <Button
+              key={ix}
+              mode="contained"
+              onPress={() => {
+                onClick(ix);
+                setOpenDialog(false);
+              }}
+              style={styles.button}
+              labelStyle={styles.buttonLabel}
+            >
+              {option}
+            </Button>
+          ))}
+        </View>
+      </Surface>
+    </Modal>
   );
 };
 

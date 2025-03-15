@@ -14,13 +14,14 @@ import TableSelecProduct from '../TableSelect/TableSelecProduct';
 import Product from '../../Models/Product';
 import ModelConfig from '../../Models/ModelConfig';
 import ConfirmOption from '../Dialogs/ConfirmOption';
+import Log from 'src/Models/Log';
 
 const BoxBusquedaRapida = () => {
   const {
     userData,
     addToSalesData,
     showConfirm,
-    showSnackbarMessage,
+    showAlert,
     showLoading,
     hideLoading,
     cliente,
@@ -39,7 +40,7 @@ const BoxBusquedaRapida = () => {
   }, []);
 
   const getProducts = () => {
-  //console.log('Iniciando getProducts');
+    //console.log('Iniciando getProducts');
     Product.getInstance().getProductsFastSearch(
       (productosServidor) => {
         console.log('Productos recibidos del servidor:', productosServidor);
@@ -55,11 +56,11 @@ const BoxBusquedaRapida = () => {
 
   const completarBotonesFaltantes = async (productosServidor) => {
     const cantConfig = await ModelConfig.get('cantidadProductosBusquedaRapida');
-    console.log('cantConfig',cantConfig)
+    console.log('cantConfig', cantConfig)
     console.log('Completando botones. Cantidad configurada:', cantConfig);
-    
+
     const botonesByBotonNum = [];
-    
+
     // Mapear productos existentesr
     productosServidor.forEach((prodSer) => {
       if (prodSer.boton <= cantConfig) {
@@ -82,7 +83,7 @@ const BoxBusquedaRapida = () => {
         filledProds.push(botonesByBotonNum[i]);
       }
     }
-    
+
     console.log('Productos finales para renderizar:', filledProds);
     setProds(filledProds);
   };
@@ -127,21 +128,21 @@ const BoxBusquedaRapida = () => {
               product,
               (response) => {
                 hideLoading();
-                showSnackbarMessage('Eliminado del listado');
+                showAlert('Eliminado del listado');
                 setProds([]);
                 getProducts();
               },
               () => {
                 hideLoading();
-                showSnackbarMessage('No se pudo realizar');
+                showAlert('No se pudo realizar');
               }
             );
           } else {
-            addToSalesData(prodsEncontrados[0]);
+            addToSalesData(prodsEncontrados[0],undefined, true);
           }
         },
         (err) => {
-          showSnackbarMessage('No se pudo encontrar el producto.' + err);
+          showAlert('No se pudo encontrar el producto.' + err);
         }
       );
     } else {
@@ -168,24 +169,24 @@ const BoxBusquedaRapida = () => {
       Product.getInstance().changeProductFastSearch(
         findedProductx,
         (response) => {
-          showSnackbarMessage('Se ha modificado correctamente');
+          showAlert('Se ha modificado correctamente');
           setProds([]);
           getProducts();
         },
         () => {
-          showSnackbarMessage('No se pudo modificar');
+          showAlert('No se pudo modificar');
         }
       );
     } else {
       Product.getInstance().addProductFastSearch(
         findedProductx,
         (response) => {
-          showSnackbarMessage('Se agregó correctamente');
+          showAlert('Se agregó correctamente');
           setProds([]);
           getProducts();
         },
         () => {
-          showSnackbarMessage('No se pudo agregar');
+          showAlert('No se pudo agregar');
         }
       );
     }
@@ -193,20 +194,19 @@ const BoxBusquedaRapida = () => {
 
   const handleClearButton = () => {
     showConfirm(
-      `¿Limpiar el botón ${settingProduct ? settingProduct.boton : ''} ${
-        settingProduct.nombre
+      `¿Limpiar el botón ${settingProduct ? settingProduct.boton : ''} ${settingProduct.nombre
       }?`,
       () => {
         setSettingProduct(null);
         Product.getInstance().removeProductFastSearch(
           settingProduct,
           (response) => {
-            showSnackbarMessage('Realizado correctamente');
+            showAlert('Realizado correctamente');
             setProds([]);
             getProducts();
           },
           () => {
-            showSnackbarMessage('No se pudo realizar');
+            showAlert('No se pudo realizar');
           }
         );
       }
@@ -215,7 +215,7 @@ const BoxBusquedaRapida = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-     
+
       {!showSearchProduct &&
         prods.length > 0 &&
         prods.map((product, index) => {
@@ -226,7 +226,7 @@ const BoxBusquedaRapida = () => {
             alignItems: 'center',
             marginBottom: 10,
             borderRadius: 5,
-             width: '48%',
+            width: '48%',
           };
 
           return (
@@ -235,12 +235,14 @@ const BoxBusquedaRapida = () => {
               style={styles}
               onPress={() => onSelect(product)}
               onLongPress={() => {
+                console.log("long click para ")
+                Log("producto", product)
                 setIsChanging(true);
                 if (product.codigoProducto) {
                   setSettingProduct(product);
                   setShowConfirmOption(true);
-                 
-                  
+
+
                 }
               }}
             >
@@ -250,7 +252,7 @@ const BoxBusquedaRapida = () => {
         })}
 
       <TableSelecProduct
-      style={styles.containerProducts}
+        style={styles.containerProducts}
         show={showSearchProduct}
         onSelect={handleSelectProduct}
       />
@@ -258,14 +260,12 @@ const BoxBusquedaRapida = () => {
       <ConfirmOption
         openDialog={showConfirmOption}
         setOpenDialog={setShowConfirmOption}
-        textTitle={`Opciones del botón ${
-          settingProduct ? settingProduct.boton : ''
-        }`}
-        textConfirm={`Elija una opción para el botón ${
-          settingProduct
+        textTitle={`Opciones del botón ${settingProduct ? settingProduct.boton : ''
+          }`}
+        textConfirm={`Elija una opción para el botón ${settingProduct
             ? `${settingProduct.boton} con el producto '${settingProduct.nombre}'`
             : ' de búsqueda rápida'
-        }`}
+          }`}
         onClick={(option) => {
           switch (option) {
             case 0:
@@ -279,79 +279,80 @@ const BoxBusquedaRapida = () => {
         buttonOptions={['Modificar', 'Liberar']}
       />
     </ScrollView>
-  );}
-  const styles = StyleSheet.create({
-    container: {
-      flexGrow: 1,
-      padding: 15,
-      backgroundColor: '#f5f5f5',
-      flexDirection: 'row',
+  );
+}
+const styles = StyleSheet.create({
+  container: {
+    flexGrow: 1,
+    padding: 15,
+    backgroundColor: '#f5f5f5',
+    flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    },
-    buttonContainer: {
-      minHeight: 80,
-      backgroundColor: '#fff',
-      justifyContent: 'center',
-      alignItems: 'center',
-      marginBottom: 10,
-      borderRadius: 5,
-      elevation: 3,
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-      
-    },
-    inactiveButton: {
-      backgroundColor: '#465379',
-    },
-    buttonText: {
-      fontSize: 14,
-      fontWeight: '500',
-      color: '#333',
-      textAlign: 'center',
-      paddingHorizontal: 10,
-    },
-    inactiveButtonText: {
-      color: '#fff',
-    },
-    // Estilos para el modal de confirmación (si lo descomentas)
-    confirmModal: {
-      flex: 1,
-      justifyContent: 'center',
-      backgroundColor: 'rgba(0,0,0,0.5)',
-    },
-    modalContent: {
-      backgroundColor: 'white',
-      margin: 20,
-      padding: 20,
-      borderRadius: 8,
-    },
-    modalTitle: {
-      fontSize: 18,
-      fontWeight: 'bold',
-      marginBottom: 15,
-    },
-    modalText: {
-      fontSize: 16,
-      marginBottom: 20,
-    },
-    modalButtonsContainer: {
-      flexDirection: 'row',
-      justifyContent: 'flex-end',
-    },
-    modalButton: {
-      marginLeft: 15,
-      paddingVertical: 8,
-      paddingHorizontal: 15,
-    },
-    containerProducts : {
-      flexGrow: 1,
-      padding: 15,
-      backgroundColor: '#f5f5f5',
-   
-    },
-  });
-  
-  export default BoxBusquedaRapida;
+  },
+  buttonContainer: {
+    minHeight: 80,
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 10,
+    borderRadius: 5,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+
+  },
+  inactiveButton: {
+    backgroundColor: '#465379',
+  },
+  buttonText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#333',
+    textAlign: 'center',
+    paddingHorizontal: 10,
+  },
+  inactiveButtonText: {
+    color: '#fff',
+  },
+  // Estilos para el modal de confirmación (si lo descomentas)
+  confirmModal: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    margin: 20,
+    padding: 20,
+    borderRadius: 8,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 15,
+  },
+  modalText: {
+    fontSize: 16,
+    marginBottom: 20,
+  },
+  modalButtonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  modalButton: {
+    marginLeft: 15,
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+  },
+  containerProducts: {
+    flexGrow: 1,
+    padding: 15,
+    backgroundColor: '#f5f5f5',
+
+  },
+});
+
+export default BoxBusquedaRapida;

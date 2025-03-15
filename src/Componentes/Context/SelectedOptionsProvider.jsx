@@ -241,7 +241,7 @@ export const SelectedOptionsProvider = ({ children }) => {
   const [showAsignarPeso, setShowAsignarPeso] = useState(false);
   const [productoSinPeso, setProductoSinPeso] = useState(null);
 
-  const addToSalesData = (product, quantity) => {
+  const addToSalesData = (product, quantity, withAlert = false) => {
     // console.log("")
     // console.log("")
     // console.log("")
@@ -282,7 +282,11 @@ export const SelectedOptionsProvider = ({ children }) => {
         totalAntesPrecio != totalDespuesPrecio ||
         totalAntesCantidad != totalDespuesCantidad
       )
-        showMessage("Agregado correctamente");
+        if (withAlert) {
+          showAlert("Agregado correctamente");
+        } else {
+          showMessage("Agregado correctamente");
+        }
       setGrandTotal(sales.getTotal());
       setSalesData(sales.products);
 
