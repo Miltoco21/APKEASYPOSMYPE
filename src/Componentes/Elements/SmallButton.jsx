@@ -97,12 +97,12 @@ const SmallButton = ({
   animateBackgroundColor = false,
 }) => {
   const [clickeable, setClickeable] = useState(true);
-  const [colorFondo, setColorFondo] = useState("#283048");
+  const [colorFondo, setColorFondo] = useState("#465379");
 
   const changeBackgroundColor = () => {
     setColorFondo("#0dee8e");
     setTimeout(() => {
-      setColorFondo("#283048");
+      setColorFondo("#465379");
     }, 1000);
   };
 
@@ -135,17 +135,28 @@ const SmallButton = ({
 };
 
 const styles = StyleSheet.create({
-  button: {
-    width: 130,
-    margin: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 10,
-    borderRadius: 4,
+  // button: {
+  //   width: 130,
+  //   margin: 5,
+  //   alignItems: 'center',
+  //   justifyContent: 'center',
+  //   paddingVertical: 10,
+  //   borderRadius: 4,
+  // },
+  button:{
+    width: "100%",
+    minHeight: 80,
+    backgroundColor: "#465379",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 10,
+    borderRadius: 8,
+    padding: 10,
+    elevation: 2,
   },
   buttonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: 18,
   },
 });
 
