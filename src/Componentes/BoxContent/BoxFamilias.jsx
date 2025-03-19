@@ -211,13 +211,13 @@ const BoxFamilias = ({ onSelect }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: 10,
+    
+    
   },
   buttonContainer: {
     width: "100%",
     alignItems: "center",
-    marginTop: 10,
+    
   },
 });
 

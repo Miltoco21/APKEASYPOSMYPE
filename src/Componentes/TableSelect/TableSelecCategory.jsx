@@ -3,10 +3,10 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Product from "../../Models/Product";
 import SmallButton from "../Elements/SmallButton";
 
-const TableSelecCategory = ({ show, onSelect }) => {
+const TableSelecCategory = ({ show, onSelect,title="Elegir Categoría" }) => {
   const [categories, setCategories] = useState([]);
 
-  const title = "Elegir categoria";
+
   useEffect(() => {
     if (show) {
       Product.getInstance().getCategories(
@@ -45,7 +45,7 @@ const TableSelecCategory = ({ show, onSelect }) => {
 
 const styles = StyleSheet.create({
   mainContainer: {
-    flex: 1,
+
     padding: 1,
     backgroundColor: "#fff",
   },
@@ -83,59 +83,3 @@ const styles = StyleSheet.create({
 
 export default TableSelecCategory;
 
-// import React, { useState, useEffect } from "react";
-// import { View, Text, StyleSheet } from "react-native";
-// import SmallButton from "../Elements/SmallButton";
-// import Product from "../../Models/Product";
-
-// const TableSelecCategory = ({ show, onSelect, title = "Elegir categoria" }) => {
-//   const [categories, setCategories] = useState([]);
-
-//   useEffect(() => {
-//     setCategories([]);
-//     Product.getInstance().getCategories(
-//       (respuestaServidor) => {
-//         setCategories(respuestaServidor);
-//       },
-//       () => {
-//         setCategories([]);
-//       }
-//     );
-//   }, [show]);
-
-//   if (!show) return null;
-
-//   return (
-//     <View style={styles.container}>
-//       <Text style={styles.title}>{title}</Text>
-//       {categories.length > 0 &&
-//         categories.map((category, index) => (
-//           <SmallButton
-//             key={index}
-//             textButton={category.descripcion}
-//             actionButton={() => onSelect(category)}
-//             style={styles.button}
-//           />
-//         ))}
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     padding: 2,
-
-//   },
-//   title: {
-//     fontSize: 18,
-//     fontWeight: "bold",
-//     marginBottom: 10,
-//   },
-//   button: {
-//     minHeight: 56,
-//     marginBottom: 1,
-
-//   },
-// });
-
-// export default TableSelecCategory;
