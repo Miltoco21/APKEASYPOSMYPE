@@ -13,7 +13,7 @@ class InfoCierre extends Model {
 
 
   async obtenerDeServidor(idUsuario,callbackOk, callbackWrong){
-    const configs = ModelConfig.get()
+    const configs = await ModelConfig.get()
     var url = configs.urlBase + "/api/Cajas/GetArqueoCajaByIdUsuario?idusuario=" + idUsuario
 
     url += "&codigoSucursal=" + ModelConfig.get("sucursal")
