@@ -9,7 +9,7 @@ import EndPoint from './EndPoint';
 
 class CerrarCaja extends Model {
   async enviar(data,callbackOk, callbackWrong){
-    const configs = ModelConfig.get()
+    const configs = await ModelConfig.get()
     var url = configs.urlBase
       + "/api/Cajas/AddCajaArqueo";
 

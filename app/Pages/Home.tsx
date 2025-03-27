@@ -41,9 +41,9 @@ const Home = ({
         <BusquedaProductos />
         <BoxTotales />
 
-        <View style={styles.bottomWrapper}>
+       
           <BottomButtons />
-        </View>
+       
       </View>
     </Box>
   );
@@ -54,9 +54,8 @@ const styles = StyleSheet.create({
     position: 'relative'
   },
   bottomWrapper: {
-    flex: 1,
-    position: 'relative',
-    zIndex: 1
+    
+    
   }
 });
 export default Home;

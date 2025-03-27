@@ -14,7 +14,7 @@ const BoxTop = () => {
   const { 
     clearSessionData,
     showLoading,
-    hideLoading
+    hideLoading,
    } = useContext(SelectedOptionsContext);
 
 
@@ -24,6 +24,8 @@ const BoxTop = () => {
   const theme = useTheme();
 
   const [userData, setUserData] = useState(null);
+
+
 
 
   const updateGreeting = () => {
@@ -47,16 +49,18 @@ const BoxTop = () => {
         day: 'numeric'
       }));
       setGreeting(updateGreeting());
-    };
+    };  
+    const userModel = User.getInstance()
+
+    setUserData(await userModel.getFromSesion())
+    //comentado para poder debuggear 
 
     const interval = setInterval(updateDateTime, 1000);
     updateDateTime();
 
-    const userModel = User.getInstance()
+  
 
-    setUserData(await userModel.getFromSesion())
-
-    // return () => clearInterval(interval);
+    return () => clearInterval(interval);
   }
 
   useEffect(() => {
