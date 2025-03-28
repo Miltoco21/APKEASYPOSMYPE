@@ -1,12 +1,13 @@
 import axios from 'axios';
 import Singleton from './Singleton';
 import SoporteTicket from './SoporteTicket';
+import Log from './Log';
 
 
 class EndPoint extends Singleton {
 
   static admError(error,callbackWrong){
-    console.log("admError", error)
+    Log("admError", error)
     console.log("admError2", callbackWrong)
     SoporteTicket.catchRequestError(error)
     if(callbackWrong == undefined) return

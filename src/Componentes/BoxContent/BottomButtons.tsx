@@ -94,7 +94,7 @@ const BottomButtons = () => {
       />
       <CerrarCajaModal
         visible={showShowCerrarCaja}
-        onDismiss={setShowShowCerrarCaja} />
+        onDismiss={()=>{setShowShowCerrarCaja(false)}} />
       {/* Modal para Familias */}
       <Modal
         visible={showFamiliasModal}

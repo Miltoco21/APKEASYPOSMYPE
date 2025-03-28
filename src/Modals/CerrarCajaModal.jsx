@@ -1,5 +1,3 @@
-
-
 import React, { useState, useContext, useEffect } from 'react';
 import {
   Modal,
@@ -23,10 +21,21 @@ import CerrarCaja from '../Models/CerrarCaja';
 import Printer from '../Models/Printer';
 import UserEvent from '../Models/UserEvent';
 import System from '../Helpers/System';
+import Log from 'src/Models/Log';
+import { useRouter } from "expo-router";
 
-const CierreCajaModal = ({ visible, onDismiss, }) => {
-  const { userData, clearSessionData, showAlert } = useContext(SelectedOptionsContext);
-  const navigation = useNavigation();
+const CierreCajaModal = ({
+  visible,
+  onDismiss
+}) => {
+  const {
+    userData,
+    clearSessionData,
+    showAlert,
+    showLoading,
+    hideLoading
+  } = useContext(SelectedOptionsContext);
+  const router = useRouter();
 
   // Estados para controlar pasos y datos
   const [step, setStep] = useState(1);
@@ -34,7 +43,7 @@ const CierreCajaModal = ({ visible, onDismiss, }) => {
   const [arrayBilletes, setArrayBilletes] = useState([]);
   const [totalEfectivo, setTotalEfectivo] = useState(0);
   const [enviando, setEnviando] = useState(false);
-  
+
   // Inicia los controles al mostrarse el modal
   const iniciarControles = () => {
     setStep(1);
@@ -44,30 +53,33 @@ const CierreCajaModal = ({ visible, onDismiss, }) => {
   };
 
   const cargarInfoCierre = () => {
-    console.log("buscando info de cierre de caja");
+    // console.log("buscando info de cierre de caja");
     const infoCierreServidor = new InfoCierre();
     infoCierreServidor.obtenerDeServidor(
       userData.codigoUsuario,
       (info) => {
         setInfoCierre(info);
-        console.log("info de cierre cargada correctamente", info);
+        // console.log("info de cierre cargada correctamente", info);
       },
       () => {
-        showMessage("Hubo un problema de conexión. Solicitar al administrador para hacer el cierre administrativo.");
+        showAlert("Hubo un problema de conexión. Solicitar al administrador para hacer el cierre administrativo.");
         onDismiss();
       }
     );
   };
 
   useEffect(() => {
+    // console.log("carga la pantalla de cierre de caja")
+    // Log("userData", userData)
     if (visible) {
       iniciarControles();
-      cargarInfoCierre();
+      if (userData && userData.codigoUsuario)
+        cargarInfoCierre();
     }
-  }, [visible]);
+  }, [visible, userData]);
 
   const handleOnNext = () => {
-    console.log("arrayBilletes:", arrayBilletes);
+    // console.log("arrayBilletes:", arrayBilletes);
     if (arrayBilletes.length < 1) {
       showAlert("Agregar los billetes para continuar.");
       return;
@@ -97,9 +109,9 @@ const CierreCajaModal = ({ visible, onDismiss, }) => {
 
     // Calcula la diferencia
     const diferencia = totalEfectivo - infoCierre.arqueoCajaById.totalSistema;
-    console.log("totalSistema", infoCierre.arqueoCajaById.totalSistema);
-    console.log("totalEfectivo", totalEfectivo);
-    console.log("diferencia", diferencia);
+    // console.log("totalSistema", infoCierre.arqueoCajaById.totalSistema);
+    // console.log("totalEfectivo", totalEfectivo);
+    // console.log("diferencia", diferencia);
 
     const data = {
       idTurno: userData.idTurno,
@@ -108,30 +120,44 @@ const CierreCajaModal = ({ visible, onDismiss, }) => {
       diferencia: diferencia,
       codigoUsuario: userData.codigoUsuario,
       fechaIngreso: System.getInstance().getDateForServer(),
-      cajaArqueoDetalles: arrayBilletes
+      // cajaArqueoDetalles: arrayBilletes
     };
+
+    cajaArqueoDetalles = []
+
+    arrayBilletes.forEach((bille) => {
+      cajaArqueoDetalles.push({
+        denoBillete: bille.denomination + "",
+        cantidad: bille.quantity,
+        valor: bille.subtotal
+      })
+    })
+
+    data.cajaArqueoDetalles = cajaArqueoDetalles
 
     setEnviando(true);
     const cerrarCaja = new CerrarCaja();
+
+    showLoading("Haciendo cierre...")
     cerrarCaja.enviar(
       data,
       (res) => {
-        showMessage("Caja cerrada correctamente.");
+        hideLoading()
+        setEnviando(false);
+        showAlert("Caja cerrada correctamente.");
         UserEvent.send({
           name: "cierre de caja correctamente",
           info: ""
         });
         Printer.printAll(res);
         clearSessionData();
-        navigation.navigate("Login"); // Asumiendo que tienes una ruta "Login"
+        router.navigate("./Login");
         onDismiss();
-      },
-      (error) => {
-        showMessage(error);
-      }
-    ).finally(() => {
-      setEnviando(false);
-    });
+      }, (error) => {
+        hideLoading()
+        showAlert(error);
+        setEnviando(false);
+      })
   };
 
   return (
@@ -151,13 +177,13 @@ const CierreCajaModal = ({ visible, onDismiss, }) => {
         <ScrollView contentContainerStyle={styles.content}>
           {step === 1 && (
 
-<BoxCierreCajaPaso1
-totalEfectivo={totalEfectivo}
-setTotalEfectivo={setTotalEfectivo}
-arrayBilletes={arrayBilletes}
-setArrayBilletes={setArrayBilletes}
-hasFocus={visible}
-/>
+            <BoxCierreCajaPaso1
+              totalEfectivo={totalEfectivo}
+              setTotalEfectivo={setTotalEfectivo}
+              arrayBilletes={arrayBilletes}
+              setArrayBilletes={setArrayBilletes}
+              hasFocus={visible}
+            />
             // <BoxCierreCajaPaso1
             //   totalEfectivo={totalEfectivo}
             //   setTotalEfectivo={setTotalEfectivo}

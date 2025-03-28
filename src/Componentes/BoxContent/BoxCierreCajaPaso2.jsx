@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { 
+import {
   ScrollView,
   View,
   Text,
@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 import { SelectedOptionsContext } from '../Context/SelectedOptionsProvider';
 
-const BoxCierreCajaPaso2 = ({ 
+const BoxCierreCajaPaso2 = ({
   arrayBilletes,
   infoCierre,
   totalEfectivo,
@@ -80,8 +80,8 @@ const BoxCierreCajaPaso2 = ({
             {diferencia === 0
               ? 'No hay diferencia'
               : diferenciaPositiva
-              ? 'Diferencia efectivo (sobrante)'
-              : 'Diferencia efectivo (faltante)'}
+                ? 'Diferencia efectivo (sobrante)'
+                : 'Diferencia efectivo (faltante)'}
           </Text>
           <Text
             style={[
@@ -101,7 +101,9 @@ const BoxCierreCajaPaso2 = ({
             Usuario
           </Text>
           <Text style={[styles.tableCell, styles.cellRightSepared, { flex: 1, textAlign: 'right' }]}>
-            {userData.nombres + ' ' + userData.apellidos}
+            {userData && (
+              userData.nombres + ' ' + userData.apellidos
+            )}
           </Text>
         </View>
       </View>

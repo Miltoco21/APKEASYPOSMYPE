@@ -204,6 +204,11 @@ export const SelectedOptionsProvider = ({ children }) => {
   };
 
   useEffect(() => {
+    if(!userData)
+      getUserData()
+  }, [userData]);
+
+  useEffect(() => {
     setGrandTotal(sales.getTotal());
   }, [salesData]);
 

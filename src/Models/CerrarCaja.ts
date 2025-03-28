@@ -6,20 +6,21 @@ import axios from 'axios';
 import ModelConfig from './ModelConfig';
 import SoporteTicket from './SoporteTicket';
 import EndPoint from './EndPoint';
+import Log from './Log';
 
 class CerrarCaja extends Model {
-  async enviar(data,callbackOk, callbackWrong){
+  async enviar(data, callbackOk, callbackWrong) {
     const configs = await ModelConfig.get()
     var url = configs.urlBase
       + "/api/Cajas/AddCajaArqueo";
 
-    if(!data.codigoSucursal) data.codigoSucursal = ModelConfig.get("sucursal")
-    if(!data.puntoVenta) data.puntoVenta = ModelConfig.get("puntoVenta")
+    if (!data.codigoSucursal) data.codigoSucursal = await ModelConfig.get("sucursal")
+    if (!data.puntoVenta) data.puntoVenta = await ModelConfig.get("puntoVenta")
 
-    EndPoint.sendPost(url,data,(responseData, response)=>{
-      callbackOk(responseData,response);
-    },callbackWrong)
-        
+      EndPoint.sendPost(url, data, (responseData, response) => {
+      callbackOk(responseData, response);
+    }, callbackWrong)
+
   }
 };
 

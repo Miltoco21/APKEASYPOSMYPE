@@ -6,7 +6,6 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Alert,
   Image
 } from "react-native";
 import Box from "../../src/Componentes/Box"
@@ -64,7 +63,7 @@ export default function Login() {
 
       // console.log("error", error)
       hideLoading()
-      // Alert.alert(error)
+      // showAlert(error)
 
       console.log("error", error)
       if (
@@ -73,7 +72,7 @@ export default function Login() {
       ) {
         setReintentarPorSesionActiva(true)
       } else {
-        Alert.alert(error)
+        showAlert(error)
         // hideLoading()
       }
 
@@ -103,8 +102,9 @@ export default function Login() {
           handleLogin()
         }, async (error) => {
           hideLoading()
+          showAlert("No se pudo cerrar sesion anterior", error)
           // console.log("no se pudo 2 hacer logout..", error)
-          // Alert.alert(error)
+          // showAlert(error)
 
           // }
         })
@@ -122,7 +122,7 @@ export default function Login() {
       }, async (error) => {
         hideLoading()
         // console.log("no se pudo hacer logout..", error)
-        // Alert.alert(error)
+        // showAlert(error)
 
         // }
       })
