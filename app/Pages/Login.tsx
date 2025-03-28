@@ -53,20 +53,91 @@ export default function Login() {
     showLoading("Ingresando al sistema...")
     await user.doLoginInServer((info) => {
       updateUserData(info.responseUsuario);
+
+      console.log("devuelve el login de la api", info.responseUsuario)
+
+
+
       hideLoading()
       router.navigate("./Home");
     }, async (error) => {
+
+      // console.log("error", error)
+      // hideLoading()
+      // Alert.alert(error)
+
       console.log("error", error)
-      hideLoading()
-      Alert.alert(error)
+      if (
+        error === "El Usuario tiene una Sesión activa."
+        && !reintentarPorSesionActiva
+      ) {
+        setReintentarPorSesionActiva(true)
+      } else {
+        Alert.alert(error)
+        // hideLoading()
+      }
+
     })
   };
+
+
+  const intentarLogout = async () => {
+    // console.log("intentarLogout")
+    var user = new User();
+    user.setRutFrom(rutOrCode)
+    user.setUserCodeFrom(rutOrCode)
+    user.setPassword(password)
+
+    if (user.codigoUsuario === 0) {
+      // console.log("buscando usuario por rut", rutOrCode)
+      await User.getByRut(rutOrCode, async (usuarios) => {
+        const usuario = usuarios[0]
+
+        const user2 = new User()
+        user2.codigoUsuario = usuario.codigoUsuario
+
+        await user2.doLogoutInServer(async (response) => {
+          // console.log("listo 2 el logout..intentamos hacer login")
+          handleLogin()
+        }, async (error) => {
+
+          // console.log("no se pudo 2 hacer logout..", error)
+          // Alert.alert(error)
+
+          // }
+        })
+
+      }, (error) => {
+
+      })
+    } else {
+      await user.doLogoutInServer(async (response) => {
+        // console.log("listo el logout..intentamos hacer login")
+        handleLogin()
+      }, async (error) => {
+
+        // console.log("no se pudo hacer logout..", error)
+        // Alert.alert(error)
+
+        // }
+      })
+
+
+    }
+
+
+  }
+
 
   const cargaInicial = async () => {
     // console.log("carga inicial")
     const us = User.getInstance()
 
     // await us.sesion.eliminar({id:1})
+
+    const ses = await us.getFromSesion()
+
+    console.log("ses", ses)
 
     const cargado = await User.getInstance().getFromSesion()
     if (cargado) {
@@ -75,6 +146,12 @@ export default function Login() {
 
     // Log("cargado",cargado)
   }
+
+  useEffect(() => {
+    if (reintentarPorSesionActiva) {
+      intentarLogout()
+    }
+  }, [reintentarPorSesionActiva])
 
   useEffect(() => {
     cargaInicial()
