@@ -63,7 +63,7 @@ export default function Login() {
     }, async (error) => {
 
       // console.log("error", error)
-      // hideLoading()
+      hideLoading()
       // Alert.alert(error)
 
       console.log("error", error)
@@ -96,11 +96,13 @@ export default function Login() {
         const user2 = new User()
         user2.codigoUsuario = usuario.codigoUsuario
 
+        showLoading("Cerrando sesion anterior...")
         await user2.doLogoutInServer(async (response) => {
           // console.log("listo 2 el logout..intentamos hacer login")
+          hideLoading()
           handleLogin()
         }, async (error) => {
-
+          hideLoading()
           // console.log("no se pudo 2 hacer logout..", error)
           // Alert.alert(error)
 
@@ -111,11 +113,14 @@ export default function Login() {
 
       })
     } else {
+      showLoading("Cerrando sesion anterior...")
+
       await user.doLogoutInServer(async (response) => {
         // console.log("listo el logout..intentamos hacer login")
+        hideLoading()
         handleLogin()
       }, async (error) => {
-
+        hideLoading()
         // console.log("no se pudo hacer logout..", error)
         // Alert.alert(error)
 
@@ -140,7 +145,7 @@ export default function Login() {
     console.log("ses", ses)
 
     const cargado = await User.getInstance().getFromSesion()
-    if (cargado) {
+    if (cargado && !Array.isArray(cargado)) {
       router.navigate("./Home");
     }
 

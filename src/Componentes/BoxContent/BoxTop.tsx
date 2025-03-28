@@ -52,7 +52,10 @@ const BoxTop = () => {
     };  
     const userModel = User.getInstance()
 
-    setUserData(await userModel.getFromSesion())
+    const guardado = await userModel.getFromSesion()
+    if(guardado && !Array.isArray(guardado)){
+      setUserData(guardado)
+    }
     //comentado para poder debuggear 
 
     const interval = setInterval(updateDateTime, 1000);

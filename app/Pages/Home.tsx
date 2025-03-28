@@ -1,4 +1,4 @@
-import React, { useContext,useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Text, View, StyleSheet, } from "react-native";
 import Box from "../../src/Componentes/Box";
 import BoxContainer from "../../src/Componentes/BoxContainer";
@@ -15,7 +15,7 @@ import { SelectedOptionsContext } from '../../src/Componentes/Context/SelectedOp
 const Home = ({
 
 }) => {
-  
+
   const {
     userData,
     updateUserData,
@@ -25,12 +25,21 @@ const Home = ({
     showAlert
   } = useContext(SelectedOptionsContext);
 
-  const [isCajaOpen, setIsCajaOpen] = useState(true);
+  const [isCajaOpen, setIsCajaOpen] = useState(false);
 
   // Función para cerrar el componente AbrirCaja
   const handleCloseCaja = () => {
     setIsCajaOpen(false);
   };
+
+
+  useEffect(() => {
+    if (userData && !Array.isArray(userData) && !userData.inicioCaja) {
+      console.log("no tiene iniciada la caja");
+      // console.log(userData)
+      setIsCajaOpen(true);
+    }
+  }, [userData])
 
   return (
     <Box>
@@ -41,9 +50,9 @@ const Home = ({
         <BusquedaProductos />
         <BoxTotales />
 
-       
-          <BottomButtons />
-       
+
+        <BottomButtons />
+
       </View>
     </Box>
   );
@@ -54,8 +63,8 @@ const styles = StyleSheet.create({
     position: 'relative'
   },
   bottomWrapper: {
-    
-    
+
+
   }
 });
 export default Home;

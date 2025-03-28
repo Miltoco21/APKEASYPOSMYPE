@@ -50,7 +50,7 @@ const BottomButtons = () => {
 
   return (
     <SafeAreaView style={styles.safeContainer} >
-      <Text>botn</Text>
+      {/* <Text>botn</Text> */}
       {/* Contenedor principal: se utiliza flex:1 para ocupar la pantalla completa */}
       <View style={styles.container}>
 

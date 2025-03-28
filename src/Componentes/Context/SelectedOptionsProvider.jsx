@@ -192,14 +192,15 @@ export const SelectedOptionsProvider = ({ children }) => {
     setSearchResults(results);
   };
 
-  const [userData, setUserData] = useState([]);
+  const [userData, setUserData] = useState(null);
+
   const updateUserData = (data) => {
     setUserData(User.getInstance().saveInSesion(data));
   };
 
-  const getUserData = () => {
-    if (User.getInstance().sesion.hasOne())
-      setUserData(User.getInstance().getFromSesion());
+  const getUserData = async() => {
+    if (await User.getInstance().sesion.hasOne())
+      setUserData(await User.getInstance().getFromSesion());
   };
 
   useEffect(() => {
@@ -364,10 +365,9 @@ export const SelectedOptionsProvider = ({ children }) => {
 
   const clearSessionData = async () => {
     await User.getInstance().sesion.truncate();
-    setUserData([]);
+    setUserData(null);
     setCliente(null);
     await Client.getInstance().sesion.truncate();
-    setUserData([]);
     clearSalesData();
   };
 
