@@ -4,8 +4,8 @@ import Model from './Model.js';
 import BaseConfig from "../definitions/BaseConfig.js";
 import IPagoBoleta, { IProductoPagoBoleta, ITransferencia } from '../Types/IPagoBoleta.js';
 import axios from 'axios';
-import ModelConfig from './ModelConfig.js';
-import EndPoint from './EndPoint.js';
+import ModelConfig from '../Models/ModelConfig'
+import EndPoint from '../Models/EndPoint';
 
 
 class InfoCierre extends Model {
