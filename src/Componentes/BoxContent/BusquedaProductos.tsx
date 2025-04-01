@@ -7,7 +7,8 @@ import {
   TouchableOpacity,
   FlatList,
   ActivityIndicator,
-  InteractionManager
+  InteractionManager,
+  Keyboard
 } from 'react-native';
 import { SelectedOptionsContext } from '../Context/SelectedOptionsProvider';
 import Product from "../../Models/Product";
@@ -153,29 +154,53 @@ const BoxProducts = () => {
     }
   };
   // Manejo de productos seleccionados usando contexto
+  // const handleAddProduct = (product) => {
+  //   addToSalesData(product);
+  //   setSearchText("")
+  // };
   const handleAddProduct = (product) => {
+    Keyboard.dismiss(); // Cierra el teclado
     addToSalesData(product);
-    setSearchText("")
+    setSearchText("");
+    //Keyboard.dismiss(); // Cierra el teclado
+    if(refInputBuscar.current) {
+      refInputBuscar.current.blur(); // Quita el foco del input
+    }
+
   };
 
 
   return (
     <View>
       <Text style={styles.headerText}>Buscar Productos</Text>
-      <TextInput
+      {/* <TextInput
         style={styles.searchInput}
         placeholder="Buscar ..."
         placeholderTextColor="#999"
         value={searchText}
         onChangeText={setSearchText}
         ref={refInputBuscar}
-      />
+      /> */}
+      <TextInput
+  style={styles.searchInput}
+  placeholder="Buscar ..."
+  placeholderTextColor="#999"
+  value={searchText}
+  onChangeText={setSearchText}
+  ref={refInputBuscar}
+ returnKeyType="search"
+ //submitBehavior={true}
+/>
 
       {searchText.length > 0 && (
         <View style={styles.resultsContainer}>
           <FlatList
+            keyboardShouldPersistTaps="handled"
             data={filteredProducts}
             keyExtractor={(item) => item.idProducto.toString()}
+            maxToRenderPerBatch={5}
+            initialNumToRender={10}
+            windowSize={7}
             renderItem={({ item }) => (
               <View style={styles.productRow}>
                 <View style={styles.productInfo}>
@@ -189,8 +214,10 @@ const BoxProducts = () => {
                 <TouchableOpacity
                   style={styles.addButton}
                   onPress={() => handleAddProduct(item)}
+                  accessibilityLabel={`Agregar ${item.nombre}`}
+                  accessibilityRole="button"
                 >
-                  <Text style={styles.addButtonText}>Agregar</Text>
+                  <Text style={styles.addButtonText}>Agregarr</Text>
                 </TouchableOpacity>
               </View>
             )}
