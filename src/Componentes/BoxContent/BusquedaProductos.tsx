@@ -21,6 +21,7 @@ import Balanza from '../../Models/Balanza';
 import BalanzaUnidad from '../../Models/BalanzaUnidad';
 import { Button, Icon, IconButton } from 'react-native-paper';
 import CapturaCodigoCamara from '../ScreenDialog/CapturaCodigoCamara';
+import IngresoPLU from 'src/Modals/IngresoPLU';
 
 
 const BoxProducts = () => {
@@ -45,6 +46,22 @@ const BoxProducts = () => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [capturarCodigo, setCapturarCodigo] = useState(false);
+
+
+  const [showPLUModal, setShowPLUModal] = useState(false);
+
+  const handlePLUConfirm = (pluValue) => {
+    setShowPLUModal(false);
+
+    if (pluValue instanceof Error) {
+      showAlert('Error', pluValue.message);
+      return;
+    }
+
+    ProductCodeStack.addProductCode(pluValue);
+    setSearchText("");
+  };
+
 
   // Resto del código de búsqueda permanece igual...
   const handleSearch = async (searchValue, currentPage = 1) => {
@@ -221,7 +238,8 @@ const BoxProducts = () => {
             }}
           />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.pluButton} onPress={handlePLUSearch}>
+        <TouchableOpacity style={styles.pluButton}   onPress={() => setShowPLUModal(true)}
+        >
           <Text style={styles.pluButtonText}>PLU</Text>
         </TouchableOpacity>
       </View>
@@ -275,8 +293,23 @@ const BoxProducts = () => {
           />
         )}
       </View>
+
+      <IngresoPLU
+        visible={showPLUModal}
+        // onConfirm={handlePLUConfirm}
+        onConfirm={(plu) => {
+          // Lógica para manejar PLU válido
+          console.log('PLU ingresado:', plu);
+          setShowPLUModal(false);
+        }}
+        onCancel={() => setShowPLUModal(false)}
+      />
+
     </View>
+
   );
+
+
 
 };
 
