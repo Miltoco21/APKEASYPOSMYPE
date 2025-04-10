@@ -14,17 +14,19 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true,"bundleIdentifier": "com.easypos.mype"
+      "supportsTablet": true,
+      "bundleIdentifier": "com.easypos.mype"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/images/splash.jpg",
         "backgroundColor": "#ffffff"
-      },"permissions": [
-          "android.permission.CAMERA",
-          "android.permission.RECORD_AUDIO"
-        ],
-        "package": "com.easypos.mype"
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.easypos.mype"
     },
     "web": {
       "favicon": "./assets/favicon.png"

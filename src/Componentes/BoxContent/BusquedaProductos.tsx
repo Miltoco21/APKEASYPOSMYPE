@@ -19,8 +19,8 @@ import ProductCodeStack from '../../Models/ProductCodeStack';
 import ModelConfig from '../../Models/ModelConfig';
 import Balanza from '../../Models/Balanza';
 import BalanzaUnidad from '../../Models/BalanzaUnidad';
-
-
+import { Button, Icon, IconButton } from 'react-native-paper';
+import CapturaCodigoCamara from '../ScreenDialog/CapturaCodigoCamara';
 
 
 const BoxProducts = () => {
@@ -33,7 +33,8 @@ const BoxProducts = () => {
     salesDataTimestamp,
     showLoading,
     hideLoading,
-    showMessage
+    showMessage,
+    showAlert
   } = useContext(SelectedOptionsContext);
 
   const refInputBuscar = useRef(null)
@@ -43,8 +44,7 @@ const BoxProducts = () => {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-
-
+  const [capturarCodigo, setCapturarCodigo] = useState(false);
 
   // Resto del código de búsqueda permanece igual...
   const handleSearch = async (searchValue, currentPage = 1) => {
@@ -172,17 +172,25 @@ const BoxProducts = () => {
     addToSalesData(product);
     setSearchText("");
     //Keyboard.dismiss(); // Cierra el teclado
-    if(refInputBuscar.current) {
+    if (refInputBuscar.current) {
       refInputBuscar.current.blur(); // Quita el foco del input
     }
 
   };
 
 
+
   return (
     <View>
+      <CapturaCodigoCamara
+        openDialog={capturarCodigo}
+        setOpenDialog={setCapturarCodigo}
+        onCapture={(cod) => {
+          setSearchText(cod)
+        }}
+      />
       <Text style={styles.headerText}>Buscar Productos</Text>
-   
+
       <View style={styles.searchRow}>
         <TextInput
           style={styles.searchInput}
@@ -193,6 +201,26 @@ const BoxProducts = () => {
           ref={refInputBuscar}
           returnKeyType="search"
         />
+        <TouchableOpacity style={styles.scanCodButton} onPress={() => {
+          setCapturarCodigo(true)
+        }}>
+          <IconButton icon={"camera"}
+            style={{
+              width: 40,
+              position: "absolute",
+              top: -10,
+              left: -7
+            }}
+          />
+          <IconButton icon={"barcode"}
+            style={{
+              width: 40,
+              position: "absolute",
+              top: 7,
+              left: -7
+            }}
+          />
+        </TouchableOpacity>
         <TouchableOpacity style={styles.pluButton} onPress={handlePLUSearch}>
           <Text style={styles.pluButtonText}>PLU</Text>
         </TouchableOpacity>
@@ -258,7 +286,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#f2f2f2'
+    backgroundColor: '#f2f2f2',
+    position: "absolute"
   },
   headerText: {
     fontSize: 20,
@@ -282,9 +311,19 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     fontSize: 16
   },
+  scanCodButton: {
+    borderWidth: 1,
+    borderRadius: 8,
+    margin: 0,
+    position: "relative",
+    width: 40,
+    // backgroundColor:"red",
+    marginLeft: 3,
+    height: 50,
+  },
   pluButton: {
     height: 50,
-    marginLeft: 8,
+    marginLeft: 3,
     backgroundColor: '#283048',
     borderRadius: 8,
     paddingHorizontal: 20,
