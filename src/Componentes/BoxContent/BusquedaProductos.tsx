@@ -14,6 +14,14 @@ import { SelectedOptionsContext } from '../Context/SelectedOptionsProvider';
 import Product from "../../Models/Product";
 import ProductList from '../ScreenContent/ProductList';
 import Log from 'src/Models/Log';
+import ProductCodeStack from '../../Models/ProductCodeStack';
+
+import ModelConfig from '../../Models/ModelConfig';
+import Balanza from '../../Models/Balanza';
+import BalanzaUnidad from '../../Models/BalanzaUnidad';
+
+
+
 
 const BoxProducts = () => {
   // Acceder al contexto
@@ -36,9 +44,7 @@ const BoxProducts = () => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
-  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
-  const [clearAllModalVisible, setClearAllModalVisible] = useState(false);
-  const [selectedProductToDelete, setSelectedProductToDelete] = useState(null);
+
 
   // Resto del código de búsqueda permanece igual...
   const handleSearch = async (searchValue, currentPage = 1) => {
@@ -133,6 +139,13 @@ const BoxProducts = () => {
     setHasMore(false);
   };
 
+  const handlePLUSearch = () => {
+    // Si el texto ingresado es numérico, se procesa como código PLU
+    if (!parseFloat(searchText)) return;
+    ProductCodeStack.addProductCode(searchText);
+    setSearchText('');
+  };
+
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
       if (searchText.trim()) {
@@ -153,11 +166,7 @@ const BoxProducts = () => {
       handleSearch(searchText, page + 1);
     }
   };
-  // Manejo de productos seleccionados usando contexto
-  // const handleAddProduct = (product) => {
-  //   addToSalesData(product);
-  //   setSearchText("")
-  // };
+
   const handleAddProduct = (product) => {
     Keyboard.dismiss(); // Cierra el teclado
     addToSalesData(product);
@@ -173,24 +182,22 @@ const BoxProducts = () => {
   return (
     <View>
       <Text style={styles.headerText}>Buscar Productos</Text>
-      {/* <TextInput
-        style={styles.searchInput}
-        placeholder="Buscar ..."
-        placeholderTextColor="#999"
-        value={searchText}
-        onChangeText={setSearchText}
-        ref={refInputBuscar}
-      /> */}
-      <TextInput
-  style={styles.searchInput}
-  placeholder="Buscar ..."
-  placeholderTextColor="#999"
-  value={searchText}
-  onChangeText={setSearchText}
-  ref={refInputBuscar}
- returnKeyType="search"
- //submitBehavior={true}
-/>
+   
+      <View style={styles.searchRow}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Buscar ..."
+          placeholderTextColor="#999"
+          value={searchText}
+          onChangeText={setSearchText}
+          ref={refInputBuscar}
+          returnKeyType="search"
+        />
+        <TouchableOpacity style={styles.pluButton} onPress={handlePLUSearch}>
+          <Text style={styles.pluButtonText}>PLU</Text>
+        </TouchableOpacity>
+      </View>
+      {loading && <ActivityIndicator size="small" color="#283048" />}
 
       {searchText.length > 0 && (
         <View style={styles.resultsContainer}>
@@ -217,7 +224,7 @@ const BoxProducts = () => {
                   accessibilityLabel={`Agregar ${item.nombre}`}
                   accessibilityRole="button"
                 >
-                  <Text style={styles.addButtonText}>Agregarr</Text>
+                  <Text style={styles.addButtonText}>Agregar</Text>
                 </TouchableOpacity>
               </View>
             )}
@@ -248,21 +255,46 @@ const BoxProducts = () => {
 // // Estilos permanecen iguales...
 // // Estilos actualizados para mejor visualización
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+    backgroundColor: '#f2f2f2'
+  },
   headerText: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 8,
-    color: '#283048',
+    marginBottom: 12,
+    color: '#283048'
+  },
+  searchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    marginBottom: 16
   },
   searchInput: {
-    height: 40,
+    flex: 1,
+    height: 50,
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 8,
-    paddingHorizontal: 10,
-    marginBottom: 16,
+    paddingHorizontal: 12,
     backgroundColor: '#fff',
-    color: '#000',
+    fontSize: 16
+  },
+  pluButton: {
+    height: 50,
+    marginLeft: 8,
+    backgroundColor: '#283048',
+    borderRadius: 8,
+    paddingHorizontal: 20,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  pluButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold'
   },
   resultsContainer: {
     maxHeight: 200,
@@ -271,92 +303,56 @@ const styles = StyleSheet.create({
     padding: 8,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: '#ccc'
   },
   productRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 4,
+    paddingVertical: 8,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderBottomColor: '#eee'
   },
   productInfo: {
     flex: 1,
-    marginRight: 10,
+    marginRight: 10
   },
   productName: {
     fontSize: 16,
-    color: '#333',
+    color: '#333'
   },
   productCode: {
     fontSize: 12,
-    color: '#666',
+    color: '#666'
   },
   addButton: {
     backgroundColor: '#283048',
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-    borderRadius: 4,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 4
   },
   addButtonText: {
     color: '#fff',
-    fontSize: 14,
+    fontSize: 14
   },
   selectedBox: {
     backgroundColor: '#fff',
     borderRadius: 8,
     padding: 8,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: '#ccc'
   },
   boxHeader: {
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 8,
-    color: '#283048',
+    color: '#283048'
   },
   noProductsText: {
     fontSize: 14,
-    color: '#666',
-  },
-  selectedProductRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 4,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
-  quantityText: {
-    flex: 0.5,
-    fontSize: 10,
-    color: '#333',
-    textAlign: 'center',
-    fontWeight: 'bold',
-  },
-  selectedProductText: {
-    flex: 2,
-    fontSize: 8,
-    color: '#333',
-    paddingHorizontal: 4,
-  },
-  priceText: {
-    flex: 1,
-    fontSize: 9,
-    color: '#283048',
-    textAlign: 'right',
-    paddingHorizontal: 4,
-  },
-  totalText: {
-    flex: 1,
-    fontSize: 9,
-    color: '#283048',
-    fontWeight: 'bold',
-    textAlign: 'right',
-    paddingHorizontal: 4,
-  },
+    color: '#666'
+  }
 });
+
 export default BoxProducts;
 
-
-//[cantidad][nombre][precioVenta][total][boton eliminar]

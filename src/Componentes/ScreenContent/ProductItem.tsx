@@ -1,124 +1,111 @@
 // import React, { useState, useEffect, useContext } from 'react';
-// import { FlatList, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+// import { View, Text, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
 // import { Ionicons } from '@expo/vector-icons';
 // import { SelectedOptionsContext } from '../Context/SelectedOptionsProvider';
-// import AsignarPrecio from '../ScreenDialog/AsignarPrecio';
-// import AsignarPeso from '../ScreenDialog/AsignarPeso';
+// import Validator from '../../Helpers/Validator';
 
-// const ProductsItem = ({
-//   item,
-//   index,
-//   onRefresh = ()=>{}
-// }) => {
-//   const {
-//     addToSalesData,
-//     removeFromSalesData,
-//     clearSalesData,
-//     salesDataTimestamp,
-//     replaceToSalesData,
-//     sales,
-//     showConfirm
-//   } = useContext(SelectedOptionsContext);
-
-//   const [currentQuantity, setCurrentQuantity] = useState(0)
-//   const [showModalPeso, setShowModalPeso] = useState(false)
-
+// const ProductsItem = ({ item, index, onRefresh = () => {} }) => {
+//   const { removeFromSalesData, replaceToSalesData, showConfirm } = useContext(SelectedOptionsContext);
+//   // Usamos una única variable para manejar cantidad o peso
+//   const [currentValue, setCurrentValue] = useState(item.quantity || item.cantidad);
+//   const [isEditing, setIsEditing] = useState(false);
+//   // Definimos el label según el tipo de producto
+//   const label = item.pesable ? 'peso' : 'cantidad';
 
 //   useEffect(() => {
-//     setCurrentQuantity(item.quantity || item.cantidad)
-//   }, [])
+//     setCurrentValue(item.quantity || item.cantidad);
+//   }, []);
 
-//   const actualizarPeso = (nuevoPeso)=>{
-//     item.quantity = nuevoPeso
-//     item.cantidad = item.quantity
-//     item.updateSubtotal()
-//     replaceToSalesData(index,item)
-//     setCurrentQuantity(nuevoPeso)
-//   }
+//   const handleValueChange = (text) => {
+//     // Aquí se actualiza el estado mientras se escribe
+//     setCurrentValue(text);
+//   };
+
+//   const commitValueChange = () => {
+//     // Convertir el valor ingresado a número
+//     let numericValue = parseFloat(currentValue);
+//     if (isNaN(numericValue) || numericValue === 0) {
+//       alert("Debe ingresar un valor correcto");
+//       // Reestablecemos el valor anterior en caso de error
+//       setCurrentValue(item.quantity || item.cantidad);
+//       setIsEditing(false);
+//       return;
+//     }
+
+//     // Verificar que no termine en punto o coma, similar a la lógica del modal
+//     const valueStr = currentValue.toString();
+//     const lastChar = valueStr.slice(-1);
+//     if (lastChar === '.' || lastChar === ',') {
+//       alert("Debe ingresar un valor correcto");
+//       setCurrentValue(item.quantity || item.cantidad);
+//       setIsEditing(false);
+//       return;
+//     }
+
+//     // Validar según el tipo de producto
+//     if (item.pesable && !Validator.isPeso(currentValue)) {
+//       alert("El peso ingresado no es válido");
+//       setCurrentValue(item.quantity || item.cantidad);
+//       setIsEditing(false);
+//       return;
+//     }
+//     if (!item.pesable && !Validator.isCantidad(currentValue)) {
+//       alert("La cantidad ingresada no es válida");
+//       setCurrentValue(item.quantity || item.cantidad);
+//       setIsEditing(false);
+//       return;
+//     }
+
+//     // Actualizamos el producto y el estado global
+//     item.quantity = numericValue;
+//     item.cantidad = numericValue;
+//     item.updateSubtotal();
+//     replaceToSalesData(index, item);
+//     setIsEditing(false);
+//   };
 
 //   return (
-
 //     <View style={styles.selectedProductRow}>
-//       <AsignarPeso
-//         product={item}
-//         onChange={(nuevoPeso) => {
-//           actualizarPeso(nuevoPeso)
-//         }}
-//         openDialog={showModalPeso}
-//         setOpenDialog={setShowModalPeso}
+//       {isEditing ? (
+//         <TextInput
+//           style={styles.quantityText}
+//           keyboardType="numeric"
+//           autoFocus
+//           value={String(currentValue)}
+//           onChangeText={handleValueChange}
+//           onBlur={commitValueChange}
+//           placeholder={label}
 //         />
-//       <TouchableOpacity
-//         onPress={() => {
-//           setShowModalPeso(true)
-//         }}
-//       >
-//         <Text style={styles.quantityText}>{currentQuantity}</Text>
-//       </TouchableOpacity>
-
-
-//       <Text style={styles.selectedProductText}>{item.nombre || item.description}</Text>
+//       ) : (
+//         <TouchableOpacity onPress={() => setIsEditing(true)}>
+//           <Text style={styles.quantityText}>{currentValue}</Text>
+//         </TouchableOpacity>
+//       )}
+//       <Text style={styles.selectedProductText}>
+//         {item.nombre || item.description}
+//       </Text>
 //       <Text style={styles.priceText}>
 //         {item.precioVenta ? `$${item.precioVenta}` : '-'}
 //       </Text>
 //       <Text style={styles.totalText}>
-//         {item.precioVenta ? `$${(item.precioVenta * currentQuantity)}` : '-'}
+//         {item.precioVenta ? `$${(item.precioVenta * currentValue)}` : '-'}
 //       </Text>
 //       <TouchableOpacity
 //         onPress={() => {
-//           console.log("click en eliminar producto")
-//           showConfirm("¿Eliminar " + item.description + "?", ()=>{
-//             console.log("confirma eliminar producto")
+//           showConfirm("¿Eliminar " + item.description + "?", () => {
 //             removeFromSalesData(index);
-//           })
+//           });
 //         }}
 //       >
 //         <Ionicons name="trash" size={21} color="#ff4444" />
 //       </TouchableOpacity>
-//     </View>)
+//     </View>
+//   );
 // };
 
 // export default ProductsItem;
 
 // const styles = StyleSheet.create({
-//   resultsContainer: {
-//     maxHeight: 100,
-//     backgroundColor: '#fff',
-//     borderRadius: 8,
-//     padding: 8,
-//     marginBottom: 16,
-//     borderWidth: 1,
-//     borderColor: '#ccc',
-//   },
-//   productRow: {
-//     flexDirection: 'row',
-//     justifyContent: 'space-between',
-//     alignItems: 'center',
-//     paddingVertical: 4,
-//     borderBottomWidth: 1,
-//     borderBottomColor: '#eee',
-//   },
-//   productInfo: {
-//     flex: 1,
-//     marginRight: 10,
-//   },
-//   productName: {
-//     fontSize: 16,
-//     color: '#333',
-//   },
-//   productCode: {
-//     fontSize: 12,
-//     color: '#666',
-//   },
-//   addButton: {
-//     backgroundColor: '#283048',
-//     paddingVertical: 4,
-//     paddingHorizontal: 8,
-//     borderRadius: 4,
-//   },
-//   addButtonText: {
-//     color: '#fff',
-//     fontSize: 14,
-//   },
 //   selectedProductRow: {
 //     flexDirection: 'row',
 //     alignItems: 'center',
@@ -132,10 +119,10 @@
 //     color: '#333',
 //     textAlign: 'center',
 //     fontWeight: 'bold',
-//     borderWidth:1,
-//     borderRadius:4,
-//     padding:5,
-//     width: 30
+//     borderWidth: 1,
+//     borderRadius: 4,
+//     padding: 5,
+//     width: 30,
 //   },
 //   selectedProductText: {
 //     flex: 2,
@@ -158,33 +145,71 @@
 //     textAlign: 'right',
 //     paddingHorizontal: 4,
 //   },
-// })
-
-import React, { useState, useContext } from 'react';
+// });
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SelectedOptionsContext } from '../Context/SelectedOptionsProvider';
+import Validator from '../../Helpers/Validator';
 
 const ProductsItem = ({ item, index, onRefresh = () => {} }) => {
-  const {
-    removeFromSalesData,
-    replaceToSalesData,
-    showConfirm,
-  } = useContext(SelectedOptionsContext);
-
-  const [currentQuantity, setCurrentQuantity] = useState(item.quantity || item.cantidad);
+  const { removeFromSalesData, replaceToSalesData, showConfirm } = useContext(SelectedOptionsContext);
+  // Usamos una única variable para manejar cantidad o peso
+  const [currentValue, setCurrentValue] = useState(item.quantity || item.cantidad);
   const [isEditing, setIsEditing] = useState(false);
+  // Definimos el label según el tipo de producto
+  const label = item.pesable ? 'peso' : 'cantidad';
 
-  const handleQuantityChange = (text) => {
-    let nuevoValor = parseFloat(text);
-    if (isNaN(nuevoValor)) {
-      nuevoValor = 0;
+  useEffect(() => {
+    setCurrentValue(item.quantity || item.cantidad);
+  }, []);
+
+  const handleValueChange = (text) => {
+    // Aquí se actualiza el estado mientras se escribe
+    setCurrentValue(text);
+  };
+
+  const commitValueChange = () => {
+    // Convertir el valor ingresado a número
+    let numericValue = parseFloat(currentValue);
+    if (isNaN(numericValue) || numericValue === 0) {
+      alert("Debe ingresar un valor correcto");
+      // Reestablecemos el valor anterior en caso de error
+      setCurrentValue(item.quantity || item.cantidad);
+      setIsEditing(false);
+      return;
     }
-    setCurrentQuantity(nuevoValor);
-    item.quantity = nuevoValor;
-    item.cantidad = nuevoValor;
+
+    // Verificar que no termine en punto o coma, similar a la lógica del modal
+    const valueStr = currentValue.toString();
+    const lastChar = valueStr.slice(-1);
+    if (lastChar === '.' || lastChar === ',') {
+      alert("Debe ingresar un valor correcto");
+      setCurrentValue(item.quantity || item.cantidad);
+      setIsEditing(false);
+      return;
+    }
+
+    // Validar según el tipo de producto
+    if (item.pesable && !Validator.isPeso(currentValue)) {
+      alert("El peso ingresado no es válido");
+      setCurrentValue(item.quantity || item.cantidad);
+      setIsEditing(false);
+      return;
+    }
+    if (!item.pesable && !Validator.isCantidad(currentValue)) {
+      alert("La cantidad ingresada no es válida");
+      setCurrentValue(item.quantity || item.cantidad);
+      setIsEditing(false);
+      return;
+    }
+
+    // Actualizamos el producto y el estado global
+    item.quantity = numericValue;
+    item.cantidad = numericValue;
     item.updateSubtotal();
     replaceToSalesData(index, item);
+    setIsEditing(false);
   };
 
   return (
@@ -194,21 +219,24 @@ const ProductsItem = ({ item, index, onRefresh = () => {} }) => {
           style={styles.quantityText}
           keyboardType="numeric"
           autoFocus
-          value={String(currentQuantity)}
-          onChangeText={handleQuantityChange}
-          onBlur={() => setIsEditing(false)}
+          value={String(currentValue)}
+          onChangeText={handleValueChange}
+          onBlur={commitValueChange}
+          placeholder={label}
         />
       ) : (
         <TouchableOpacity onPress={() => setIsEditing(true)}>
-          <Text style={styles.quantityText}>{currentQuantity}</Text>
+          <Text style={styles.quantityText}>{currentValue}</Text>
         </TouchableOpacity>
       )}
-      <Text style={styles.selectedProductText}>{item.nombre || item.description}</Text>
+      <Text style={styles.selectedProductText}>
+        {item.nombre || item.description}
+      </Text>
       <Text style={styles.priceText}>
         {item.precioVenta ? `$${item.precioVenta}` : '-'}
       </Text>
       <Text style={styles.totalText}>
-        {item.precioVenta ? `$${(item.precioVenta * currentQuantity)}` : '-'}
+        {item.precioVenta ? `$${(item.precioVenta * currentValue)}` : '-'}
       </Text>
       <TouchableOpacity
         onPress={() => {
@@ -242,7 +270,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 4,
     padding: 5,
-    width: 30,
+    width: 36,
   },
   selectedProductText: {
     flex: 2,
