@@ -8,6 +8,7 @@ import { SelectedOptionsContext } from "../Context/SelectedOptionsProvider";
 
 import { Link, router } from 'expo-router';
 import Log from "src/Models/Log";
+import Colors from "../Colores/Colores";
 
 const BoxTop = () => {
 
@@ -200,6 +201,7 @@ const styles = StyleSheet.create({
   },
   avatar: {
     marginLeft: 12,
+    backgroundColor:Colors.azul
   },
   content: {
     flexDirection: 'row',

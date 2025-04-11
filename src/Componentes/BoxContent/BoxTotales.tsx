@@ -6,6 +6,7 @@ import { SelectedOptionsContext } from '../Context/SelectedOptionsProvider';
 import BoxBoleta from './BoxBoleta'
 import PagarBoleta from '../ScreenDialog/PagarBoleta';
 import Log from 'src/Models/Log';
+import Colors from '../Colores/Colores';
 
 
 const BoxTotales = ({
@@ -83,6 +84,7 @@ const styles = StyleSheet.create({
   button: {
     flex: 1,
     marginHorizontal: 4,
+    backgroundColor:Colors.azul,
   },
 });
 
