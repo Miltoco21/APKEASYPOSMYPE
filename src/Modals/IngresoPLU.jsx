@@ -24,6 +24,38 @@ const IngresoPLU = ({ visible, onConfirm, onCancel }) => {
     }
   }, [visible]);
 
+  // const handleConfirm = async () => {
+  //   try {
+  //     if (!inputValue) {
+  //       showAlert('Error', 'El campo PLU no puede estar vacío');
+  //       return;
+  //     }
+  
+  //     if (!/^\d+$/.test(inputValue)) {
+  //       showAlert('Error', 'El PLU debe contener solo números');
+  //       return;
+  //     }
+  
+  //     const productos = await Product.getInstance().findByCodigoBarras({
+  //       codigoProducto: inputValue,
+  //       codigoCliente: userData?.codigoCliente || 0
+  //     });
+  
+  //     if (productos?.length > 0) {
+  //       addToSalesData(productos[0]);
+  //       showAlert('Éxito', 'Producto agregado correctamente');
+  //       onConfirm(inputValue);
+  //     } else {
+  //       // Si el producto no se encuentra, se guarda el PLU y se muestra el modal para crear el nuevo producto
+  //       setCurrentPLU(inputValue);
+  //       setShowNewProductModal(true);
+  //     }
+  //   } catch (error) {
+  //     showAlert('Error', error.message);
+  //     onCancel();
+  //   }
+  // };
+
   const handleConfirm = async () => {
     try {
       if (!inputValue) {
@@ -36,26 +68,39 @@ const IngresoPLU = ({ visible, onConfirm, onCancel }) => {
         return;
       }
   
-      const productos = await Product.getInstance().findByCodigoBarras({
-        codigoProducto: inputValue,
-        codigoCliente: userData?.codigoCliente || 0
-      });
+      // Mostrar carga mientras se busca el producto
+      //showAlert('Buscando...', 'Buscando producto por PLU', false); 
   
-      if (productos?.length > 0) {
-        addToSalesData(productos[0]);
-        showAlert('Éxito', 'Producto agregado correctamente');
-        onConfirm(inputValue);
-      } else {
-        // Si el producto no se encuentra, se guarda el PLU y se muestra el modal para crear el nuevo producto
-        setCurrentPLU(inputValue);
-        setShowNewProductModal(true);
-      }
+      // Ejecutar la búsqueda
+      await Product.getInstance().findByCodigoBarras(
+        {
+          codigoProducto: inputValue,
+          codigoCliente: userData?.codigoCliente || 0
+        },
+        (productos, response) => {
+          if (productos?.length > 0) {
+            const producto = productos[0];
+            addToSalesData(producto);
+            onConfirm(inputValue); // Notificar confirmación exitosa
+            showAlert('Éxito', 'Producto agregado correctamente');
+          } else {
+
+            setCurrentPLU(inputValue);
+            setShowNewProductModal(true);
+        
+          }
+        },
+        (error) => {
+          showAlert('Error', `Falló la búsqueda: ${error.message}`);
+          onCancel();
+        }
+      );
+  
     } catch (error) {
-      showAlert('Error', error.message);
+      showAlert('Error crítico', error.message);
       onCancel();
     }
   };
-
   const handleCreateProduct = async (newProductData) => {
     try {
       const nuevoProducto = {
