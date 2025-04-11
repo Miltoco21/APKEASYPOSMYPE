@@ -50,8 +50,8 @@ const BottomButtons = () => {
 
   return (
     <SafeAreaView style={styles.safeContainer} >
-      {/* <Text>botn</Text> */}
-      {/* Contenedor principal: se utiliza flex:1 para ocupar la pantalla completa */}
+
+
       <View style={styles.container}>
 
         {/* Si tuvieras otro contenido principal, puedes agregarlo aquí */}
@@ -94,7 +94,7 @@ const BottomButtons = () => {
       />
       <CerrarCajaModal
         visible={showShowCerrarCaja}
-        onDismiss={()=>{setShowShowCerrarCaja(false)}} />
+        onDismiss={() => { setShowShowCerrarCaja(false) }} />
       {/* Modal para Familias */}
       <Modal
         visible={showFamiliasModal}
@@ -111,21 +111,29 @@ const BottomButtons = () => {
           <BoxProductoFamilia />
         </SafeAreaView>
       </Modal>
+
+
       <Modal
         visible={showBusquedaRapidaModal}
         animationType="slide"
         onRequestClose={() => setShowBusquedaRapidaModal(false)}
       >
-        <SafeAreaView style={styles.modalContainer}>
-          <TouchableOpacity style={styles.closeButton} onPress={() => setShowBusquedaRapidaModal(false)}>
-            <Text style={styles.closeButtonText}>Cerrar</Text>
+        <SafeAreaView style={styles.modalSafeContainer}>
+    <View style={styles.modalHeader}>
+      <Text style={styles.modalTitle}>Búsqueda Rápida</Text>
+      <TouchableOpacity
+        style={styles.closeButton}
+        onPress={() => setShowBusquedaRapidaModal(false)}
+      >
+        <Ionicons name="close" size={24} color="#000" />
+      </TouchableOpacity>
+    </View>
+    
+    <View style={styles.modalContent}>
+      <BoxBusquedaRapida />
+    </View>
+  </SafeAreaView>
 
-          </TouchableOpacity>
-
-          <Text style={{ fontSize: 18, textAlign: 'center', margin: 20 }}>Búsqueda Rápida</Text>
-
-          <BoxBusquedaRapida />
-        </SafeAreaView>
       </Modal>
 
 
@@ -136,27 +144,57 @@ const BottomButtons = () => {
 };
 
 export default BottomButtons;
+
 const styles = StyleSheet.create({
   safeContainer: {
     flex: 1,
     backgroundColor: '#fff',
-
+    paddingBottom: 2
+  },
+  modalSafeContainer: {
+    flex: 1,
+    backgroundColor: '#fff',
   },
   container: {
     flex: 1,
 
     backgroundColor: '#fff',
-    height: 4,
+
+
 
   },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+
+  },
+
+  modalContent: {
+    flex: 1,
+
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+
+
   modalContainer: {
-    height: 4,
+
+    flex: 1,
+
 
     backgroundColor: '#fff',
   },
   closeButton: {
+    
     alignSelf: 'flex-end',
-    padding: 10,
+    padding: 5,
   },
   closeButtonText: {
     fontSize: 16,
