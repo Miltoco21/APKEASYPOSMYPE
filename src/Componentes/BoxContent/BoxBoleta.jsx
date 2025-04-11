@@ -450,7 +450,7 @@ const BoxBoleta = ({ onClose, visible }) => {
             <Text style={styles.buttonText}>Finalizar</Text>
           )}
         </TouchableOpacity>
-
+{/* 
         <TouchableOpacity onPress={onClose}>
           <Text style={{
             width: "100%",
@@ -460,8 +460,8 @@ const BoxBoleta = ({ onClose, visible }) => {
             backgroundColor: "#ccc",
             marginVertical: 5,
             fontWeight: "bold"
-          }}>Volver</Text>
-        </TouchableOpacity>
+          }}>Volverr</Text>
+        </TouchableOpacity> */}
       </View>
     </ScrollView>
   );
@@ -473,7 +473,7 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-    marginBottom: 20,
+    marginBottom: 2,
   },
   mainSection: {
     flex: 2,
@@ -485,32 +485,32 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   inputRow: {
-    marginBottom: 15,
+    marginBottom: 6,
   },
   textInput: {
     borderWidth: 1,
     borderColor: '#518eb9',
     borderRadius: 4,
     padding: 10,
-    fontSize: 17,
+    fontSize: 14,
   },
   totalsContainer: {
-    marginBottom: 15,
+    marginBottom: 1,
   },
   totalText: {
     color: 'rgb(225, 33, 59)',
-    fontSize: 32,
+    fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 5,
   },
   subTotalText: {
     color: 'rgb(68,65,65)',
-    fontSize: 17,
+    fontSize: 14,
     fontWeight: 'bold',
     marginBottom: 5,
   },
   infoText: {
-    fontSize: 18,
+    fontSize: 13,
     marginBottom: 5,
   },
   errorText: {

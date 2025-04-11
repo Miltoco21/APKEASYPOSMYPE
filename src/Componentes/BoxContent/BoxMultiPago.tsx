@@ -424,8 +424,8 @@ const BoxMultiPago = ({
         }}
       />
       <View  style={{
-        marginLeft: -20,
-        padding: 20,
+        marginLeft: -10,
+        padding: 10,
       }}>
 
         <View>

@@ -85,11 +85,11 @@ const BoxPagos = ({ pagos, setPagos, totalPagos, setTotalPagos, onRemove = (pago
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "#f4f4f4",
-    padding: 10,
-    marginTop: 10,
+    padding: 2,
+   
   },
   title: {
-    fontSize: 16,
+    fontSize: 13,
     fontWeight: "bold",
     marginBottom: 5,
   },
@@ -97,12 +97,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingVertical: 8,
+    paddingVertical: 2,
     borderBottomWidth: 1,
     borderBottomColor: "#ddd",
   },
   text: {
-    fontSize: 14,
+    fontSize: 12,
     flex: 1,
   },
 });
