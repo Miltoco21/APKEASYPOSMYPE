@@ -5,22 +5,25 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet
+  StyleSheet,ActivityIndicator
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { SelectedOptionsContext } from '../Componentes/Context/SelectedOptionsProvider';
-import Product from 'src/Models/Product';
-import NewProductModal from './NewProductModal'; // Asegúrate de que la ruta sea la correcta
+import Product from '../Models/Product';
+import NewProductModal from '../Modals/NewProductModal'; // Asegúrate de que la ruta sea la correcta
 
 const IngresoPLU = ({ visible, onConfirm, onCancel }) => {
   const { userData, showAlert, addToSalesData } = useContext(SelectedOptionsContext);
   const [inputValue, setInputValue] = useState('');
   const [showNewProductModal, setShowNewProductModal] = useState(false);
   const [currentPLU, setCurrentPLU] = useState('');
+  const [loadingPLU, setLoadingPLU] = useState(false);
+
 
   useEffect(() => {
     if (!visible) {
       setInputValue('');
+      setLoadingPLU(false);
     }
   }, [visible]);
 
@@ -67,7 +70,7 @@ const IngresoPLU = ({ visible, onConfirm, onCancel }) => {
         showAlert('Error', 'El PLU debe contener solo números');
         return;
       }
-  
+      setLoadingPLU(true);
       // Mostrar carga mientras se busca el producto
       //showAlert('Buscando...', 'Buscando producto por PLU', false); 
   
@@ -78,6 +81,7 @@ const IngresoPLU = ({ visible, onConfirm, onCancel }) => {
           codigoCliente: userData?.codigoCliente || 0
         },
         (productos, response) => {
+          setLoadingPLU(false);
           if (productos?.length > 0) {
             const producto = productos[0];
             addToSalesData(producto);
@@ -91,6 +95,7 @@ const IngresoPLU = ({ visible, onConfirm, onCancel }) => {
           }
         },
         (error) => {
+          setLoadingPLU(false);
           showAlert('Error', `Falló la búsqueda: ${error.message}`);
           onCancel();
         }
@@ -101,28 +106,38 @@ const IngresoPLU = ({ visible, onConfirm, onCancel }) => {
       onCancel();
     }
   };
-  const handleCreateProduct = async (newProductData) => {
-    try {
-      const nuevoProducto = {
-        codigoBarras: currentPLU,
-        nombre: newProductData.nombre,
-        precioVenta: parseFloat(newProductData.precio),
-        tipoStock: '1',
-        fechaIngreso: new Date().toISOString(),
-      };
+  // const handleCreateProduct = async (newProductData) => {
+  //   try {
+  //     const nuevoProducto = {
+  //       codigoBarras: currentPLU,
+  //       nombre: newProductData.nombre,
+  //       precioVenta: parseFloat(newProductData.precio),
+  //       tipoStock: '1',
+  //       fechaIngreso: new Date().toISOString(),
+  //     };
 
-      const createdProduct = await Product.getInstance().create(nuevoProducto);
+  //     const createdProduct = await Product.getInstance().create(nuevoProducto);
       
-      addToSalesData(createdProduct);
-      showAlert('Éxito', 'Producto creado y agregado');
-      setShowNewProductModal(false);
-      onConfirm(currentPLU);
+  //     addToSalesData(createdProduct);
+  //     showAlert('Éxito', 'Producto creado y agregado');
+  //     setShowNewProductModal(false);
+  //     onConfirm(currentPLU);
       
-    } catch (error) {
-      showAlert('Error', 'No se pudo crear el producto');
-    }
+  //   } catch (error) {
+  //     showAlert('Error', 'No se pudo crear el producto');
+  //   }
+  // };
+
+  const handleCreateProduct = (newProduct) => {
+    addToSalesData({
+      ...newProduct,
+      quantity: 1,
+      total: newProduct.price || 0
+    });
+    showAlert('Éxito', 'Producto creado y agregado');
+    setShowNewProductModal(false);
+    onConfirm(currentPLU);
   };
-
   return (
     <>
       <Modal
@@ -147,17 +162,24 @@ const IngresoPLU = ({ visible, onConfirm, onCancel }) => {
               <TouchableOpacity
                 style={[styles.button, styles.cancelButton]}
                 onPress={onCancel}
+                disabled={loadingPLU}
               >
                 <Icon name="cancel" size={20} color="white" />
                 <Text style={styles.buttonText}>Cancelar</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.button, styles.confirmButton]}
+                style={[styles.button, styles.confirmButton, loadingPLU && styles.disabledButton]}
                 onPress={handleConfirm}
-                disabled={!inputValue}
+                disabled={!inputValue || loadingPLU}
               >
-                <Icon name="check-circle" size={20} color="white" />
-                <Text style={styles.buttonText}>Confirmar</Text>
+                {loadingPLU ? (
+                  <ActivityIndicator color="white" />
+                ) : (
+                  <>
+                    <Icon name="check-circle" size={20} color="white" />
+                    <Text style={styles.buttonText}>Confirmar</Text>
+                  </>
+                )}
               </TouchableOpacity>
             </View>
           </View>
