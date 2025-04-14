@@ -35,7 +35,10 @@ const BoxProducts = () => {
     showLoading,
     hideLoading,
     showMessage,
-    showAlert
+    showAlert,
+    searchInputRef,
+    focusSearchInput
+
   } = useContext(SelectedOptionsContext);
 
   const refInputBuscar = useRef(null)
@@ -174,6 +177,8 @@ const BoxProducts = () => {
       }
     }, 500);
 
+    focusSearchInput();
+
     return () => clearTimeout(debounceTimer);
   }, [searchText]);
 
@@ -189,9 +194,7 @@ const BoxProducts = () => {
     addToSalesData(product);
     setSearchText("");
     //Keyboard.dismiss(); // Cierra el teclado
-    if (refInputBuscar.current) {
-      refInputBuscar.current.blur(); // Quita el foco del input
-    }
+   focusSearchInput();
 
   };
 
@@ -204,6 +207,8 @@ const BoxProducts = () => {
         setOpenDialog={setCapturarCodigo}
         onCapture={(cod) => {
           setSearchText(cod)
+          focusSearchInput();
+
         }}
       />
       <Text style={styles.headerText}>Buscar Productos</Text>
@@ -215,7 +220,8 @@ const BoxProducts = () => {
           placeholderTextColor="#999"
           value={searchText}
           onChangeText={setSearchText}
-          ref={refInputBuscar}
+          ref={searchInputRef}
+
           returnKeyType="search"
         />
         <TouchableOpacity style={styles.scanCodButton} onPress={() => {

@@ -22,7 +22,8 @@ const Home = ({
     showLoading,
     hideLoading,
     GeneralElements,
-    showAlert
+    showAlert,
+    focusSearchInput
   } = useContext(SelectedOptionsContext);
 
   const [isCajaOpen, setIsCajaOpen] = useState(false);
