@@ -348,10 +348,15 @@ async getCategories(callbackOk, callbackWrong) {
         if (!product.codigoSucursal) product.codigoSucursal = await ModelConfig.get("sucursal")
         if (!product.puntoVenta) product.puntoVenta = await ModelConfig.get("puntoVenta")
 
-        await EndPoint.sendPut(url, product, (responseData, response) => {
-            callbackOk(responseData, response);
-        }, callbackWrong)
-
+        // await EndPoint.sendPut(url, product, (responseData, response) => {
+        //     callbackOk(responseData, response);
+        // }, callbackWrong)
+        return EndPoint.sendPut(
+            url,
+            product,
+            (responseData, response) => callbackOk(responseData, response),
+            callbackWrong
+          );
     }
 
     async newProductFromCode(product, callbackOk, callbackWrong) {

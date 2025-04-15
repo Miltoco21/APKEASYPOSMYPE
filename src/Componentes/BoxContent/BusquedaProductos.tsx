@@ -22,6 +22,7 @@ import BalanzaUnidad from '../../Models/BalanzaUnidad';
 import { Button, Icon, IconButton } from 'react-native-paper';
 import CapturaCodigoCamara from '../ScreenDialog/CapturaCodigoCamara';
 import IngresoPLU from 'src/Modals/IngresoPLU';
+import IngresoPrecio from 'src/Modals/IngresoPrecio';
 
 
 const BoxProducts = () => {
@@ -52,6 +53,9 @@ const BoxProducts = () => {
 
 
   const [showPLUModal, setShowPLUModal] = useState(false);
+
+  const [showEditPriceModal, setShowEditPriceModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   const handlePLUConfirm = (pluValue) => {
     setShowPLUModal(false);
@@ -189,14 +193,40 @@ const BoxProducts = () => {
     }
   };
 
-  const handleAddProduct = (product) => {
-    Keyboard.dismiss(); // Cierra el teclado
-    addToSalesData(product);
-    setSearchText("");
-    //Keyboard.dismiss(); // Cierra el teclado
-   focusSearchInput();
+  // const handleAddProduct = (product) => {
+  //   Keyboard.dismiss(); // Cierra el teclado
+  //   addToSalesData(product);
+  //   setSearchText("");
+  //   //Keyboard.dismiss(); // Cierra el teclado
+  //  focusSearchInput();
 
+  // };
+  const handleAddProduct = (product) => {
+    if (product.precioVenta <= 0) {
+      // Si el precio es cero, mostrar modal de edición
+      setSelectedProduct(product);
+      setShowEditPriceModal(true);
+    } else {
+      // Si el precio es válido, agregar directamente
+      Keyboard.dismiss();
+      addToSalesData(product);
+      setSearchText("");
+      focusSearchInput();
+    }
   };
+    // Función para manejar la actualización del precio
+
+  const handlePriceUpdate = (updatedProduct) => {
+    addToSalesData(updatedProduct);
+     // Actualizar lista de búsqueda si el producto está visible
+  setFilteredProducts(prev => prev.map(p => 
+    p.idProducto === updatedProduct.idProducto ? updatedProduct : p
+  ));
+    setShowEditPriceModal(false);
+    setSearchText("");
+    focusSearchInput();
+  };
+
 
 
 
@@ -310,6 +340,16 @@ const BoxProducts = () => {
         }}
         onCancel={() => setShowPLUModal(false)}
       />
+
+<IngresoPrecio
+  visible={showEditPriceModal}
+  product={selectedProduct}
+  onConfirm={handlePriceUpdate}
+  onCancel={() => {
+    setShowEditPriceModal(false);
+    setSelectedProduct(null);
+  }}
+/>
 
     </View>
 
