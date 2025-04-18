@@ -143,6 +143,7 @@ export default function Login() {
     const ses = await us.getFromSesion()
 
     console.log("ses", ses)
+    console.log("codigoSucursal", ses.codigoSucursal)
 
     const cargado = await User.getInstance().getFromSesion()
     if (cargado && !Array.isArray(cargado)) {

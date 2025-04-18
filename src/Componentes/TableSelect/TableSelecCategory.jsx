@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Product from "../../Models/Product";
 import SmallButton from "../Elements/SmallButton";
+import Colors from "../Colores/Colores";
 
 const TableSelecCategory = ({ show, onSelect,title="Elegir Categoría" }) => {
   const [categories, setCategories] = useState([]);
@@ -65,7 +66,7 @@ const styles = StyleSheet.create({
   categoryButton: {
     width: "48%",
     minHeight: 80,
-    backgroundColor: "#465379",
+    backgroundColor:Colors.azul,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 10,

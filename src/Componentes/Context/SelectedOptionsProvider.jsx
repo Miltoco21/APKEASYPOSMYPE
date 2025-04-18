@@ -45,6 +45,17 @@ export const SelectedOptionsProvider = ({ children }) => {
 
   const searchInputRef = useRef(null);
 
+  const focusSearchInput = () => {
+    setTimeout(() => {
+      if (searchInputRef.current) {
+        searchInputRef.current.focus();
+      }
+    }, 100);
+  };
+
+
+
+
   const [CONFIG, setCONFIG] = useState(null);
   const init = async () => {
     // console.log("init de SelectedOptionsProvider");
@@ -302,6 +313,7 @@ export const SelectedOptionsProvider = ({ children }) => {
         name: "agrega producto " + product.nombre,
       });
 
+      focusSearchInput();
       // setTimeout(() => {
       //   searchInputRef.current.focus()
       // }, 500);
@@ -415,10 +427,10 @@ export const SelectedOptionsProvider = ({ children }) => {
       name: "quita producto " + sales.products[index].description,
     });
     setSalesData(sales.removeFromIndex(index));
+    showAlert("focoo")
+    focusSearchInput();
 
-    // setTimeout(() => {
-    //   searchInputRef.current.focus()
-    // }, 500);
+    
   };
 
   const incrementQuantity = (index, productInfo) => {
@@ -656,6 +668,9 @@ export const SelectedOptionsProvider = ({ children }) => {
 
         pedirSupervision,
         hideSnackbar,
+        searchInputRef,
+        focusSearchInput
+
       }}
     >
       {children}
