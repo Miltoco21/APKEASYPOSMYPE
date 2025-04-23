@@ -11,6 +11,7 @@ import Client from "../../Models/Client";
 // import PagoTransferencia from "../ScreenDialog/PagoTransferencia";
 import ModelConfig from "../../Models/ModelConfig";
 import Product from "../../Models/Product";
+import TecladoBilletes from "../BoxContent/TecladoBilletes";
 
 import TPago from '../../Types/TPago'
 

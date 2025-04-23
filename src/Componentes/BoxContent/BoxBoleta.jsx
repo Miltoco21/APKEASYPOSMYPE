@@ -30,6 +30,7 @@ import Oferta5 from '../../Models/Oferta5';
 import ProductSold from '../../Models/ProductSold';
 import { Button } from 'react-native-paper';
 import Log from 'src/Models/Log';
+import TecladoBilletes from './TecladoBilletes';
 
 const BoxBoleta = ({ onClose, visible }) => {
   const {
@@ -72,7 +73,7 @@ const BoxBoleta = ({ onClose, visible }) => {
   const [trabajaConComanda, setTrabajaConComanda] = useState(false);
   const [nombreClienteComanda, setNombreClienteComanda] = useState("");
   const [showNombreComanda, setShowNombreComanda] = useState(false);
-
+  const [showBilletesModal, setShowBilletesModal] = useState(false);
   // Función para aplicar ofertas
   const aplicarOfertas = async () => {
     // console.log("aplicando ofertas");
@@ -162,10 +163,10 @@ const BoxBoleta = ({ onClose, visible }) => {
       return;
     }
     console.log("el pago esta completo")
-    if (trabajaConComanda && nombreClienteComanda.length < 1) {
-      showAlert("Debe completar el nombre de la comanda");
-      return;
-    }
+    // if (trabajaConComanda && nombreClienteComanda.length < 1) {
+    //   showAlert("Debe completar el nombre de la comanda");
+    //   return;
+    // }
 
     let algunaPreventa = "";
     const requestBody = {
@@ -303,72 +304,80 @@ const BoxBoleta = ({ onClose, visible }) => {
   };
 
   return (
-
     <ScrollView contentContainerStyle={styles.container}>
-      {/* Modal o diálogo para ingresar el nombre de la comanda */}
-      {/* <IngresarTexto
-        title="Ingresar Nombre para comanda"
-        openDialog={showNombreComanda}
-        setOpenDialog={setShowNombreComanda}
-        varChanger={setNombreClienteComanda}
-        varValue={nombreClienteComanda}
-      /> */}
-
+  {/* <TecladoBilletes
+  visible={showBilletesModal}
+  onClose={() => setShowBilletesModal(false)}
+  onAmountSelected={(monto) => {
+    setPagarCon(monto);
+    setCambioManualTeclado(true);
+  }}
+/> */}
+      <TecladoBilletes
+        visible={showBilletesModal}
+        onClose={() => setShowBilletesModal(false)}
+        initialValue={pagarCon}    
+        
+                       // <--- PASAMOS EL VALOR ACTUAL
+        onAmountSelected={(monto) => {
+          setPagarCon(monto);
+          setCambioManualTeclado(true);
+        }}
+      />
+  
       <View style={styles.row}>
-        {/* Sección principal */}
         <View style={styles.mainSection}>
-          {error ? <Text style={styles.errorText}>{error}</Text> : null}
-
+          {error && <Text style={styles.errorText}>{error}</Text>}
+  
           <View style={styles.inputRow}>
             <TextInput
               style={styles.textInput}
               placeholder="Pagar con"
               keyboardType="numeric"
-              value={pagarCon}
+              value={pagarCon.toString()}
               onChangeText={(value) => {
-                // console.log("cambio pagar con ", value)
-                if (!value.trim()) {
-                  setPagarCon(0);
-                } else {
-                  const numValue = parseFloat(value);
-                  if (numValue > 0) {
-                    setPagarCon(numValue);
-                  }
-
-                  // console.log("numValue", numValue)
-                }
+                const numValue = parseFloat(value) || 0;
+                setPagarCon(numValue > 0 ? numValue : 0);
               }}
             />
           </View>
-
-          <View style={styles.totalsContainer}>
-            <Text style={styles.totalText}>
-              Total: $ {parseFloat(totalFinal + "").toLocaleString()}
-            </Text>
-            <Text style={styles.subTotalText}>
-              SubTotal: $ {parseFloat(totalYDescuentoYRedondeo + "").toLocaleString()}
-            </Text>
-            <Text style={styles.infoText}>
-              Total pagos: $ {parseFloat(totalPagos + "").toLocaleString()}
-            </Text>
-            {faltaPagar > 0 && (
-              <Text style={styles.errorText}>
-                Falta pagar: $ {parseFloat(faltaPagar + "").toLocaleString()}
+  
+          <View style={styles.totalsRow}>
+            <View style={styles.totalsTextContainer}>
+              <Text style={styles.totalText}>
+                Total: $ {totalFinal.toLocaleString()}
               </Text>
-            )}
-            {aplicaRedondeo && (
+              <Text style={styles.subTotalText}>
+                SubTotal: $ {totalYDescuentoYRedondeo.toLocaleString()}
+              </Text>
               <Text style={styles.infoText}>
-                Redondeo: $ {parseFloat(redondeo + "").toLocaleString()}
+                Total pagos: $ {totalPagos.toLocaleString()}
               </Text>
-            )}
-            <Text style={styles.infoText}>
-              Vuelto: $ {(vuelto + "")}
-            </Text>
+              {faltaPagar > 0 && (
+                <Text style={styles.errorText}>
+                  Falta pagar: $ {faltaPagar.toLocaleString()}
+                </Text>
+              )}
+              {aplicaRedondeo && (
+                <Text style={styles.infoText}>
+                  Redondeo: $ {redondeo.toLocaleString()}
+                </Text>
+              )}
+              <Text style={styles.infoText}>
+                Vuelto: $ {vuelto.toLocaleString()}
+              </Text>
+            </View>
+            
+            <TouchableOpacity 
+              style={styles.pesoButton}
+              onPress={() => setShowBilletesModal(true)}
+            >
+              <Text style={styles.pesoButtonText}>$</Text>
+            </TouchableOpacity>
           </View>
-
+  
           <BoxEntregaEnvases
             tieneEnvases={tieneEnvases}
-
             settieneEnvases={settieneEnvases}
             products={productosVendidos}
             productosConEnvases={productosConEnvases}
@@ -376,7 +385,7 @@ const BoxBoleta = ({ onClose, visible }) => {
             descuentoEnvases={descuentoEnvases}
             setDescuentoEnvases={setDescuentoEnvases}
           />
-
+  
           <BoxPagos
             pagos={pagos}
             setPagos={setPagos}
@@ -384,7 +393,7 @@ const BoxBoleta = ({ onClose, visible }) => {
             setTotalPagos={setTotalPagos}
             onRemove={() => setCambioManualTeclado(false)}
           />
-
+  
           <BoxMultiPago
             pagarCon={pagarCon}
             setPagarCon={setPagarCon}
@@ -405,63 +414,23 @@ const BoxBoleta = ({ onClose, visible }) => {
             setAplicaRedondeo={setAplicaRedondeo}
             setFaltaPagar={setFaltaPagar}
             setTotalFinal={setTotalFinal}
-
-            excluirMetodos={[
-              "TRANSFERENCIA",
-              "CUENTACORRIENTE"
-            ]}
+            excluirMetodos={["TRANSFERENCIA", "CUENTACORRIENTE"]}
           />
         </View>
-
-        {/* Sección lateral con el teclado para el pago */}
-        {/* <View style={styles.sideSection}>
-          <TecladoPagoCaja
-          
-          
-            showFlag={true}
-            varValue={pagarCon}
-            varChanger={(v) => {
-              setPagarCon(v);
-              setCambioManualTeclado(true);
-            }}
-            onEnter={() => {}}
-            esPrimeraTecla={!cambioManualTeclado}
-          />
-        </View> */}
       </View>
-
-      {/* Pie de página con el botón final y datos de comanda */}
+  
       <View style={styles.footer}>
-        {trabajaConComanda && (
-          <View style={styles.comandaContainer}>
-            <Text style={styles.label}>Nombre de comanda</Text>
-            <TextInput
-              style={styles.comandaInput}
-              value={nombreClienteComanda}
-              onChangeText={setNombreClienteComanda}
-              onFocus={() => setShowNombreComanda(true)}
-            />
-          </View>
-        )}
-        <TouchableOpacity style={styles.finalButton} onPress={handlePagoBoleta}>
+        <TouchableOpacity 
+          style={styles.finalButton} 
+          onPress={handlePagoBoleta}
+          disabled={loading}
+        >
           {loading ? (
             <ActivityIndicator size="small" color="#fff" />
           ) : (
             <Text style={styles.buttonText}>Finalizar</Text>
           )}
         </TouchableOpacity>
-{/* 
-        <TouchableOpacity onPress={onClose}>
-          <Text style={{
-            width: "100%",
-            padding: 10,
-            textAlign: "center",
-            color: "black",
-            backgroundColor: "#ccc",
-            marginVertical: 5,
-            fontWeight: "bold"
-          }}>Volverr</Text>
-        </TouchableOpacity> */}
       </View>
     </ScrollView>
   );
@@ -470,80 +439,90 @@ const BoxBoleta = ({ onClose, visible }) => {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
+    flexGrow: 1,
   },
   row: {
     flexDirection: 'row',
     marginBottom: 2,
   },
   mainSection: {
-    flex: 2,
-    paddingRight: 10,
-  },
-  sideSection: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   inputRow: {
-    marginBottom: 6,
+    marginBottom: 10,
   },
   textInput: {
     borderWidth: 1,
     borderColor: '#518eb9',
     borderRadius: 4,
-    padding: 10,
-    fontSize: 14,
+    padding: 12,
+    fontSize: 16,
+    height: 50,
   },
-  totalsContainer: {
-    marginBottom: 1,
+  totalsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginVertical: 15,
+    gap: 10,
+  },
+  totalsTextContainer: {
+    flex: 1,
   },
   totalText: {
-    color: 'rgb(225, 33, 59)',
+    color: '#e1213b',
     fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 5,
+    fontWeight: '700',
+    marginBottom: 4,
   },
   subTotalText: {
-    color: 'rgb(68,65,65)',
-    fontSize: 14,
-    fontWeight: 'bold',
-    marginBottom: 5,
+    color: '#444141',
+    fontSize: 15,
+    fontWeight: '600',
+    marginBottom: 4,
   },
   infoText: {
-    fontSize: 13,
-    marginBottom: 5,
+    fontSize: 14,
+    color: '#555',
+    marginBottom: 3,
   },
   errorText: {
-    fontSize: 18,
-    color: 'rgb(225, 33, 59)',
-    marginBottom: 5,
+    fontSize: 16,
+    color: '#e1213b',
+    fontWeight: '500',
+    marginVertical: 5,
+  },
+  pesoButton: {
+    backgroundColor: '#6c63ff',
+    width: 45,
+    height: 45,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 5,
+  },
+  pesoButtonText: {
+    color: 'white',
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlignVertical: 'center',
   },
   footer: {
     marginTop: 20,
-  },
-  comandaContainer: {
     marginBottom: 10,
-  },
-  label: {
-    fontSize: 16,
-    marginBottom: 5,
-  },
-  comandaInput: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 4,
-    padding: 10,
-    fontSize: 16,
   },
   finalButton: {
     backgroundColor: '#6c63ff',
-    padding: 15,
+    padding: 16,
+    borderRadius: 8,
     alignItems: 'center',
-    borderRadius: 4,
+    justifyContent: 'center',
+    elevation: 3,
   },
   buttonText: {
-    color: '#fff',
+    color: 'white',
     fontSize: 18,
+    fontWeight: '600',
   },
 });
 
