@@ -110,7 +110,7 @@ const TecladoBilletes = ({
       
             
             <TouchableOpacity
-              style={[styles.actionButton, styles.clearButton]}
+              style={[styles.actionButton, styles.acceptButton]}
               onPress={handleAccept}
             >
               <Text style={styles.buttonText}>Aceptar</Text>
@@ -122,6 +122,17 @@ const TecladoBilletes = ({
               <Text style={styles.buttonText}>Limpiar</Text>
             </TouchableOpacity>
           </View>
+          <View style={styles.actionRow}>
+      
+            
+      <TouchableOpacity
+         style={[styles.actionButton, styles.cancelButton]}
+         onPress={onClose}
+      >
+        <Text style={styles.buttonText}>Cerrar</Text>
+      </TouchableOpacity>
+   
+    </View>
         </View>
       </View>
     </Modal>
@@ -157,10 +168,10 @@ const styles = StyleSheet.create({
   denominationRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 8,
+    marginBottom: 2,
   },
   denominationButton: {
-    width: 80,
+    width: 98,
     height: 50,
     backgroundColor: '#81E7AF',
     borderWidth: 2,
@@ -177,7 +188,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#4f4e4e',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
     fontFamily: 'Victor Mono',
   },
@@ -197,7 +208,7 @@ const styles = StyleSheet.create({
     borderColor: '#6b6767',
   },
   clearButton: {
-    backgroundColor: '#c1c1c1',
+    backgroundColor: 'red',
     width: 80,
     height: 50,
 
@@ -215,6 +226,36 @@ const styles = StyleSheet.create({
   },
   acceptButton: {
     backgroundColor: '#2196F3',
+     width: 80,
+    height: 50,
+
+    borderWidth: 2,
+    borderColor: '#6b6767',
+    borderRadius: 10,
+    margin: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#c1c1c1',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 3,
+  },
+  cancelButton: {
+    backgroundColor: '#9E9E9E',
+    width: 80,
+    height: 50,
+    borderWidth: 2,
+    borderColor: '#6b6767',
+    borderRadius: 10,
+    margin: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#c1c1c1',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 3,
   },
 });
 
