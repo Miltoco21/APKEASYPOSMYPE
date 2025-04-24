@@ -67,6 +67,7 @@ const TecladoBilletes = ({
             placeholder="Ingrese monto"
             placeholderTextColor="#666"
             autoFocus={true}
+            readOnly
           />
 
           <View style={styles.denominationRow}>
