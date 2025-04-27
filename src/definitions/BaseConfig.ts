@@ -53,6 +53,8 @@ const BaseConfig = {
   verBotonPreventa: true,
   verBotonEnvases: true,
   verBotonPagarFactura: true,
+  
+  impresoraBluetooth: "",
 };
 
 export default BaseConfig;

@@ -31,6 +31,7 @@ import ProductSold from '../../Models/ProductSold';
 import { Button } from 'react-native-paper';
 import Log from 'src/Models/Log';
 import TecladoBilletes from './TecladoBilletes';
+import PrinterBluetooth from 'src/Models/PrinterBluetooth';
 
 const BoxBoleta = ({ onClose, visible }) => {
   const {
@@ -141,6 +142,8 @@ const BoxBoleta = ({ onClose, visible }) => {
 
   useEffect(() => {
     aplicarOfertas();
+
+    PrinterBluetooth.prepareBluetooth()
   }, []);
 
   // Función para procesar el pago
@@ -176,8 +179,10 @@ const BoxBoleta = ({ onClose, visible }) => {
       codigoUsuarioVenta: 0,
       subtotal: totalYDescuentoYRedondeo,
       totalPagado: totalPagos,
+      total: totalPagos,
       totalRedondeado: totalFinal,
       vuelto: vuelto,
+      descuento: 0,
       redondeo: (aplicaRedondeo ? redondeo : 0),
       products: productosConEnvases.map((producto) => {
         const esEnvase = ProductSold.esEnvase(producto);
@@ -190,6 +195,11 @@ const BoxBoleta = ({ onClose, visible }) => {
             cantidad: System.getInstance().typeIntFloat(difcant),
             precioUnidad: producto.price,
             descripcion: producto.description,
+            extras: {
+              agregar: [],
+              quitar: [],
+              entrega: "SERVIR"
+            }
           };
         } else {
           if (producto.preVenta) {
@@ -207,12 +217,17 @@ const BoxBoleta = ({ onClose, visible }) => {
             cantidad: System.getInstance().typeIntFloat(producto.quantity),
             precioUnidad: producto.price,
             descripcion: producto.description,
+            extras: {
+              agregar: [],
+              quitar: [],
+              entrega: "SERVIR"
+            }
           };
         }
       }),
       pagos: pagos,
       preVentaID: algunaPreventa,
-      nombreClienteComanda: nombreClienteComanda,
+      nombreClienteComanda: "prueba",//nombreClienteComanda,
       transferencias: {}
 
     };
@@ -273,9 +288,8 @@ const BoxBoleta = ({ onClose, visible }) => {
 
         const cantidad = await ModelConfig.get("cantidadTicketImprimir");
         const cantAImprimir = parseInt(cantidad);
-        Printer.printAll(response, cantAImprimir);
-
-
+        // PrinterBluetooth.printAll(requestBody,response, cantAImprimir);
+        PrinterBluetooth.printAll(requestBody,response);
 
         // const cantAImprimir = parseInt(ModelConfig.get("cantidadTicketImprimir"));
         // Printer.printAll(response, cantAImprimir);
@@ -305,7 +319,7 @@ const BoxBoleta = ({ onClose, visible }) => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-  {/* <TecladoBilletes
+      {/* <TecladoBilletes
   visible={showBilletesModal}
   onClose={() => setShowBilletesModal(false)}
   onAmountSelected={(monto) => {
@@ -316,19 +330,19 @@ const BoxBoleta = ({ onClose, visible }) => {
       <TecladoBilletes
         visible={showBilletesModal}
         onClose={() => setShowBilletesModal(false)}
-        initialValue={pagarCon}    
-        
-                       // <--- PASAMOS EL VALOR ACTUAL
+        initialValue={pagarCon}
+
+        // <--- PASAMOS EL VALOR ACTUAL
         onAmountSelected={(monto) => {
           setPagarCon(monto);
           setCambioManualTeclado(true);
         }}
       />
-  
+
       <View style={styles.row}>
         <View style={styles.mainSection}>
           {error && <Text style={styles.errorText}>{error}</Text>}
-  
+
           <View style={styles.inputRow}>
             <TextInput
               style={styles.textInput}
@@ -341,7 +355,7 @@ const BoxBoleta = ({ onClose, visible }) => {
               }}
             />
           </View>
-  
+
           <View style={styles.totalsRow}>
             <View style={styles.totalsTextContainer}>
               <Text style={styles.totalText}>
@@ -367,15 +381,15 @@ const BoxBoleta = ({ onClose, visible }) => {
                 Vuelto: $ {vuelto.toLocaleString()}
               </Text>
             </View>
-            
-            <TouchableOpacity 
+
+            <TouchableOpacity
               style={styles.pesoButton}
               onPress={() => setShowBilletesModal(true)}
             >
               <Text style={styles.pesoButtonText}>$</Text>
             </TouchableOpacity>
           </View>
-  
+
           <BoxEntregaEnvases
             tieneEnvases={tieneEnvases}
             settieneEnvases={settieneEnvases}
@@ -385,7 +399,7 @@ const BoxBoleta = ({ onClose, visible }) => {
             descuentoEnvases={descuentoEnvases}
             setDescuentoEnvases={setDescuentoEnvases}
           />
-  
+
           <BoxPagos
             pagos={pagos}
             setPagos={setPagos}
@@ -393,7 +407,7 @@ const BoxBoleta = ({ onClose, visible }) => {
             setTotalPagos={setTotalPagos}
             onRemove={() => setCambioManualTeclado(false)}
           />
-  
+
           <BoxMultiPago
             pagarCon={pagarCon}
             setPagarCon={setPagarCon}
@@ -418,10 +432,10 @@ const BoxBoleta = ({ onClose, visible }) => {
           />
         </View>
       </View>
-  
+
       <View style={styles.footer}>
-        <TouchableOpacity 
-          style={styles.finalButton} 
+        <TouchableOpacity
+          style={styles.finalButton}
           onPress={handlePagoBoleta}
           disabled={loading}
         >

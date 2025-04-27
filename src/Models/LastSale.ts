@@ -61,10 +61,10 @@ class LastSale{
         }
     }
 
-    static loadFromSesion(){
+    static async loadFromSesion(){
         var me = LastSale.getInstance()
-        if(!LastSale.getInstance().sesion.hasOne()) return null
-        var carga1 = me.sesion.cargar(1)
+        if(!await LastSale.getInstance().sesion.hasOne()) return null
+        var carga1 = await me.sesion.cargar(1)
         // console.log("carga1")
         // console.log(carga1)
         if(carga1){
