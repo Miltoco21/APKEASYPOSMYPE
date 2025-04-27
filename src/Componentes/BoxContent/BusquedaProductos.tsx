@@ -214,14 +214,14 @@ const BoxProducts = () => {
       focusSearchInput();
     }
   };
-    // Función para manejar la actualización del precio
+  // Función para manejar la actualización del precio
 
   const handlePriceUpdate = (updatedProduct) => {
     addToSalesData(updatedProduct);
-     // Actualizar lista de búsqueda si el producto está visible
-  setFilteredProducts(prev => prev.map(p => 
-    p.idProducto === updatedProduct.idProducto ? updatedProduct : p
-  ));
+    // Actualizar lista de búsqueda si el producto está visible
+    setFilteredProducts(prev => prev.map(p =>
+      p.idProducto === updatedProduct.idProducto ? updatedProduct : p
+    ));
     setShowEditPriceModal(false);
     setSearchText("");
     focusSearchInput();
@@ -274,7 +274,7 @@ const BoxProducts = () => {
             }}
           />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.pluButton}   onPress={() => setShowPLUModal(true)}
+        <TouchableOpacity style={styles.pluButton} onPress={() => setShowPLUModal(true)}
         >
           <Text style={styles.pluButtonText}>PLU</Text>
         </TouchableOpacity>
@@ -341,15 +341,15 @@ const BoxProducts = () => {
         onCancel={() => setShowPLUModal(false)}
       />
 
-<IngresoPrecio
-  visible={showEditPriceModal}
-  product={selectedProduct}
-  onConfirm={handlePriceUpdate}
-  onCancel={() => {
-    setShowEditPriceModal(false);
-    setSelectedProduct(null);
-  }}
-/>
+      <IngresoPrecio
+        visible={showEditPriceModal}
+        product={selectedProduct}
+        onConfirm={handlePriceUpdate}
+        onCancel={() => {
+          setShowEditPriceModal(false);
+          setSelectedProduct(null);
+        }}
+      />
 
     </View>
 

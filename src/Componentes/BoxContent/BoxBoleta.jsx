@@ -22,16 +22,17 @@ import BoxEntregaEnvases from "./BoxEntregaEnvases";
 import BoxPagos from "./BoxPagos";
 import BoxMultiPago from "./BoxMultiPago";
 //import IngresarTexto from '../ScreenDialog/IngresarTexto'; debe quedar vacion reemplza teclado
-import Printer from "../../Models/Printer";
-import LastSale from "../../Models/LastSale";
-import ModelConfig from "../../Models/ModelConfig";
-import UserEvent from "../../Models/UserEvent";
-import Model from "../../Models/Model";
-import Oferta5 from "../../Models/Oferta5";
-import ProductSold from "../../Models/ProductSold";
-import { Button } from "react-native-paper";
-import Log from "src/Models/Log";
-import TecladoBilletes from "./TecladoBilletes";
+import Printer from '../../Models/Printer';
+import LastSale from '../../Models/LastSale';
+import ModelConfig from '../../Models/ModelConfig';
+import UserEvent from '../../Models/UserEvent';
+import Model from '../../Models/Model';
+import Oferta5 from '../../Models/Oferta5';
+import ProductSold from '../../Models/ProductSold';
+import { Button } from 'react-native-paper';
+import Log from 'src/Models/Log';
+import TecladoBilletes from './TecladoBilletes';
+import PrinterBluetooth from 'src/Models/PrinterBluetooth';
 
 const BoxBoleta = ({ onClose, visible }) => {
   const {
@@ -155,6 +156,8 @@ const BoxBoleta = ({ onClose, visible }) => {
 
   useEffect(() => {
     aplicarOfertas();
+
+    PrinterBluetooth.prepareBluetooth()
   }, []);
 
   // Función para procesar el pago
@@ -193,9 +196,11 @@ const BoxBoleta = ({ onClose, visible }) => {
       codigoUsuarioVenta: 0,
       subtotal: totalYDescuentoYRedondeo,
       totalPagado: totalPagos,
+      total: totalPagos,
       totalRedondeado: totalFinal,
       vuelto: vuelto,
-      redondeo: aplicaRedondeo ? redondeo : 0,
+      descuento: 0,
+      redondeo: (aplicaRedondeo ? redondeo : 0),
       products: productosConEnvases.map((producto) => {
         const esEnvase = ProductSold.esEnvase(producto);
         if (esEnvase) {
@@ -210,6 +215,11 @@ const BoxBoleta = ({ onClose, visible }) => {
             cantidad: System.getInstance().typeIntFloat(difcant),
             precioUnidad: producto.price,
             descripcion: producto.description,
+            extras: {
+              agregar: [],
+              quitar: [],
+              entrega: "SERVIR"
+            }
           };
         } else {
           if (producto.preVenta) {
@@ -227,13 +237,19 @@ const BoxBoleta = ({ onClose, visible }) => {
             cantidad: System.getInstance().typeIntFloat(producto.quantity),
             precioUnidad: producto.price,
             descripcion: producto.description,
+            extras: {
+              agregar: [],
+              quitar: [],
+              entrega: "SERVIR"
+            }
           };
         }
       }),
       pagos: pagos,
       preVentaID: algunaPreventa,
-      nombreClienteComanda: nombreClienteComanda,
-      transferencias: {},
+      nombreClienteComanda: "prueba",//nombreClienteComanda,
+      transferencias: {}
+
     };
 
     let transferenciaDatos = {};
@@ -291,7 +307,8 @@ const BoxBoleta = ({ onClose, visible }) => {
 
         const cantidad = await ModelConfig.get("cantidadTicketImprimir");
         const cantAImprimir = parseInt(cantidad);
-        Printer.printAll(response, cantAImprimir);
+        // PrinterBluetooth.printAll(requestBody,response, cantAImprimir);
+        PrinterBluetooth.printAll(requestBody,response);
 
         // const cantAImprimir = parseInt(ModelConfig.get("cantidadTicketImprimir"));
         // Printer.printAll(response, cantAImprimir);
@@ -331,6 +348,7 @@ const BoxBoleta = ({ onClose, visible }) => {
         visible={showBilletesModal}
         onClose={() => setShowBilletesModal(false)}
         initialValue={pagarCon}
+
         // <--- PASAMOS EL VALOR ACTUAL
         onAmountSelected={(monto) => {
           setPagarCon(monto);

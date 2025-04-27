@@ -12,6 +12,7 @@ import Typography from 'src/Componentes/Typography';
 import BoxOptionList from 'src/Componentes/BoxContent/BoxOptionList';
 import InputNumber from 'src/Componentes/Elements/CompuestosMobile/InputNumber';
 import Log from 'src/Models/Log';
+import ImpresoraBluetooth from './ImpresoraBluetooth';
 
 const BaseConfigModal = ({
   openDialog,
@@ -32,7 +33,9 @@ const BaseConfigModal = ({
   const [agruparProductoLinea, setAgruparProductoLinea] = useState(false)
   const [sucursal, setSucursal] = useState("")
   const [puntoVenta, setPuntoVenta] = useState("")
+  const [impresoraBluetooth, setImpresoraBluetooth] = useState("")
 
+  const [showModalPrinter, setShowModalPrinter] = useState(false)
 
   const cargarOrdenesListados = () => {
     var seleccionables = []
@@ -62,6 +65,7 @@ const BaseConfigModal = ({
     setPedirPermisoBorrarProducto(await ModelConfig.get("pedirPermisoBorrarProducto"))
     setPermitirVentaPrecio0(await ModelConfig.get("permitirVentaPrecio0"))
     setAgruparProductoLinea(await ModelConfig.get("agruparProductoLinea"))
+    setImpresoraBluetooth(await ModelConfig.get("impresoraBluetooth"))
 
   }
 
@@ -75,9 +79,10 @@ const BaseConfigModal = ({
     await ModelConfig.change("permitirVentaPrecio0", permitirVentaPrecio0)
 
     await ModelConfig.change("agruparProductoLinea", agruparProductoLinea)
-    
+
     await ModelConfig.change("sucursal", sucursal)
     await ModelConfig.change("puntoVenta", puntoVenta)
+    await ModelConfig.change("impresoraBluetooth", impresoraBluetooth)
 
     onClose()
   };
@@ -85,9 +90,13 @@ const BaseConfigModal = ({
   const onClose = () => {
     setOpenDialog(false)
   }
-
+  
+  const getNamePrinter = () => {
+    const pr = JSON.parse(impresoraBluetooth)
+    return pr.name
+  }
   useEffect(() => {
-    if(!openDialog)return
+    if (!openDialog) return
     loadConfigs()
     cargarOrdenesListados()
   }, [openDialog])
@@ -97,112 +106,150 @@ const BaseConfigModal = ({
       visible={openDialog}
       transparent={true}
       animationType="slide"
-      onRequestClose={ onClose }
+      onRequestClose={onClose}
     >
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalContent}>
+      <ScrollView>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
 
 
-          <Text style={styles.modalTitle}>
-            <Ionicons name="settings" size={13} color="#0c3259" /> Configuración
-          </Text>
+            <Text style={styles.modalTitle}>
+              <Ionicons name="settings" size={13} color="#0c3259" /> Configuración
+            </Text>
 
-          <Grid>
-            <InputPage
-              inputState={[urlBase, setUrlBase]}
-              label={"Url Base"}
-            />
-          </Grid>
-
-
-          <Grid>
-            <InputNumber
-              inputState={[sucursal, setSucursal]}
-              label={"Sucursal"}
-            />
-          </Grid>
-
-          <Grid>
-            <InputNumber
-              inputState={[puntoVenta, setPuntoVenta]}
-              label={"Caja"}
-            />
-          </Grid>
+            <Grid>
+              <InputPage
+                inputState={[urlBase, setUrlBase]}
+                label={"Url Base"}
+              />
+            </Grid>
 
 
-          <Grid item xs={12} md={12} lg={12}>
-            <InputCheckboxAutorizar
-              inputState={[pedirDatosTransferencia, setPedirDatosTransferencia]}
-              label={"Pedir datos para pagos con transferencia"}
-            />
-          </Grid>
+            <Grid>
+              <InputNumber
+                inputState={[sucursal, setSucursal]}
+                label={"Sucursal"}
+              />
+            </Grid>
 
-          <Grid item xs={12} md={12} lg={12}>
-            <InputCheckboxAutorizar
-              inputState={[pagarConCuentaCorriente, setPagarConCuentaCorriente]}
-              label={"Permitir pagar con cuenta corriente"}
-            />
-          </Grid>
-
-
-
-          <Grid item xs={12} lg={12}>
-            <Typography>Orden Listado Productos</Typography>
-            <BoxOptionList
-              optionSelected={ordenMostrarListado}
-              setOptionSelected={(e) => {
-                setOrdenMostrarListado(e)
-              }}
-              options={ordenesMostrarListado}
-            />
-          </Grid>
-
-          <Grid>
-            <InputNumber
-              inputState={[cantBusqRap, setCantBusqRap]}
-              label={"Cantidad productos busqueda rapida"}
-            />
-          </Grid>
+            <Grid>
+              <InputNumber
+                inputState={[puntoVenta, setPuntoVenta]}
+                label={"Caja"}
+              />
+            </Grid>
 
 
-          <Grid item xs={12} md={12} lg={12}>
-            <InputCheckboxAutorizar
-              inputState={[pedirPermisoBorrarProducto, setPedirPermisoBorrarProducto]}
-              label={"Solicitar permiso para eliminar un producto"}
-            />
-          </Grid>
+            <Grid item xs={12} md={12} lg={12}>
+              <InputCheckboxAutorizar
+                inputState={[pedirDatosTransferencia, setPedirDatosTransferencia]}
+                label={"Pedir datos para pagos con transferencia"}
+              />
+            </Grid>
 
-          <Grid item xs={12} md={6} lg={6}>
-            <InputCheckbox
-              inputState={[permitirVentaPrecio0, setPermitirVentaPrecio0]}
-              label={"Permitir venta con precio 0"}
-            />
-          </Grid>
+            <Grid item xs={12} md={12} lg={12}>
+              <InputCheckboxAutorizar
+                inputState={[pagarConCuentaCorriente, setPagarConCuentaCorriente]}
+                label={"Permitir pagar con cuenta corriente"}
+              />
+            </Grid>
 
-          <Grid item xs={12} md={12} lg={12}>
-            <InputCheckbox
-              inputState={[agruparProductoLinea, setAgruparProductoLinea]}
-              label={"Agrupar Producto Linea"}
-            />
-          </Grid>
 
-          <View style={styles.modalButtons}>
-            <TouchableOpacity
-              style={[styles.modalButton, styles.cancelButton]}
-              onPress={onClose}
-            >
-              <Text style={styles.buttonText}>Cancelar</Text>
-            </TouchableOpacity>
 
-            <TouchableOpacity
-              style={[styles.modalButton, styles.saveButton]}
-              onPress={handleSave}
-            >
-              <Text style={styles.buttonText}>Guardar</Text>
-            </TouchableOpacity>
+            <Grid item xs={12} lg={12}>
+              <Typography>Orden Listado Productos</Typography>
+              <BoxOptionList
+                optionSelected={ordenMostrarListado}
+                setOptionSelected={(e) => {
+                  setOrdenMostrarListado(e)
+                }}
+                options={ordenesMostrarListado}
+              />
+            </Grid>
+
+            <Grid>
+              <InputNumber
+                inputState={[cantBusqRap, setCantBusqRap]}
+                label={"Cantidad productos busqueda rapida"}
+              />
+            </Grid>
+
+
+            <Grid item xs={12} md={12} lg={12}>
+              <InputCheckboxAutorizar
+                inputState={[pedirPermisoBorrarProducto, setPedirPermisoBorrarProducto]}
+                label={"Solicitar permiso para eliminar un producto"}
+              />
+            </Grid>
+
+            <Grid item xs={12} md={6} lg={6}>
+              <InputCheckbox
+                inputState={[permitirVentaPrecio0, setPermitirVentaPrecio0]}
+                label={"Permitir venta con precio 0"}
+              />
+            </Grid>
+
+            <Grid item xs={12} md={12} lg={12}>
+              <InputCheckbox
+                inputState={[agruparProductoLinea, setAgruparProductoLinea]}
+                label={"Agrupar Producto Linea"}
+              />
+            </Grid>
+            <Grid item xs={12} md={12} lg={12}>
+              {impresoraBluetooth != "" ? (
+                <Text style={{
+                  fontSize:18,
+                  padding:5,
+                  // backgroundColor:"silver",
+                  borderWidth:1,
+                  borderRadius:4,
+                  marginTop:20,
+                  marginBottom:2
+                }}>Impresora: { getNamePrinter() }</Text>
+              ) : (
+                <Text>Sin asignar</Text>
+              )}
+              <ImpresoraBluetooth
+                visible={showModalPrinter}
+                onConfirm={(infoBluetooth) => {
+                  console.log("vamos a guardar", infoBluetooth[0])
+                  setImpresoraBluetooth(JSON.stringify(infoBluetooth[0]))
+                  setShowModalPrinter(false)
+                }}
+                onCancel={() => {
+                  setShowModalPrinter(false)
+                }}
+              />
+              <TouchableOpacity
+                style={[styles.modalButton, {
+                  backgroundColor:"#EC00E8"
+                }]}
+                onPress={() => {
+                  setShowModalPrinter(true)
+                }}
+              >
+                <Text style={styles.buttonText}>CONF. Impresora Bluetetooth</Text>
+              </TouchableOpacity>
+            </Grid>
+
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.cancelButton]}
+                onPress={onClose}
+              >
+                <Text style={styles.buttonText}>Cancelar</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.modalButton, styles.saveButton]}
+                onPress={handleSave}
+              >
+                <Text style={styles.buttonText}>Guardar</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-      </View>
+      </ScrollView>
     </Modal>
   );
 };

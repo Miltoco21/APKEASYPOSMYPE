@@ -7,43 +7,51 @@ import BoxBoleta from './BoxBoleta'
 import PagarBoleta from '../ScreenDialog/PagarBoleta';
 import Log from 'src/Models/Log';
 import Colors from '../Colores/Colores';
+import UltimaVenta from 'src/Modals/UltimaVenta';
 
 
 const BoxTotales = ({
-  onPagarBoleta = () => {},
-  onPagarFactura = () => {},
-  onOpcion3 = () => {},
-  onOpcion4 = () => {},
+  onPagarBoleta = () => { },
+  onPagarFactura = () => { },
+  onOpcion3 = () => { },
+  onOpcion4 = () => { },
 }) => {
 
   const {
     grandTotal,
-      salesData,
-      addToSalesData,
-      removeFromSalesData,
-      clearSalesData,
-      salesDataTimestamp,
-      showAlert
-    } = useContext(SelectedOptionsContext);
+    salesData,
+    addToSalesData,
+    removeFromSalesData,
+    clearSalesData,
+    salesDataTimestamp,
+    showAlert
+  } = useContext(SelectedOptionsContext);
 
-    const [showModalPagarBoleta, setShowModalPagarBoleta] = useState(false);
+  const [showModalPagarBoleta, setShowModalPagarBoleta] = useState(false);
+  const [showUltimaVenta, setShowUltimaVenta] = useState(false);
 
-    const abrirBoleta = ()=>{
-      if(salesData.length < 1){
-        showAlert("No hay productos en el listado")
-        return
-      }
-
-      Log("ventas", salesData)
-      setShowModalPagarBoleta(true)
+  const abrirBoleta = () => {
+    if (salesData.length < 1) {
+      showAlert("No hay productos en el listado")
+      return
     }
+
+    Log("ventas", salesData)
+    setShowModalPagarBoleta(true)
+  }
 
   return (
     <Surface style={styles.container}>
       <Title style={styles.totalText}>TOTAL: ${grandTotal}</Title>
       <View style={styles.buttonRow}>
-      <Button mode="contained" style={styles.button} onPress={abrirBoleta}>
+        <Button mode="contained" style={styles.button} onPress={abrirBoleta}>
           Hacer el pago
+        </Button>
+
+        <Button mode="contained" style={styles.button} onPress={()=>{
+          setShowUltimaVenta(true)
+        }}>
+          Ultima venta
         </Button>
         {/* <Button mode="contained" style={styles.button} onPress={onPagarFactura}>
          Factura
@@ -58,7 +66,8 @@ const BoxTotales = ({
         </Button>
       </View> */}
 
-      <PagarBoleta openDialog={showModalPagarBoleta} setOpenDialog={setShowModalPagarBoleta}/>
+      <PagarBoleta openDialog={showModalPagarBoleta} setOpenDialog={setShowModalPagarBoleta} />
+      <UltimaVenta visible={showUltimaVenta} onCancel={()=>setShowUltimaVenta(false)}/>
     </Surface>
   );
 };
@@ -84,7 +93,7 @@ const styles = StyleSheet.create({
   button: {
     flex: 1,
     marginHorizontal: 4,
-    backgroundColor:Colors.azul,
+    backgroundColor: Colors.azul,
   },
 });
 
