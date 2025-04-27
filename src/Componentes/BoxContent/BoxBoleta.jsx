@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,30 +7,31 @@ import {
   ActivityIndicator,
   ScrollView,
   StyleSheet,
-  Alert
-} from 'react-native';
-import axios from 'axios';
-import dayjs from 'dayjs';
+  Alert,
+} from "react-native";
+import axios from "axios";
+import dayjs from "dayjs";
+import Colors from "../Colores/Colores";
 
 // Importar el contexto y helpers/modelos personalizados
-import { SelectedOptionsContext } from '../Context/SelectedOptionsProvider';
-import System from '../../Helpers/System';
-import PagoBoleta from '../../Models/PagoBoleta';
-import TecladoPagoCaja from '../Teclados/TecladoPagoCaja'///// reemplaza tevlano cuano no tinene
+import { SelectedOptionsContext } from "../Context/SelectedOptionsProvider";
+import System from "../../Helpers/System";
+import PagoBoleta from "../../Models/PagoBoleta";
+import TecladoPagoCaja from "../Teclados/TecladoPagoCaja"; ///// reemplaza tevlano cuano no tinene
 import BoxEntregaEnvases from "./BoxEntregaEnvases";
-import BoxPagos from './BoxPagos';
-import BoxMultiPago from './BoxMultiPago';
+import BoxPagos from "./BoxPagos";
+import BoxMultiPago from "./BoxMultiPago";
 //import IngresarTexto from '../ScreenDialog/IngresarTexto'; debe quedar vacion reemplza teclado
-import Printer from '../../Models/Printer';
-import LastSale from '../../Models/LastSale';
-import ModelConfig from '../../Models/ModelConfig';
-import UserEvent from '../../Models/UserEvent';
-import Model from '../../Models/Model';
-import Oferta5 from '../../Models/Oferta5';
-import ProductSold from '../../Models/ProductSold';
-import { Button } from 'react-native-paper';
-import Log from 'src/Models/Log';
-import TecladoBilletes from './TecladoBilletes';
+import Printer from "../../Models/Printer";
+import LastSale from "../../Models/LastSale";
+import ModelConfig from "../../Models/ModelConfig";
+import UserEvent from "../../Models/UserEvent";
+import Model from "../../Models/Model";
+import Oferta5 from "../../Models/Oferta5";
+import ProductSold from "../../Models/ProductSold";
+import { Button } from "react-native-paper";
+import Log from "src/Models/Log";
+import TecladoBilletes from "./TecladoBilletes";
 
 const BoxBoleta = ({ onClose, visible }) => {
   const {
@@ -49,7 +50,7 @@ const BoxBoleta = ({ onClose, visible }) => {
     setShowDialogSelectClient,
     modoAvion,
     showAlert,
-    setUltimoVuelto
+    setUltimoVuelto,
   } = useContext(SelectedOptionsContext);
 
   // Estados locales
@@ -79,64 +80,77 @@ const BoxBoleta = ({ onClose, visible }) => {
     // console.log("aplicando ofertas");
     // Log("salesData", salesData)
 
+    await Model.getOfertas(
+      (ofertas) => {
+        if (ofertas.length > 0) {
+          ofertas.forEach((ofer) => {
+            if (ofer.tipo === 5) {
+              let copiaProductos = salesData;
+              Oferta5.setInfo(ofer);
+              let resultadoOfertas = {
+                productosQueAplican: [],
+                productosQueNoAplican: copiaProductos,
+              };
 
-    await Model.getOfertas((ofertas) => {
-      if (ofertas.length > 0) {
-        ofertas.forEach((ofer) => {
-          if (ofer.tipo === 5) {
-            let copiaProductos = salesData;
-            Oferta5.setInfo(ofer);
-            let resultadoOfertas = {
-              productosQueAplican: [],
-              productosQueNoAplican: copiaProductos
-            };
+              while (
+                Oferta5.debeAplicar(resultadoOfertas.productosQueNoAplican)
+              ) {
+                const resultadoAplicar = Oferta5.aplicar(
+                  resultadoOfertas.productosQueNoAplican
+                );
+                resultadoOfertas.productosQueAplican =
+                  resultadoOfertas.productosQueAplican.concat(
+                    resultadoAplicar.productosQueAplican
+                  );
+                resultadoOfertas.productosQueNoAplican =
+                  resultadoAplicar.productosQueNoAplican;
+              }
 
-            while (Oferta5.debeAplicar(resultadoOfertas.productosQueNoAplican)) {
-              const resultadoAplicar = Oferta5.aplicar(resultadoOfertas.productosQueNoAplican);
-              resultadoOfertas.productosQueAplican = resultadoOfertas.productosQueAplican.concat(resultadoAplicar.productosQueAplican);
-              resultadoOfertas.productosQueNoAplican = resultadoAplicar.productosQueNoAplican;
+              let totalVentasx = 0;
+              let productosVendidosx = [];
+
+              resultadoOfertas.productosQueAplican.forEach((prod) => {
+                totalVentasx += prod.total;
+                productosVendidosx.push(prod);
+              });
+
+              resultadoOfertas.productosQueNoAplican.forEach((prod) => {
+                totalVentasx += prod.total;
+                productosVendidosx.push(prod);
+              });
+
+              // console.log("total de las ventas aplicando ofertas es $", totalVentasx);
+              setTotalVentas(totalVentasx);
+              setProductosVendidos(productosVendidosx);
             }
-
-            let totalVentasx = 0;
-            let productosVendidosx = [];
-
-            resultadoOfertas.productosQueAplican.forEach((prod) => {
-              totalVentasx += prod.total;
-              productosVendidosx.push(prod);
-            });
-
-            resultadoOfertas.productosQueNoAplican.forEach((prod) => {
-              totalVentasx += prod.total;
-              productosVendidosx.push(prod);
-            });
-
-            // console.log("total de las ventas aplicando ofertas es $", totalVentasx);
-            setTotalVentas(totalVentasx);
-            setProductosVendidos(productosVendidosx);
-          }
-        });
-      } else {
-        // console.log("no hay ofertas")
+          });
+        } else {
+          // console.log("no hay ofertas")
+          setProductosVendidos(salesData);
+          setTotalVentas(grandTotal);
+        }
+      },
+      (err) => {
+        // console.log("error de ofertas", err)
         setProductosVendidos(salesData);
         setTotalVentas(grandTotal);
       }
-    }, (err) => {
-      // console.log("error de ofertas", err)
-      setProductosVendidos(salesData);
-      setTotalVentas(grandTotal);
-    });
+    );
 
-    await Model.getServerConfigs((serverConfigs) => {
-      serverConfigs.forEach((serverConfig) => {
-        if (
-          serverConfig.grupo === "Ticket" &&
-          serverConfig.entrada === "ImprimirComanda" &&
-          serverConfig.valor === "SI"
-        ) {
-          setTrabajaConComanda(true);
-        }
-      });
-    }, () => { });
+    await Model.getServerConfigs(
+      (serverConfigs) => {
+        serverConfigs.forEach((serverConfig) => {
+          if (
+            serverConfig.grupo === "Ticket" &&
+            serverConfig.entrada === "ImprimirComanda" &&
+            serverConfig.valor === "SI"
+          ) {
+            setTrabajaConComanda(true);
+          }
+        });
+      },
+      () => {}
+    );
   };
 
   useEffect(() => {
@@ -157,12 +171,15 @@ const BoxBoleta = ({ onClose, visible }) => {
     const pagaConEfectivo = System.pagaConEfectivo(pagos);
     console.log("pagaConEfectivo", pagaConEfectivo);
 
-    if ((totalPagos < (totalYDescuentoYRedondeo + redondeo - 10) && pagaConEfectivo) ||
-      (!pagaConEfectivo && totalPagos < totalYDescuentoYRedondeo)) {
+    if (
+      (totalPagos < totalYDescuentoYRedondeo + redondeo - 10 &&
+        pagaConEfectivo) ||
+      (!pagaConEfectivo && totalPagos < totalYDescuentoYRedondeo)
+    ) {
       showAlert("Debe completar los pagos para continuar");
       return;
     }
-    console.log("el pago esta completo")
+    console.log("el pago esta completo");
     // if (trabajaConComanda && nombreClienteComanda.length < 1) {
     //   showAlert("Debe completar el nombre de la comanda");
     //   return;
@@ -178,11 +195,14 @@ const BoxBoleta = ({ onClose, visible }) => {
       totalPagado: totalPagos,
       totalRedondeado: totalFinal,
       vuelto: vuelto,
-      redondeo: (aplicaRedondeo ? redondeo : 0),
+      redondeo: aplicaRedondeo ? redondeo : 0,
       products: productosConEnvases.map((producto) => {
         const esEnvase = ProductSold.esEnvase(producto);
         if (esEnvase) {
-          const owner = ProductSold.getOwnerByEnvase(producto, productosConEnvases);
+          const owner = ProductSold.getOwnerByEnvase(
+            producto,
+            productosConEnvases
+          );
           const difcant = owner.quantity - producto.quantity;
           return {
             codProducto: 0,
@@ -213,8 +233,7 @@ const BoxBoleta = ({ onClose, visible }) => {
       pagos: pagos,
       preVentaID: algunaPreventa,
       nombreClienteComanda: nombreClienteComanda,
-      transferencias: {}
-
+      transferencias: {},
     };
 
     let transferenciaDatos = {};
@@ -234,7 +253,6 @@ const BoxBoleta = ({ onClose, visible }) => {
       }
     });
 
-
     requestBody.transferencias = transferenciaDatos;
     setError(null);
 
@@ -247,9 +265,9 @@ const BoxBoleta = ({ onClose, visible }) => {
     console.log("cancelando");
     setLoading(false);
 
-    const esModoAvion = true // await PagoBoleta.analizarSiEsModoAvion(requestBody); // Esperar resolución
+    const esModoAvion = true; // await PagoBoleta.analizarSiEsModoAvion(requestBody); // Esperar resolución
 
-    showLoading("Haciendo el pago")
+    showLoading("Haciendo el pago");
     await MPago.hacerPago(
       requestBody,
       esModoAvion,
@@ -275,8 +293,6 @@ const BoxBoleta = ({ onClose, visible }) => {
         const cantAImprimir = parseInt(cantidad);
         Printer.printAll(response, cantAImprimir);
 
-
-
         // const cantAImprimir = parseInt(ModelConfig.get("cantidadTicketImprimir"));
         // Printer.printAll(response, cantAImprimir);
 
@@ -285,12 +301,10 @@ const BoxBoleta = ({ onClose, visible }) => {
           onClose();
           UserEvent.send({
             name: "realiza venta",
-            info: JSON.stringify(requestBody)
+            info: JSON.stringify(requestBody),
           });
           // setLoading(false);
         }, 500);
-
-
       },
       (error, response) => {
         hideLoading();
@@ -305,7 +319,7 @@ const BoxBoleta = ({ onClose, visible }) => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-  {/* <TecladoBilletes
+      {/* <TecladoBilletes
   visible={showBilletesModal}
   onClose={() => setShowBilletesModal(false)}
   onAmountSelected={(monto) => {
@@ -316,19 +330,18 @@ const BoxBoleta = ({ onClose, visible }) => {
       <TecladoBilletes
         visible={showBilletesModal}
         onClose={() => setShowBilletesModal(false)}
-        initialValue={pagarCon}    
-        
-                       // <--- PASAMOS EL VALOR ACTUAL
+        initialValue={pagarCon}
+        // <--- PASAMOS EL VALOR ACTUAL
         onAmountSelected={(monto) => {
           setPagarCon(monto);
           setCambioManualTeclado(true);
         }}
       />
-  
+
       <View style={styles.row}>
         <View style={styles.mainSection}>
           {error && <Text style={styles.errorText}>{error}</Text>}
-  
+
           <View style={styles.inputRow}>
             <TextInput
               style={styles.textInput}
@@ -341,7 +354,7 @@ const BoxBoleta = ({ onClose, visible }) => {
               }}
             />
           </View>
-  
+
           <View style={styles.totalsRow}>
             <View style={styles.totalsTextContainer}>
               <Text style={styles.totalText}>
@@ -367,15 +380,15 @@ const BoxBoleta = ({ onClose, visible }) => {
                 Vuelto: $ {vuelto.toLocaleString()}
               </Text>
             </View>
-            
-            <TouchableOpacity 
+
+            <TouchableOpacity
               style={styles.pesoButton}
               onPress={() => setShowBilletesModal(true)}
             >
               <Text style={styles.pesoButtonText}>$</Text>
             </TouchableOpacity>
           </View>
-  
+
           <BoxEntregaEnvases
             tieneEnvases={tieneEnvases}
             settieneEnvases={settieneEnvases}
@@ -385,7 +398,7 @@ const BoxBoleta = ({ onClose, visible }) => {
             descuentoEnvases={descuentoEnvases}
             setDescuentoEnvases={setDescuentoEnvases}
           />
-  
+
           <BoxPagos
             pagos={pagos}
             setPagos={setPagos}
@@ -393,7 +406,7 @@ const BoxBoleta = ({ onClose, visible }) => {
             setTotalPagos={setTotalPagos}
             onRemove={() => setCambioManualTeclado(false)}
           />
-  
+
           <BoxMultiPago
             pagarCon={pagarCon}
             setPagarCon={setPagarCon}
@@ -418,10 +431,10 @@ const BoxBoleta = ({ onClose, visible }) => {
           />
         </View>
       </View>
-  
+
       <View style={styles.footer}>
-        <TouchableOpacity 
-          style={styles.finalButton} 
+        <TouchableOpacity
+          style={styles.finalButton}
           onPress={handlePagoBoleta}
           disabled={loading}
         >
@@ -430,6 +443,9 @@ const BoxBoleta = ({ onClose, visible }) => {
           ) : (
             <Text style={styles.buttonText}>Finalizar</Text>
           )}
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.finalButtonBack} onPress={onClose}>
+          <Text style={styles.buttonText}>Volver</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -442,7 +458,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   row: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginBottom: 2,
   },
   mainSection: {
@@ -453,16 +469,16 @@ const styles = StyleSheet.create({
   },
   textInput: {
     borderWidth: 1,
-    borderColor: '#518eb9',
+    borderColor: "#518eb9",
     borderRadius: 4,
     padding: 12,
     fontSize: 16,
     height: 50,
   },
   totalsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
     marginVertical: 15,
     gap: 10,
   },
@@ -470,59 +486,68 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   totalText: {
-    color: '#e1213b',
+    color: "#e1213b",
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: "700",
     marginBottom: 4,
   },
   subTotalText: {
-    color: '#444141',
+    color: "#444141",
     fontSize: 15,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 4,
   },
   infoText: {
     fontSize: 14,
-    color: '#555',
+    color: "#555",
     marginBottom: 3,
   },
   errorText: {
     fontSize: 16,
-    color: '#e1213b',
-    fontWeight: '500',
+    color: "#e1213b",
+    fontWeight: "500",
     marginVertical: 5,
   },
   pesoButton: {
-    backgroundColor: '#6c63ff',
+    backgroundColor: "#6c63ff",
     width: 45,
     height: 45,
     borderRadius: 25,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: 5,
   },
   pesoButtonText: {
-    color: 'white',
+    color: "white",
     fontSize: 20,
-    fontWeight: 'bold',
-    textAlignVertical: 'center',
+    fontWeight: "bold",
+    textAlignVertical: "center",
   },
   footer: {
     marginTop: 20,
     marginBottom: 10,
   },
   finalButton: {
-    backgroundColor: '#6c63ff',
+    backgroundColor: Colors.azul,
+    padding: 16,
+    marginBottom:6,
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+    elevation: 3,
+  },
+  finalButtonBack: {
+    backgroundColor: Colors.rojo,
     padding: 16,
     borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     elevation: 3,
   },
   buttonText: {
-    color: 'white',
+    color: "white",
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 });
 

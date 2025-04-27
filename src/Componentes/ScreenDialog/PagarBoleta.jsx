@@ -41,7 +41,7 @@ const PagarBoleta = ({
               visible={true} />
           </View>
 
-          <Button onPress={() => setOpenDialog(false)}>Volver</Button>
+          {/* <Button onPress={() => setOpenDialog(false)}>Volver</Button> */}
         </View>
       </View>
     </Modal>
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 10,
     width: '90%',
-    maxHeight: '80%',
+    maxHeight: '100%',
   },
 
   text: {
