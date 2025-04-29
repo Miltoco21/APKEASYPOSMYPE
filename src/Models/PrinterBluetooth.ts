@@ -6,7 +6,12 @@ import Model from './Model';
 import ModelConfig from './ModelConfig';
 import System from '../Helpers/System';
 
-import { BluetoothManager, BluetoothEscposPrinter, BluetoothTscPrinter } from 'react-native-bluetooth-escpos-printer';
+import {
+    BluetoothManager,
+    BluetoothEscposPrinter,
+    BluetoothTscPrinter,
+    BARCODE_EAN13
+} from 'react-native-bluetooth-escpos-printer';
 import Log from './Log';
 import User from './User';
 
@@ -14,9 +19,9 @@ class PrinterBluetooth {
     static printerInited = false
     static printerIntentConect = 0
     static printerConnected = false
+    static lastAlign = ""
 
     static async prepareBluetooth() {
-        console.log("prepareBluetooth")
         // if (PrinterBluetooth.printerInited) return
         PrinterBluetooth.printerInited = (await ModelConfig.get("impresoraBluetooth")) != ""
         if (PrinterBluetooth.printerInited) {
@@ -26,7 +31,7 @@ class PrinterBluetooth {
     }
 
     static async conectarBlue(address) {
-        Log("conectarBlue3..", address)
+        // Log("conectarBlue3..", address)
         await BluetoothManager.connect(address) // the device address scanned.
             .then(async (s) => {
                 // this.setState({
@@ -36,7 +41,6 @@ class PrinterBluetooth {
                 // alert("Realizado correctamente")
                 // setDispositivosConectados([...dispositivosConectados, dispositivoObj])
                 PrinterBluetooth.printerConnected = true
-                console.log("conectado correctamente")
                 try {
                     await BluetoothEscposPrinter.printerInit();
                 } catch (er) {
@@ -45,13 +49,10 @@ class PrinterBluetooth {
             }, (e) => {
                 PrinterBluetooth.printerIntentConect++
                 if (PrinterBluetooth.printerIntentConect < 5) {
-                    console.log("no se pudo conectar al bluetooth.. reintentando", PrinterBluetooth.printerIntentConect)
                     setTimeout(() => {
-                        console.log("en timeout")
                         PrinterBluetooth.conectarBlue(address)
                     }, 1000);
                 } else {
-                    console.log("no se pudo conectar al bluetooth con intentos")
                 }
             })
     }
@@ -61,18 +62,21 @@ class PrinterBluetooth {
         await BluetoothEscposPrinter.printerAlign(
             BluetoothEscposPrinter.ALIGN.LEFT
         );
+        this.lastAlign = BluetoothEscposPrinter.ALIGN.LEFT
     }
 
     static async impAlignCentro() {
         await BluetoothEscposPrinter.printerAlign(
             BluetoothEscposPrinter.ALIGN.CENTER
         );
+        this.lastAlign = BluetoothEscposPrinter.ALIGN.CENTER
     }
 
     static async impAlignDerecha() {
         await BluetoothEscposPrinter.printerAlign(
             BluetoothEscposPrinter.ALIGN.RIGHT
         );
+        this.lastAlign = BluetoothEscposPrinter.ALIGN.RIGHT
     }
     static async impQR(contenido) {
         await BluetoothEscposPrinter.printQRCode(contenido, 120, 0);
@@ -90,9 +94,70 @@ class PrinterBluetooth {
             ["texto1", 'texto2', 'texto3', 'texto4'], {});
     }
 
+
+    static checkLen(content, maxLen, align = null) {
+        var res = []
+        var me = this
+
+        if (content.length <= maxLen) return content
+
+        if (!align) align = me.lastAlign
+        if (!align) align = BluetoothEscposPrinter.ALIGN.LEFT
+
+        const contentArr = content.split(" ")
+        var acum = ""
+        contentArr.forEach(palabra => {
+            palabra += " "
+            if ((acum + palabra).length < maxLen) {
+                acum += palabra
+            } else if ((acum + palabra).length == maxLen) {
+                res.push(acum + palabra)
+                acum = ""
+            } else {//es > que maxLen
+                if (acum == "") {
+                    const arrs = System.partirCada(palabra, maxLen)
+                    var ixArr = 0
+                    while (ixArr < arrs.length && arrs[ixArr] != "") {
+                        ixArr++
+                        if (arrs[ixArr].length == maxLen) {
+                            res.push(arrs[ixArr])
+                        } else {
+                            acum = arrs[ixArr]
+                        }
+                    }
+                } else {
+                    const diff = maxLen - acum.length
+                    if (align == BluetoothEscposPrinter.ALIGN.CENTER) {
+                        const des = Math.floor(diff / 2)
+                        const an = diff - des
+                        res.push(" ".repeat(an) + acum + " ".repeat(des))
+                    }
+
+                    if (align == BluetoothEscposPrinter.ALIGN.LEFT) {
+                        res.push(acum + " ".repeat(diff))
+                    }
+
+                    if (align == BluetoothEscposPrinter.ALIGN.RIGHT) {
+                        res.push(" ".repeat(diff) + acum)
+                    }
+
+                    acum = palabra
+                }
+            }
+        });
+        if (acum != "") {//quedo algo
+            res.push(acum)
+        }
+
+        return res.join(" ")
+    }
+
     static async impProduct(product) {
-        console.log("impProduct", product)
+
+        // var me = this
+        // return
         let columnWidths = [4, 20, 7];
+        var me = this
         await BluetoothEscposPrinter.printColumn(columnWidths,
             [
                 BluetoothEscposPrinter.ALIGN.LEFT,
@@ -100,7 +165,7 @@ class PrinterBluetooth {
                 BluetoothEscposPrinter.ALIGN.RIGHT
             ], [
             product.cantidad + "",
-            product.descripcion,
+            me.checkLen(product.descripcion, 19, BluetoothEscposPrinter.ALIGN.CENTER),
             (product.precioUnidad * product.cantidad) + "",
         ], {});
     }
@@ -129,13 +194,7 @@ class PrinterBluetooth {
     }
 
     static async impTexto(texto) {
-        console.log("impTexto2--texto:", texto)
-        try {
-            await BluetoothEscposPrinter.printText(texto + "\n", {});
-        } catch (err) {
-            alert(err)
-        }
-        // await BluetoothEscposPrinter.printAndFeed(1);
+        await BluetoothEscposPrinter.printText(texto + "\n", {});
     }
 
     static async impTextoSubrayado(texto) {
@@ -159,12 +218,7 @@ class PrinterBluetooth {
             fonttype: 0
         }
         if (!options) options = optionsDefault
-        console.log("impTexto--texto:", texto, "..options:", options)
-        try {
-            await BluetoothEscposPrinter.printText(texto + "\n", options);
-        } catch (err) {
-            alert(err)
-        }
+        await BluetoothEscposPrinter.printText(this.checkLen(texto, 16) + "\n", options);
     }
 
     static async impEnter() {
@@ -177,100 +231,130 @@ class PrinterBluetooth {
         });
     }
 
+    static async impBarra(contenido) {
+        await BluetoothEscposPrinter.printBarCode(contenido,
+            BluetoothEscposPrinter.BARCODETYPE.JAN13,
+            3,
+            120,
+            0,
+            2
+        );
+    }
+
+
+    static async imprimirAlgunosCodigos() {
+        try {
+            this.impBarra("7509552906448")
+            this.impTexto("SHAMPOO FRUCTIS 350ML GUARANA")
+            this.impEnter()
+
+            this.impBarra("7801610001295")
+            this.impTexto("COCA COLA ORIGINAL 2L")
+            this.impEnter()
+
+            this.impBarra("7801620009694")
+            this.impTexto("CACHANTUN")
+            this.impEnter()
+        } catch (er) {
+            alert(er)
+        }
+    }
+
 
     static async printAll(requestBody, response) {
-        console.log("printAll")
-        try{
+        try {
             await this.impEnter()
-        }catch(err){
+        } catch (err) {
             PrinterBluetooth.printerIntentConect = 0
             PrinterBluetooth.prepareBluetooth()
             setTimeout(() => {
                 PrinterBluetooth.printAll(requestBody, response)
-                console.log("error:" + err + "..se reintentara")
             }, 1000);
             return
         }
+
         if (requestBody.products.length < 1) return
         var comercioRazon = ""
         var comercioGiro = ""
         var comercioRut = ""
         var comercioDireccion = ""
 
-        await Model.getServerConfigs((serverConfigs) => {
-            // Log("serverConfigs", serverConfigs)
+        await Model.getServerImpresionConfigs((serverConfigs) => {
             serverConfigs.forEach((serverConfig) => {
-                if (serverConfig.grupo === "Ticket") {
-                    if (serverConfig.entrada === "Direccion") {
+                if (serverConfig.grupo === "ImpresionTicket") {
+                    if (serverConfig.entrada === "Nom_Direccion") {
                         comercioDireccion = serverConfig.valor
                     }
-                    if (serverConfig.entrada === "Giro") {
+                    if (serverConfig.entrada === "Nom_Giro") {
                         comercioGiro = serverConfig.valor
                     }
-                    if (serverConfig.entrada === "RazonSocial") {
+                    if (serverConfig.entrada === "Nom_RazonSocial") {
                         comercioRazon = serverConfig.valor
                     }
-                    if (serverConfig.entrada === "Rut") {
+                    if (serverConfig.entrada === "Nro_Rut") {
                         comercioRut = serverConfig.valor
                     }
                 }
             });
         }, () => { });
 
-
-
         if (PrinterBluetooth.printerConnected) {
-            this.impEnter()
-            this.impAlignCentro()
-            if (comercioRazon != "") this.impTextoGrande(comercioRazon)
-            if (comercioRut != "") this.impTexto(comercioRut)
-            if (comercioDireccion != "") this.impTexto(comercioDireccion)
-            if (comercioGiro != "") this.impTexto(comercioGiro)
+            await this.impEnter()
+            await this.impAlignCentro()
+            if (comercioRazon != "") await this.impTextoGrande(comercioRazon)
+            if (comercioRut != "") await this.impTexto(comercioRut)
+            if (comercioDireccion != "") await this.impTexto(comercioDireccion)
+            if (comercioGiro != "") await this.impTexto(comercioGiro)
 
-            // this.impEnter()
-            this.impAlignIzquierda()
+            await this.impAlignIzquierda()
 
             const user = new User()
             var infoUser = await user.getFromSesion()
-            this.impTexto("Usuario: " + infoUser.codigoUsuario + " - " + infoUser.nombres + " " + infoUser.apellidos)
-            this.impTexto("Sucursal: " + await ModelConfig.get("sucursal"))
-            this.impTexto("Punto venta: " + await ModelConfig.get("puntoVenta"))
+            await this.impTexto("Usuario: " + infoUser.codigoUsuario + " - " + infoUser.nombres + " " + infoUser.apellidos)
+            await this.impTexto("Sucursal: " + await ModelConfig.get("sucursal"))
+            await this.impTexto("Punto venta: " + await ModelConfig.get("puntoVenta"))
 
+            var totalEnvases = 0
             if (requestBody.products.length > 0) {
                 await this.impEnter()
                 await this.impHeaderProduct()
-                requestBody.products.forEach(async(prod) => {
-                    await this.impProduct(prod)
+                requestBody.products.forEach(async (prod) => {
+                    // Log("prod", prod)
+                    if (prod.descripcion == "Envase") {
+                        if (prod.cantidad > 0) {
+                            totalEnvases += (prod.cantidad * prod.precioUnidad)
+                        }
+                    } else {
+                        await this.impProduct(prod)
+                    }
                 })
             }
 
-            // console.log("comercioRut", comercioRut)
 
             var metodosPago = ""
             requestBody.pagos.forEach((pago) => {
                 if (metodosPago != "") metodosPago += ", "
                 metodosPago += pago.metodoPago
             })
-            this.impTexto(metodosPago)
+            await this.impTexto(metodosPago)
 
-            this.impTexto("Fecha " + System.formatDateServer(requestBody.fechaIngreso))
-            this.impAlignDerecha()
-            this.impTexto("Total: $" + requestBody.total + "")
-            this.impTexto("T.Envase: $0")//envase
-            this.impTexto("Descuento: $0")
-            this.impTexto("Pagado: $" + requestBody.totalPagado)
-            this.impTexto("Redondeado: $" + requestBody.totalRedondeado)
-            this.impTexto("Vuelto: $" + requestBody.vuelto)
+            await this.impTexto("Fecha " + System.formatDateServer(requestBody.fechaIngreso))
+            await this.impAlignDerecha()
+            await this.impTexto("Total: $" + requestBody.total + "")
+            await this.impTexto("T.Envase: $" + totalEnvases + "")//envase
+            await this.impTexto("Descuento: $0")
+            await this.impTexto("Pagado: $" + requestBody.totalPagado)
+            await this.impTexto("Redondeado: $" + requestBody.totalRedondeado)
+            await this.impTexto("Vuelto: $" + requestBody.vuelto)
 
-            this.impEnter()
-            this.impAlignCentro()
-            this.impTexto("www.easypos.cl")
-            this.impEnter()
-            this.impEnter()
+            await this.impEnter()
+            await this.impAlignCentro()
+            await this.impTexto("www.easypos.cl")
+            await this.impEnter()
+            await this.impEnter()
 
         } else {
 
-            console.log("no se va a imprimir en bluetooth")
         }
     }
 
