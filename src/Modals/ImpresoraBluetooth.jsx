@@ -11,7 +11,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { SelectedOptionsContext } from '../Componentes/Context/SelectedOptionsProvider';
 import Product from '../Models/Product';
 import NewProductModal from './NewProductModal'; // Asegúrate de que la ruta sea la correcta
-import Blu from '@/Pages/Blu';
+import BluAdmin from '@/Pages/BluAdmin';
 
 const ImpresoraBluetooth = ({ visible, onConfirm, onCancel }) => {
   const {
@@ -32,7 +32,7 @@ const ImpresoraBluetooth = ({ visible, onConfirm, onCancel }) => {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Blu onSave={(info)=>{
+            <BluAdmin onSave={(info)=>{
               onConfirm(info)
             }}
             onCancel={()=>{
