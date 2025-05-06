@@ -52,6 +52,7 @@ const BoxBoleta = ({ onClose, visible }) => {
     modoAvion,
     showAlert,
     setUltimoVuelto,
+    showConfirm,
   } = useContext(SelectedOptionsContext);
 
   // Estados locales
@@ -156,7 +157,6 @@ const BoxBoleta = ({ onClose, visible }) => {
 
   useEffect(() => {
     aplicarOfertas();
-
     PrinterBluetooth.prepareBluetooth()
   }, []);
 

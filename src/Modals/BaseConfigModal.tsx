@@ -140,19 +140,19 @@ const BaseConfigModal = ({
             </Grid>
 
 
-            <Grid item xs={12} md={12} lg={12}>
+            {/* <Grid item xs={12} md={12} lg={12}>
               <InputCheckboxAutorizar
                 inputState={[pedirDatosTransferencia, setPedirDatosTransferencia]}
                 label={"Pedir datos para pagos con transferencia"}
               />
-            </Grid>
+            </Grid> */}
 
-            <Grid item xs={12} md={12} lg={12}>
+            {/* <Grid item xs={12} md={12} lg={12}>
               <InputCheckboxAutorizar
                 inputState={[pagarConCuentaCorriente, setPagarConCuentaCorriente]}
                 label={"Permitir pagar con cuenta corriente"}
               />
-            </Grid>
+            </Grid> */}
 
 
 
@@ -175,26 +175,26 @@ const BaseConfigModal = ({
             </Grid>
 
 
-            <Grid item xs={12} md={12} lg={12}>
+            {/* <Grid item xs={12} md={12} lg={12}>
               <InputCheckboxAutorizar
                 inputState={[pedirPermisoBorrarProducto, setPedirPermisoBorrarProducto]}
                 label={"Solicitar permiso para eliminar un producto"}
               />
-            </Grid>
+            </Grid> */}
 
-            <Grid item xs={12} md={6} lg={6}>
+            {/* <Grid item xs={12} md={6} lg={6}>
               <InputCheckbox
                 inputState={[permitirVentaPrecio0, setPermitirVentaPrecio0]}
                 label={"Permitir venta con precio 0"}
               />
-            </Grid>
+            </Grid> */}
 
-            <Grid item xs={12} md={12} lg={12}>
+            {/* <Grid item xs={12} md={12} lg={12}>
               <InputCheckbox
                 inputState={[agruparProductoLinea, setAgruparProductoLinea]}
                 label={"Agrupar Producto Linea"}
               />
-            </Grid>
+            </Grid> */}
             <Grid item xs={12} md={12} lg={12}>
               {impresoraBluetooth != "" ? (
                 <Text style={{
@@ -234,18 +234,18 @@ const BaseConfigModal = ({
 
             <View style={styles.modalButtons}>
               <TouchableOpacity
+                style={[styles.modalButton, styles.saveButton]}
+                onPress={handleSave}
+              >
+                <Text style={styles.buttonText}>Guardar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
                 style={[styles.modalButton, styles.cancelButton]}
                 onPress={onClose}
               >
                 <Text style={styles.buttonText}>Cancelar</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity
-                style={[styles.modalButton, styles.saveButton]}
-                onPress={handleSave}
-              >
-                <Text style={styles.buttonText}>Guardar</Text>
-              </TouchableOpacity>
             </View>
           </View>
         </View>
@@ -294,7 +294,7 @@ const styles = StyleSheet.create({
     width: 150,
   },
   modalButtons: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'space-around',
     marginTop: 20,
   },
@@ -302,8 +302,9 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 25,
     borderRadius: 5,
-    minWidth: 100,
-    alignItems: 'center',
+    height:60,
+    width: "100%",
+    marginTop:5
   },
   cancelButton: {
     backgroundColor: '#e74c3c',
@@ -314,7 +315,10 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white',
     fontWeight: 'bold',
-  }, section: {
+    alignContent:"center",
+    margin:"auto"
+  }, 
+  section: {
     marginVertical: 15,
   },
   sectionTitle: {

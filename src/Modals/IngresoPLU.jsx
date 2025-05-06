@@ -27,38 +27,6 @@ const IngresoPLU = ({ visible, onConfirm, onCancel }) => {
     }
   }, [visible]);
 
-  // const handleConfirm = async () => {
-  //   try {
-  //     if (!inputValue) {
-  //       showAlert('Error', 'El campo PLU no puede estar vacío');
-  //       return;
-  //     }
-  
-  //     if (!/^\d+$/.test(inputValue)) {
-  //       showAlert('Error', 'El PLU debe contener solo números');
-  //       return;
-  //     }
-  
-  //     const productos = await Product.getInstance().findByCodigoBarras({
-  //       codigoProducto: inputValue,
-  //       codigoCliente: userData?.codigoCliente || 0
-  //     });
-  
-  //     if (productos?.length > 0) {
-  //       addToSalesData(productos[0]);
-  //       showAlert('Éxito', 'Producto agregado correctamente');
-  //       onConfirm(inputValue);
-  //     } else {
-  //       // Si el producto no se encuentra, se guarda el PLU y se muestra el modal para crear el nuevo producto
-  //       setCurrentPLU(inputValue);
-  //       setShowNewProductModal(true);
-  //     }
-  //   } catch (error) {
-  //     showAlert('Error', error.message);
-  //     onCancel();
-  //   }
-  // };
-
   const handleConfirm = async () => {
     try {
       if (!inputValue) {
@@ -106,27 +74,6 @@ const IngresoPLU = ({ visible, onConfirm, onCancel }) => {
       onCancel();
     }
   };
-  // const handleCreateProduct = async (newProductData) => {
-  //   try {
-  //     const nuevoProducto = {
-  //       codigoBarras: currentPLU,
-  //       nombre: newProductData.nombre,
-  //       precioVenta: parseFloat(newProductData.precio),
-  //       tipoStock: '1',
-  //       fechaIngreso: new Date().toISOString(),
-  //     };
-
-  //     const createdProduct = await Product.getInstance().create(nuevoProducto);
-      
-  //     addToSalesData(createdProduct);
-  //     showAlert('Éxito', 'Producto creado y agregado');
-  //     setShowNewProductModal(false);
-  //     onConfirm(currentPLU);
-      
-  //   } catch (error) {
-  //     showAlert('Error', 'No se pudo crear el producto');
-  //   }
-  // };
 
   const handleCreateProduct = (newProduct) => {
     addToSalesData({

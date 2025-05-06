@@ -23,6 +23,7 @@ import { Button, Icon, IconButton } from 'react-native-paper';
 import CapturaCodigoCamara from '../ScreenDialog/CapturaCodigoCamara';
 import IngresoPLU from 'src/Modals/IngresoPLU';
 import IngresoPrecio from 'src/Modals/IngresoPrecio';
+import NewProductModal from 'src/Modals/NewProductModal';
 
 
 const BoxProducts = () => {
@@ -56,6 +57,8 @@ const BoxProducts = () => {
 
   const [showEditPriceModal, setShowEditPriceModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+
+  const [showNewProductModal, setShowNewProductModal] = useState(false)
 
   const handlePLUConfirm = (pluValue) => {
     setShowPLUModal(false);
@@ -142,6 +145,10 @@ const BoxProducts = () => {
         } else {
           setFilteredProducts(prev => [...prev, ...(productos || [])]);
         }
+        if (productos.length < 1) {
+          console.log("preguntar si quiere agregar")
+          setShowNewProductModal(true)
+        }
         setHasMore(productos?.length === 10);
 
         // hideLoading()
@@ -171,6 +178,7 @@ const BoxProducts = () => {
   };
 
   useEffect(() => {
+    console.log("cambio searchText", searchText)
     const debounceTimer = setTimeout(() => {
       if (searchText.trim()) {
         setPage(1);
@@ -228,6 +236,15 @@ const BoxProducts = () => {
   };
 
 
+  const handleCreateProduct = (newProduct) => {
+    addToSalesData({
+      ...newProduct,
+      quantity: 1,
+      total: newProduct.price || 0
+    });
+    showAlert('Éxito', 'Producto creado y agregado');
+    setShowNewProductModal(false);
+  };
 
 
   return (
@@ -250,6 +267,9 @@ const BoxProducts = () => {
           placeholderTextColor="#999"
           value={searchText}
           onChangeText={setSearchText}
+          onPointerEnter={(e)=>{
+            console.log("apreto ", e)
+          }}
           ref={searchInputRef}
 
           returnKeyType="search"
@@ -340,6 +360,17 @@ const BoxProducts = () => {
         }}
         onCancel={() => setShowPLUModal(false)}
       />
+
+
+      <NewProductModal
+        visible={showNewProductModal}
+        pluCode={searchText}
+        onSave={handleCreateProduct}
+        onCancel={() => setShowNewProductModal(false)}
+        confirmation={true}
+        confirmationMessage="Producto no encontrado. ¿Desea agregarlo?"
+      />
+
 
       <IngresoPrecio
         visible={showEditPriceModal}

@@ -12,6 +12,7 @@ import { SelectedOptionsContext } from '../Componentes/Context/SelectedOptionsPr
 import Product from '../Models/Product';
 import NewProductModal from './NewProductModal'; // Asegúrate de que la ruta sea la correcta
 import BluAdmin from '@/Pages/BluAdmin';
+import SmallButton from 'src/Componentes/Elements/SmallButton';
 
 const ImpresoraBluetooth = ({ visible, onConfirm, onCancel }) => {
   const {
@@ -39,6 +40,10 @@ const ImpresoraBluetooth = ({ visible, onConfirm, onCancel }) => {
               onCancel()
             }} 
             />
+
+            <SmallButton textButton={"cancelar"} actionButton={()=>{
+              onCancel()
+            }} />
           </View>
         </View>
       </Modal>

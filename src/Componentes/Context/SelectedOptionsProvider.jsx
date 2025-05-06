@@ -7,8 +7,6 @@ import LoadingDialog from "../Dialogs/LoadingDialog";
 
 import TecladoAlfaNumerico from "../Teclados/TecladoAlfaNumerico";
 
-
-
 import {
   SafeAreaView,
   View,
@@ -17,15 +15,14 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
+  Alert,
 } from "react-native";
 import { Snackbar } from "react-native-paper";
 import Product from "../../Models/Product";
 import System from "../../Helpers/System";
 //import NuevoProductoExpress from "../ScreenDialog/NuevoProductoExpress";
 import AsignarPeso from "../ScreenDialog/AsignarPrecio";
-import Confirm from "../Dialogs/Confirm";
 import Client from "../../Models/Client";
-import Alert from "../Dialogs/Alert";
 //import PedirSupervision from "../ScreenDialog/PedirSupervision";
 import UserEvent from "../../Models/UserEvent";
 import StorageSesion from "src/Helpers/StorageSesion";
@@ -37,7 +34,6 @@ export const SelectedOptionsProvider = ({ children }) => {
   //init configs values
   const [sales, setSales] = useState(new ModelSales());
   const [ultimoVuelto, setUltimoVuelto] = useState(null);
-  //const [openSnackbar, setVisibleSnackbar] = useState(false);
 
   const [snackMessage, setSnackMessage] = useState("");
   const [visibleSnackbar, setVisibleSnackbar] = useState(false);
@@ -170,11 +166,17 @@ export const SelectedOptionsProvider = ({ children }) => {
     setVerPedirSupervision(true);
   };
 
-  const showConfirm = (text, callbackYes, callbackNo) => {
-    setTextConfirm(text);
-    setHandleConfirm(() => callbackYes);
-    setHandleNotConfirm(() => callbackNo);
-    setShowConfirmDialog(true);
+  const showConfirm = (text, callbackYes, callbackNo = () => { }) => {
+    Alert.alert('Confirmar', text, [
+      {
+        text: 'Si',
+        onPress: callbackYes,
+      },
+      {
+        text: 'No',
+        onPress: callbackNo
+      },
+    ]);
   };
 
   const [showAlertDialog, setShowAlert] = useState(false);
@@ -184,14 +186,11 @@ export const SelectedOptionsProvider = ({ children }) => {
   const [modoAvion, setModoAvion] = useState(true);
 
   const showAlert = (title, text) => {
-    if (text) {
-      setTitleMsg(title);
-      setTextMsg(text);
-    } else {
-      setTitleMsg("");
-      setTextMsg(title);
+    if (!text) {
+      text = title
+      title = "Atencion"
     }
-    setShowAlert(true);
+    Alert.alert(title, text);
   };
 
   const [searchResults, setSearchResults] = useState([]);
@@ -209,13 +208,13 @@ export const SelectedOptionsProvider = ({ children }) => {
     setUserData(User.getInstance().saveInSesion(data));
   };
 
-  const getUserData = async() => {
+  const getUserData = async () => {
     if (await User.getInstance().sesion.hasOne())
       setUserData(await User.getInstance().getFromSesion());
   };
 
   useEffect(() => {
-    if(!userData)
+    if (!userData)
       getUserData()
   }, [userData]);
 
@@ -427,10 +426,7 @@ export const SelectedOptionsProvider = ({ children }) => {
       name: "quita producto " + sales.products[index].description,
     });
     setSalesData(sales.removeFromIndex(index));
-    showAlert("focoo")
     focusSearchInput();
-
-    
   };
 
   const incrementQuantity = (index, productInfo) => {
@@ -533,13 +529,7 @@ export const SelectedOptionsProvider = ({ children }) => {
           codigoIngresado={codigoNuevoExpress}
         /> */}
 
-        <Confirm
-          openDialog={showConfirmDialog}
-          setOpenDialog={setShowConfirmDialog}
-          textConfirm={textConfirm}
-          handleConfirm={handleConfirm}
-          handleNotConfirm={handleNotConfirm}
-        />
+       
 
         {/* <PedirSupervision
           openDialog={verPedirSupervision}
@@ -551,12 +541,6 @@ export const SelectedOptionsProvider = ({ children }) => {
           }}
         /> */}
 
-        <Alert
-          openDialog={showAlertDialog}
-          setOpenDialog={setShowAlert}
-          title={titleMsg}
-          message={textMsg}
-        />
 
         {/* <ScreenDialogBuscarCliente
           openDialog={showDialogSelectClient}

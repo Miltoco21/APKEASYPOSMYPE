@@ -159,52 +159,44 @@ class Product extends Model implements IProduct {
     // }
 
     async findByCodigoBarras({ codigoProducto, codigoCliente }, callbackOk, callbackWrong) {
-        try {
-          if (Product.enviando) return;
-          Product.enviando = true;
-      
-          const configs = await ModelConfig.get(); // Asegurar obtención async de config
-          
-          const params = new URLSearchParams({
+        if (Product.enviando) return;
+        Product.enviando = true;
+        const configs = await ModelConfig.get(); // Asegurar obtención async de config
+        const params = new URLSearchParams({
             codbarra: codigoProducto,
             codigoSucursal: configs.sucursal,
             puntoVenta: configs.puntoVenta,
             ...(codigoCliente && { codigoCliente })
-          });
-      
-          const url = `${configs.urlBase}/api/ProductosTmp/GetProductosByCodigoBarra?${params}`;
-      
-          const response = await fetch(url);
-          const responseData = await response.json();
-      
-          if (!response.ok) throw new Error(responseData.message || 'Error en búsqueda');
-          
-          callbackOk(responseData.productos, response);
-          
-        } catch (error) {
-          if (callbackWrong) callbackWrong(error);
-        } finally {
-          Product.enviando = false;
-        }
-      }
+        });
+        
+        const url = `${configs.urlBase}/api/ProductosTmp/GetProductosByCodigoBarra?${params}`;
+        await EndPoint.sendGet(url, (responseData, response) => {
+            console.log("listo")
+            Product.enviando = false;
+            callbackOk(responseData.productos, response);
+        }, (err) => {
+            console.log("listo con error")
+            Product.enviando = false;
+            callbackWrong(err)
+        });
+    }
+
+    async getCategories(callbackOk, callbackWrong) {
+        const sucursal = await ModelConfig.get("sucursal");
+        const puntoVenta = await ModelConfig.get("puntoVenta");
+        console.log("Sucursal:", sucursal);
+        console.log("Punto de Venta:", puntoVenta);
+
+        const configs = await ModelConfig.get();
+        let url = configs.urlBase + "/api/NivelMercadoLogicos/GetAllCategorias";
+        // url += "?codigoSucursal=" + sucursal;
+        // url += "&puntoVenta=" + puntoVenta;
 
 
-async getCategories(callbackOk, callbackWrong) {
-    const sucursal =  await ModelConfig.get("sucursal");
-    const puntoVenta =  await ModelConfig.get("puntoVenta");
-    console.log("Sucursal:", sucursal);
-    console.log("Punto de Venta:", puntoVenta);
-
-    const configs = await ModelConfig.get();
-    let url = configs.urlBase + "/api/NivelMercadoLogicos/GetAllCategorias";
-    // url += "?codigoSucursal=" + sucursal;
-    // url += "&puntoVenta=" + puntoVenta;
-
-
-    await EndPoint.sendGet(url, (responseData, response) => {
-        callbackOk(response.data.categorias, response);
-    }, callbackWrong);
-}
+        await EndPoint.sendGet(url, (responseData, response) => {
+            callbackOk(response.data.categorias, response);
+        }, callbackWrong);
+    }
 
     async getSubCategories(categoriaId, callbackOk, callbackWrong) {
         const configs = await ModelConfig.get()
@@ -356,7 +348,7 @@ async getCategories(callbackOk, callbackWrong) {
             product,
             (responseData, response) => callbackOk(responseData, response),
             callbackWrong
-          );
+        );
     }
 
     async newProductFromCode(product, callbackOk, callbackWrong) {
