@@ -6,7 +6,8 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Image
+  Image,
+  Alert
 } from "react-native";
 import Box from "../../src/Componentes/Box"
 import { useRouter } from "expo-router";
@@ -18,6 +19,8 @@ import Ionicons from "@expo/vector-icons/Ionicons"
 import User from "src/Models/User";
 import Log from "src/Models/Log";
 import ModelConfig from "src/Models/ModelConfig";
+import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
+
 
 export default function Login() {
 
@@ -134,7 +137,36 @@ export default function Login() {
   }
 
 
+  const pedirPermiso = async (cual, callbackok, callbackwrong) => {
+    const checkResult = await check(cual);
+    if (checkResult !== RESULTS.GRANTED) {
+      const requestResult = await request(cual);
+      if (requestResult === RESULTS.GRANTED) {
+        // Alert.alert('Camera permission granted');
+        callbackok()
+      } else {
+        callbackwrong()
+      }
+    }
+  }
+
+
+  const permisosBluetooth = async(quePermiso)=>{
+    await pedirPermiso(quePermiso, ()=>{
+    },()=>{
+      Alert.alert('Se necesita el permiso del bluetooh');
+      setTimeout(async() => {
+        await permisosBluetooth(quePermiso)
+      }, 1000);
+    })
+  }
+
   const cargaInicial = async () => {
+
+    permisosBluetooth(PERMISSIONS.ANDROID.BLUETOOTH_CONNECT)
+    permisosBluetooth(PERMISSIONS.ANDROID.BLUETOOTH_SCAN)
+    permisosBluetooth(PERMISSIONS.ANDROID.BLUETOOTH_ADVERTISE)
+
     // console.log("carga inicial")
     const us = User.getInstance()
 

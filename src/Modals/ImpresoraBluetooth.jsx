@@ -13,6 +13,7 @@ import Product from '../Models/Product';
 import NewProductModal from './NewProductModal'; // Asegúrate de que la ruta sea la correcta
 import BluAdmin from '@/Pages/BluAdmin';
 import SmallButton from 'src/Componentes/Elements/SmallButton';
+import Blu from '@/Pages/Blu';
 
 const ImpresoraBluetooth = ({ visible, onConfirm, onCancel }) => {
   const {
@@ -33,15 +34,23 @@ const ImpresoraBluetooth = ({ visible, onConfirm, onCancel }) => {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <BluAdmin onSave={(info)=>{
+            {/* <BluAdmin onSave={(info)=>{
               onConfirm(info)
             }}
             onCancel={()=>{
               onCancel()
             }} 
+            /> */}
+
+            <Blu onSave={(info) => {
+              onConfirm(info)
+            }}
+              onCancel={() => {
+                onCancel()
+              }}
             />
 
-            <SmallButton textButton={"cancelar"} actionButton={()=>{
+            <SmallButton textButton={"cancelar"} actionButton={() => {
               onCancel()
             }} />
           </View>

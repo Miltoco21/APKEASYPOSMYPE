@@ -23,6 +23,7 @@ import ModelConfig from "src/Models/ModelConfig";
 
 import { BluetoothManager, BluetoothEscposPrinter, BluetoothTscPrinter } from 'react-native-bluetooth-escpos-printer';
 import { Button } from "react-native-paper";
+import System from "src/Helpers/System";
 
 export default function Blu({
   onSave,
@@ -109,13 +110,13 @@ export default function Blu({
         //   loading: false,
         //   boundAddress: direccionDispositivo
         // })
-        alert("Realizado correctamente")
+        System.mostrarError("Realizado correctamente")
         setDispositivosConectados([...dispositivosConectados, dispositivoObj])
       }, (e) => {
         // this.setState({
         //   loading: false
         // })
-        alert("No se pudo vincular: " + e);
+        System.mostrarError(e);
       })
 
   }

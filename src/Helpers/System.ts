@@ -2,6 +2,7 @@
 import CONSTANTS from "../definitions/Constants";
 import dayjs from "dayjs";
 import ModelConfig from "../Models/ModelConfig";
+import { Alert } from "react-native";
 
 
 class System {
@@ -291,9 +292,9 @@ class System {
     static async configBoletaOk() { // Hacer el método async
         const emitirBoleta = await ModelConfig.get("emitirBoleta"); // Esperar la resolución
         const tienePasarelaPago = await ModelConfig.get("tienePasarelaPago");
-      
+
         return (emitirBoleta !== null && tienePasarelaPago !== null);
-      }
+    }
 
     static invertirProps(objeto) {
         const objetoInvertido = {}
@@ -326,16 +327,30 @@ class System {
     static arrayIdValueFromObject(objeto, invert) {
         if (invert) objeto = this.invertirProps(objeto)
         const keys = Object.keys(objeto)
-        var ar:any = []
+        var ar: any = []
 
         keys.forEach((key) => {
             ar.push({
-                id : key,
+                id: key,
                 value: objeto[key]
             })
         })
 
         return ar
+    }
+
+
+    static mostrarError(err) {
+        var txt = ""
+        if (typeof (err) == "object") {
+            txt = (err.message)
+        } else if (typeof (err) == "string") {
+            txt = (err)
+        } else {
+            txt = ("Error con formato desconocido." + typeof (err))
+        }
+        Alert.alert(txt)
+        return txt
     }
 
 }
