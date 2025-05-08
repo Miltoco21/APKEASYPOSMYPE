@@ -13,6 +13,7 @@ import BoxOptionList from 'src/Componentes/BoxContent/BoxOptionList';
 import InputNumber from 'src/Componentes/Elements/CompuestosMobile/InputNumber';
 import Log from 'src/Models/Log';
 import ImpresoraBluetooth from './ImpresoraBluetooth';
+import Box from 'src/Componentes/Box';
 
 const BaseConfigModal = ({
   openDialog,
@@ -36,6 +37,7 @@ const BaseConfigModal = ({
   const [impresoraBluetooth, setImpresoraBluetooth] = useState("")
 
   const [showModalPrinter, setShowModalPrinter] = useState(false)
+  const [usaImpresora, setUsaImpresora] = useState(false)
 
   const cargarOrdenesListados = () => {
     var seleccionables = []
@@ -66,6 +68,7 @@ const BaseConfigModal = ({
     setPermitirVentaPrecio0(await ModelConfig.get("permitirVentaPrecio0"))
     setAgruparProductoLinea(await ModelConfig.get("agruparProductoLinea"))
     setImpresoraBluetooth(await ModelConfig.get("impresoraBluetooth"))
+    setUsaImpresora(await ModelConfig.get("usarImpresoraBluetooth"))
 
   }
 
@@ -83,6 +86,7 @@ const BaseConfigModal = ({
     await ModelConfig.change("sucursal", sucursal)
     await ModelConfig.change("puntoVenta", puntoVenta)
     await ModelConfig.change("impresoraBluetooth", impresoraBluetooth)
+    await ModelConfig.change("usarImpresoraBluetooth", usaImpresora)
 
     onClose()
   };
@@ -90,7 +94,7 @@ const BaseConfigModal = ({
   const onClose = () => {
     setOpenDialog(false)
   }
-  
+
   const getNamePrinter = () => {
     const pr = JSON.parse(impresoraBluetooth)
     return pr.name
@@ -195,42 +199,64 @@ const BaseConfigModal = ({
                 label={"Agrupar Producto Linea"}
               />
             </Grid> */}
-            <Grid item xs={12} md={12} lg={12}>
-              {impresoraBluetooth != "" ? (
-                <Text style={{
-                  fontSize:18,
-                  padding:5,
-                  // backgroundColor:"silver",
-                  borderWidth:1,
-                  borderRadius:4,
-                  marginTop:20,
-                  marginBottom:2
-                }}>Impresora: { getNamePrinter() }</Text>
-              ) : (
-                <Text>Sin asignar</Text>
+
+
+            <Box style={{
+              backgroundColor: "#F8F8F8",
+              padding: 10,
+              borderWidth: 2,
+              borderRadius: 10,
+              marginTop: 10
+            }}>
+
+              <Grid item xs={12} md={12} lg={12}>
+                <InputCheckbox
+                  inputState={[usaImpresora, setUsaImpresora]}
+                  label={"Usar Impresora"}
+                />
+              </Grid>
+              {usaImpresora && (
+                <Grid item xs={12} md={12} lg={12}>
+                  {impresoraBluetooth != "" ? (
+                    <Text style={{
+                      fontSize: 18,
+                      padding: 5,
+                      // backgroundColor:"silver",
+                      borderWidth: 1,
+                      borderRadius: 4,
+                      marginTop: 20,
+                      marginBottom: 2
+                    }}>Impresora: {getNamePrinter()}</Text>
+                  ) : (
+                    <Text>Sin asignar</Text>
+                  )}
+                  <ImpresoraBluetooth
+                    visible={showModalPrinter}
+                    onConfirm={(infoBluetooth) => {
+                      if (infoBluetooth === "") {
+                        setImpresoraBluetooth("")
+                      } else {
+                        setImpresoraBluetooth(JSON.stringify(infoBluetooth))
+                      }
+                      setShowModalPrinter(false)
+                    }}
+                    onCancel={() => {
+                      setShowModalPrinter(false)
+                    }}
+                  />
+                  <TouchableOpacity
+                    style={[styles.modalButton, {
+                      backgroundColor: "#EC00E8"
+                    }]}
+                    onPress={() => {
+                      setShowModalPrinter(true)
+                    }}
+                  >
+                    <Text style={styles.buttonText}>CONF. Impresora Bluetetooth</Text>
+                  </TouchableOpacity>
+                </Grid>
               )}
-              <ImpresoraBluetooth
-                visible={showModalPrinter}
-                onConfirm={(infoBluetooth) => {
-                  console.log("vamos a guardar", infoBluetooth[0])
-                  setImpresoraBluetooth(JSON.stringify(infoBluetooth[0]))
-                  setShowModalPrinter(false)
-                }}
-                onCancel={() => {
-                  setShowModalPrinter(false)
-                }}
-              />
-              <TouchableOpacity
-                style={[styles.modalButton, {
-                  backgroundColor:"#EC00E8"
-                }]}
-                onPress={() => {
-                  setShowModalPrinter(true)
-                }}
-              >
-                <Text style={styles.buttonText}>CONF. Impresora Bluetetooth</Text>
-              </TouchableOpacity>
-            </Grid>
+            </Box>
 
             <View style={styles.modalButtons}>
               <TouchableOpacity
@@ -302,9 +328,9 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 25,
     borderRadius: 5,
-    height:60,
+    height: 60,
     width: "100%",
-    marginTop:5
+    marginTop: 5
   },
   cancelButton: {
     backgroundColor: '#e74c3c',
@@ -315,9 +341,9 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white',
     fontWeight: 'bold',
-    alignContent:"center",
-    margin:"auto"
-  }, 
+    alignContent: "center",
+    margin: "auto"
+  },
   section: {
     marginVertical: 15,
   },

@@ -6,6 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  PermissionsAndroid,
   Image,
   Alert
 } from "react-native";
@@ -138,47 +139,69 @@ export default function Login() {
 
 
   const pedirPermiso = async (cual, callbackok, callbackwrong) => {
-    const checkResult = await check(cual);
-    if (checkResult !== RESULTS.GRANTED) {
-      const requestResult = await request(cual);
-      if (requestResult === RESULTS.GRANTED) {
-        // Alert.alert('Camera permission granted');
-        callbackok()
-      } else {
-        callbackwrong()
+
+    try {
+
+      const checkResult = await check(cual);
+      console.log("checkResult", checkResult)
+      // if (checkResult === RESULTS.UNAVAILABLE) {
+      //   console.log("version vieja")
+      //   console.log("pidiendo permiso ", cual)
+      //   var granted = await PermissionsAndroid.request(
+      //     cual,
+      //     {
+      //       title: 'Permiso ' + cual,
+      //       message:
+      //         'Se requiere permiso: ' + cual,
+      //       buttonNeutral: 'Ask Me Later',
+      //       buttonNegative: 'Cancel',
+      //       buttonPositive: 'OK',
+      //     },
+      //   );
+      //   console.log("resultado de la solicitud", granted)
+      //   if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      //     callbackok()
+      //   } else {
+      //     callbackwrong(cual + ' denied');
+      //   }
+      //   return
+      // }
+
+      if (checkResult !== RESULTS.GRANTED) {
+        const requestResult = await request(cual);
+        if (requestResult === RESULTS.GRANTED) {
+          // Alert.alert('Camera permission granted');
+          callbackok()
+        } else {
+          callbackwrong()
+        }
       }
+    } catch (err) {
+      Alert.alert(err)
     }
   }
 
 
-  const permisosBluetooth = async(quePermiso)=>{
-    await pedirPermiso(quePermiso, ()=>{
-    },()=>{
-      Alert.alert('Se necesita el permiso del bluetooh');
-      setTimeout(async() => {
-        await permisosBluetooth(quePermiso)
-      }, 1000);
+  const permisosBluetooth = async (quePermiso) => {
+    await pedirPermiso(quePermiso, () => {}, async () => {
+      // Alert.alert('Se necesita el permiso del bluetooh');
+      if (await ModelConfig.get("usarImpresoraBluetooth")) {
+        setTimeout(async () => {
+          await permisosBluetooth(quePermiso)
+        }, 10000);
+      }
     })
   }
 
   const cargaInicial = async () => {
+    if (await ModelConfig.get("usarImpresoraBluetooth")) {
+      permisosBluetooth(PERMISSIONS.ANDROID.BLUETOOTH_CONNECT)
+      // permisosBluetooth(PERMISSIONS.ANDROID.BLUETOOTH_SCAN)
+      // permisosBluetooth(PERMISSIONS.ANDROID.BLUETOOTH_ADVERTISE)
+    }
 
-    permisosBluetooth(PERMISSIONS.ANDROID.BLUETOOTH_CONNECT)
-    permisosBluetooth(PERMISSIONS.ANDROID.BLUETOOTH_SCAN)
-    permisosBluetooth(PERMISSIONS.ANDROID.BLUETOOTH_ADVERTISE)
-
-    // console.log("carga inicial")
-    const us = User.getInstance()
-
-    // await us.sesion.eliminar({id:1})
-
-    const ses = await us.getFromSesion()
-
-    console.log("ses", ses)
-    console.log("codigoSucursal", ses.codigoSucursal)
-
-    const cargado = await User.getInstance().getFromSesion()
-    if (cargado && !Array.isArray(cargado)) {
+    const logueado = await User.getInstance().getFromSesion()
+    if (logueado && !Array.isArray(logueado)) {
       router.navigate("./Home");
     }
 

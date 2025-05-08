@@ -55,6 +55,8 @@ const BaseConfig = {
   verBotonPagarFactura: true,
   
   impresoraBluetooth: "",
+
+  usarImpresoraBluetooth: false
 };
 
 export default BaseConfig;

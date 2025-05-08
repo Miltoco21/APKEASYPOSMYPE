@@ -23,8 +23,8 @@ export default function ({
 
     return (
         <SafeAreaView style={{
+            ...styles.container,
             ...style,
-            ...styles.container
         }}
             {...props}>
             <Stack.Screen
