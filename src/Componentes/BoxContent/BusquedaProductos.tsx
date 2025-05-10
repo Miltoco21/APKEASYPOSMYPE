@@ -69,47 +69,189 @@ const BoxProducts = () => {
     }
 
     ProductCodeStack.addProductCode(pluValue);
-    setSearchText("");
+    setSearchText(pluValue); // Actualizar searchText con el PLU
+    focusSearchInput();
   };
 
-
-  // Resto del código de búsqueda permanece igual...
   const handleSearch = async (searchValue, currentPage = 1) => {
     if (!searchValue.trim() || loading) return;
-
+  
     setLoading(true);
     try {
       const isNumeric = /^\d+$/.test(searchValue);
       const isCodigoBarras = isNumeric && (searchValue.length === 12 || searchValue.length === 13);
-
+      let productosEncontrados = [];
+  
+      // Búsqueda exclusiva por código de barras si cumple formato
       if (isCodigoBarras) {
-        // Priorizar búsqueda por código de barras primero
-        await Product.getInstance().findByCodigoBarras(
-          { codigoProducto: searchValue, codigoCliente: 0 },
-          (productosBarras) => {
-            if (productosBarras?.length > 0) {
-              setFilteredProducts(productosBarras);
-              setHasMore(false);
-            } else {
-              // Si no encuentra por código de barras, probar con código normal
-              searchByCodigoProducto(searchValue);
-            }
-          },
-          handleError
-        );
-      } else if (isNumeric) {
-        // Búsqueda numérica que no cumple formato de código de barras
-        searchByCodigoProducto(searchValue);
-      } else {
-        // Búsqueda por descripción
-        searchByDescription(searchValue, currentPage);
+        productosEncontrados = await new Promise((resolve) => {
+          Product.getInstance().findByCodigoBarras(
+            { codigoProducto: searchValue, codigoCliente: 0 },
+            (productos) => resolve(productos || []),
+            (error) => { handleError(error); resolve([]); }
+          );
+        });
+  
+        // Si no se encontró, mostrar modal inmediatamente
+        if (!productosEncontrados.length) {
+          setShowNewProductModal(true);
+          return; // Salir tempranamente
+        }
       }
+  
+      // Resto de búsquedas solo si no es código de barras
+      if (!isCodigoBarras) {
+        // Búsqueda por código numérico
+        if (isNumeric) {
+          productosEncontrados = await new Promise((resolve) => {
+            Product.getInstance().findByCodigo(
+              { codigoProducto: searchValue, codigoCliente: 0 },
+              (productos) => resolve(productos || []),
+              (error) => { handleError(error); resolve([]); }
+            );
+          });
+        }
+  
+        // Búsqueda por descripción si no se encontró por código
+        if (!productosEncontrados.length) {
+          productosEncontrados = await new Promise((resolve) => {
+            Product.getInstance().findByDescriptionPaginado(
+              {
+                description: searchValue,
+                codigoCliente: 0,
+                pagina: currentPage,
+                canPorPagina: 10
+              },
+              (productos) => resolve(productos || []),
+              (error) => { handleError(error); resolve([]); }
+            );
+          });
+        }
+      }
+  
+      // Actualizar resultados
+      if (currentPage === 1) {
+        setFilteredProducts(productosEncontrados);
+      } else {
+        setFilteredProducts(prev => [...prev, ...productosEncontrados]);
+      }
+  
+      // Mostrar modal si no hay resultados en primera página
+      if (!productosEncontrados.length && currentPage === 1) {
+        setShowNewProductModal(true);
+      }
+  
+      setHasMore(productosEncontrados.length === 10);
+  
     } catch (error) {
       handleError(error);
     } finally {
       setLoading(false);
     }
   };
+  // const handleSearch = async (searchValue, currentPage = 1) => {
+  //   if (!searchValue.trim() || loading) return;
+
+  //   setLoading(true);
+  //   try {
+  //     const isNumeric = /^\d+$/.test(searchValue);
+  //     const isCodigoBarras = isNumeric && (searchValue.length === 12 || searchValue.length === 13);
+  //     let productosEncontrados = [];
+
+  //     // Búsqueda por código de barras
+  //     if (isCodigoBarras) {
+  //       productosEncontrados = await new Promise((resolve) => {
+  //         Product.getInstance().findByCodigoBarras(
+  //           { codigoProducto: searchValue, codigoCliente: 0 },
+  //           (productos) => resolve(productos || []),
+  //           (error) => { handleError(error); resolve([]); }
+  //         );
+  //       });
+  //     }
+
+  //     // Búsqueda por código numérico (si no se encontró por código de barras)
+  //     if (!productosEncontrados.length && isNumeric) {
+  //       productosEncontrados = await new Promise((resolve) => {
+  //         Product.getInstance().findByCodigo(
+  //           { codigoProducto: searchValue, codigoCliente: 0 },
+  //           (productos) => resolve(productos || []),
+  //           (error) => { handleError(error); resolve([]); }
+  //         );
+  //       });
+  //     }
+
+  //     // Búsqueda por descripción (si no se encontró por código)
+  //     if (!productosEncontrados.length) {
+  //       productosEncontrados = await new Promise((resolve) => {
+  //         Product.getInstance().findByDescriptionPaginado(
+  //           {
+  //             description: searchValue,
+  //             codigoCliente: 0,
+  //             pagina: currentPage,
+  //             canPorPagina: 10
+  //           },
+  //           (productos) => resolve(productos || []),
+  //           (error) => { handleError(error); resolve([]); }
+  //         );
+  //       });
+  //     }
+
+  //     // Actualizar resultados
+  //     if (currentPage === 1) {
+  //       setFilteredProducts(productosEncontrados);
+  //     } else {
+  //       setFilteredProducts(prev => [...prev, ...productosEncontrados]);
+  //     }
+
+  //     // Mostrar modal si no hay resultados
+  //     if (!productosEncontrados.length && currentPage === 1) {
+  //       setShowNewProductModal(true);
+  //     }
+
+  //     setHasMore(productosEncontrados.length === 10);
+
+  //   } catch (error) {
+  //     handleError(error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+  // const handleSearch = async (searchValue, currentPage = 1) => {
+  //   if (!searchValue.trim() || loading) return;
+
+  //   setLoading(true);
+  //   try {
+  //     const isNumeric = /^\d+$/.test(searchValue);
+  //     const isCodigoBarras = isNumeric && (searchValue.length === 12 || searchValue.length === 13);
+
+  //     if (isCodigoBarras) {
+  //       // Priorizar búsqueda por código de barras primero
+  //       await Product.getInstance().findByCodigoBarras(
+  //         { codigoProducto: searchValue, codigoCliente: 0 },
+  //         (productosBarras) => {
+  //           if (productosBarras?.length > 0) {
+  //             setFilteredProducts(productosBarras);
+  //             setHasMore(false);
+  //           } else {
+  //             // Si no encuentra por código de barras, probar con código normal
+  //             searchByCodigoProducto(searchValue);
+  //           }
+  //         },
+  //         handleError
+  //       );
+  //     } else if (isNumeric) {
+  //       // Búsqueda numérica que no cumple formato de código de barras
+  //       searchByCodigoProducto(searchValue);
+  //     } else {
+  //       // Búsqueda por descripción
+  //       searchByDescription(searchValue, currentPage);
+  //     }
+  //   } catch (error) {
+  //     handleError(error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   // Función auxiliar para búsqueda por código de producto
   const searchByCodigoProducto = async (codigo) => {
@@ -170,12 +312,6 @@ const BoxProducts = () => {
     setHasMore(false);
   };
 
-  const handlePLUSearch = () => {
-    // Si el texto ingresado es numérico, se procesa como código PLU
-    if (!parseFloat(searchText)) return;
-    ProductCodeStack.addProductCode(searchText);
-    setSearchText('');
-  };
 
   useEffect(() => {
     console.log("cambio searchText", searchText)
@@ -201,14 +337,7 @@ const BoxProducts = () => {
     }
   };
 
-  // const handleAddProduct = (product) => {
-  //   Keyboard.dismiss(); // Cierra el teclado
-  //   addToSalesData(product);
-  //   setSearchText("");
-  //   //Keyboard.dismiss(); // Cierra el teclado
-  //  focusSearchInput();
 
-  // };
   const handleAddProduct = (product) => {
     if (product.precioVenta <= 0) {
       // Si el precio es cero, mostrar modal de edición
@@ -352,12 +481,12 @@ const BoxProducts = () => {
 
       <IngresoPLU
         visible={showPLUModal}
-        // onConfirm={handlePLUConfirm}
-        onConfirm={(plu) => {
-          // Lógica para manejar PLU válido
-          console.log('PLU ingresado:', plu);
-          setShowPLUModal(false);
-        }}
+         onConfirm={handlePLUConfirm}
+        // onConfirm={(plu) => {
+        //   // Lógica para manejar PLU válido
+        //   console.log('PLU ingresado:', plu);
+        //   setShowPLUModal(false);
+        // }}
         onCancel={() => setShowPLUModal(false)}
       />
 
@@ -390,8 +519,6 @@ const BoxProducts = () => {
 
 };
 
-// // Estilos permanecen iguales...
-// // Estilos actualizados para mejor visualización
 const styles = StyleSheet.create({
   container: {
     flex: 1,
