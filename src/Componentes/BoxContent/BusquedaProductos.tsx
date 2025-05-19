@@ -24,6 +24,8 @@ import CapturaCodigoCamara from '../ScreenDialog/CapturaCodigoCamara';
 import IngresoPLU from 'src/Modals/IngresoPLU';
 import IngresoPrecio from 'src/Modals/IngresoPrecio';
 import NewProductModal from 'src/Modals/NewProductModal';
+import Validator from 'src/Helpers/Validator';
+
 
 
 const BoxProducts = () => {
@@ -149,74 +151,7 @@ const BoxProducts = () => {
       setLoading(false);
     }
   };
-  // const handleSearch = async (searchValue, currentPage = 1) => {
-  //   if (!searchValue.trim() || loading) return;
-
-  //   setLoading(true);
-  //   try {
-  //     const isNumeric = /^\d+$/.test(searchValue);
-  //     const isCodigoBarras = isNumeric && (searchValue.length === 12 || searchValue.length === 13);
-  //     let productosEncontrados = [];
-
-  //     // Búsqueda por código de barras
-  //     if (isCodigoBarras) {
-  //       productosEncontrados = await new Promise((resolve) => {
-  //         Product.getInstance().findByCodigoBarras(
-  //           { codigoProducto: searchValue, codigoCliente: 0 },
-  //           (productos) => resolve(productos || []),
-  //           (error) => { handleError(error); resolve([]); }
-  //         );
-  //       });
-  //     }
-
-  //     // Búsqueda por código numérico (si no se encontró por código de barras)
-  //     if (!productosEncontrados.length && isNumeric) {
-  //       productosEncontrados = await new Promise((resolve) => {
-  //         Product.getInstance().findByCodigo(
-  //           { codigoProducto: searchValue, codigoCliente: 0 },
-  //           (productos) => resolve(productos || []),
-  //           (error) => { handleError(error); resolve([]); }
-  //         );
-  //       });
-  //     }
-
-  //     // Búsqueda por descripción (si no se encontró por código)
-  //     if (!productosEncontrados.length) {
-  //       productosEncontrados = await new Promise((resolve) => {
-  //         Product.getInstance().findByDescriptionPaginado(
-  //           {
-  //             description: searchValue,
-  //             codigoCliente: 0,
-  //             pagina: currentPage,
-  //             canPorPagina: 10
-  //           },
-  //           (productos) => resolve(productos || []),
-  //           (error) => { handleError(error); resolve([]); }
-  //         );
-  //       });
-  //     }
-
-  //     // Actualizar resultados
-  //     if (currentPage === 1) {
-  //       setFilteredProducts(productosEncontrados);
-  //     } else {
-  //       setFilteredProducts(prev => [...prev, ...productosEncontrados]);
-  //     }
-
-  //     // Mostrar modal si no hay resultados
-  //     if (!productosEncontrados.length && currentPage === 1) {
-  //       setShowNewProductModal(true);
-  //     }
-
-  //     setHasMore(productosEncontrados.length === 10);
-
-  //   } catch (error) {
-  //     handleError(error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-  // const handleSearch = async (searchValue, currentPage = 1) => {
+  
   //   if (!searchValue.trim() || loading) return;
 
   //   setLoading(true);
@@ -337,9 +272,11 @@ const BoxProducts = () => {
     }
   };
 
-
+  
   const handleAddProduct = (product) => {
     if (product.precioVenta <= 0) {
+      
+      
       // Si el precio es cero, mostrar modal de edición
       setSelectedProduct(product);
       setShowEditPriceModal(true);
@@ -350,6 +287,10 @@ const BoxProducts = () => {
       setSearchText("");
       focusSearchInput();
     }
+    if (product.pesable) {
+      console.log('Producto pesable seleccionado:');
+    }
+    
   };
   // Función para manejar la actualización del precio
 

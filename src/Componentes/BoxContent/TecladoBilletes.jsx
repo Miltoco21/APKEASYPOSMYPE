@@ -11,28 +11,47 @@ const TecladoBilletes = ({
   maxValue = 10000000,
 }) => {
   const [inputValue, setInputValue] = useState(initialValue.toString()); 
+  const [hasInteracted, setHasInteracted] = useState(false);
+
    const screenWidth = Dimensions.get('window').width;
 
-  useEffect(() => {
+   useEffect(() => {
     if (visible) {
       setInputValue(initialValue.toString());
-      // Notificamos el valor inicial al padre
+      setHasInteracted(false);
       onAmountSelected(initialValue);
     }
   }, [visible, initialValue]);
 
+  // const handleDenomination = (amount) => {
+  //   const currentValue = parseInt(inputValue.replace(/\D/g, '') || 0);
+  //   const newValue = currentValue + amount;
+    
+  //   if (newValue > maxValue) {
+  //     Alert.alert("Error", "El monto excede el máximo permitido");
+  //     return;
+  //   }
+    
+  //   setInputValue(newValue.toString());
+  // };
   const handleDenomination = (amount) => {
     const currentValue = parseInt(inputValue.replace(/\D/g, '') || 0);
-    const newValue = currentValue + amount;
-    
-    if (newValue > maxValue) {
-      Alert.alert("Error", "El monto excede el máximo permitido");
-      return;
+    let newValue;
+
+    if (!hasInteracted) {
+      newValue = amount;
+      setHasInteracted(true);
+    } else {
+      newValue = currentValue + amount;
     }
+
+    // if (newValue > maxValue) {
+    //   Alert.alert("Error", "El monto excede el máximo permitido");
+    //   return;
+    // }
     
     setInputValue(newValue.toString());
   };
-
   const handleInputChange = (text) => {
     const cleanedText = text.replace(/[^0-9]/g, '');
     setInputValue(cleanedText);

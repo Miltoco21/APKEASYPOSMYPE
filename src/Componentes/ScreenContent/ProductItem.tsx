@@ -242,11 +242,11 @@ const ProductsItem = ({ item, index, onRefresh = () => {} }) => {
       </Text>
       
       <Text style={styles.priceText}>
-        {item.precioVenta ? `$${item.precioVenta.toFixed(2)}` : '-'}
+        {item.precioVenta ? `$${item.precioVenta}` : '-'}
       </Text>
       
       <Text style={styles.totalText}>
-        {item.precioVenta ? `$${(item.precioVenta * currentValue).toFixed(2)}` : '-'}
+        {item.precioVenta ? `$${(item.precioVenta * currentValue)}` : '-'}
       </Text>
       
       <TouchableOpacity onPress={() => {
