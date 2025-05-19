@@ -12,7 +12,7 @@ const BottomButtons = () => {
   const {
     salesData,
     clearSalesData,
-    showAlert
+    showAlert,showConfirm
   } = useContext(SelectedOptionsContext);
 
   const [showSettingsModal, setShowSettingsModal] = useState(false);
@@ -70,8 +70,18 @@ const BottomButtons = () => {
                 showAlert("No hay elementos en la lista")
                 return
               }
-              clearSalesData();
-              setIndex(0);
+              showConfirm(
+                "¿Eliminar todos los elementos?", 
+                () => {
+                  // Si confirman
+                  clearSalesData();
+                  setIndex(0);
+                },
+                () => {
+                  // Si cancelan
+                  console.log("Eliminación cancelada");
+                }
+              );
             } else if (route.key === 'config') {
               setShowSettingsModal(true);
             } else if (route.key === 'familias') {
