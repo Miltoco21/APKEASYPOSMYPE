@@ -43,29 +43,60 @@ const Home = ({
   }, [userData])
 
   return (
-    <Box>
-      <GeneralElements />
-      <AbrirCaja openDialog={isCajaOpen} setOpenDialog={setIsCajaOpen} />
-      <View style={styles.mainContainer}>
-        <BoxTop />
-        <BusquedaProductos />
-        <BoxTotales />
+
+    <Box style={styles.container}>
+    <GeneralElements />
+    <AbrirCaja openDialog={isCajaOpen} setOpenDialog={setIsCajaOpen} />
+    
+    {/* Contenido principal */}
+    <View style={styles.mainContent}>
+      <BoxTop />
+      <BusquedaProductos />
+      <BoxTotales />
+    </View>
+
+    {/* Botones fijos en la parte inferior */}
+    <View style={styles.bottomButtons}>
+      <BottomButtons />
+    </View>
+  </Box>
+    // <Box>
+    //   <GeneralElements />
+    //   <AbrirCaja openDialog={isCajaOpen} setOpenDialog={setIsCajaOpen} />
+    //   <View style={styles.mainContainer}>
+    //     <BoxTop />
+    //     <BusquedaProductos />
+    //     <BoxTotales />
 
 
-        <BottomButtons />
+      
 
-      </View>
-    </Box>
+    //   </View>
+    //   <View style={styles.bottomWrapper} >
+    //   <BottomButtons />
+
+    //   </View>
+
+    // </Box>
   );
 };
 const styles = StyleSheet.create({
-  mainContainer: {
+  container: {
     flex: 1,
-    position: 'relative'
+    backgroundColor: '#fff'
   },
-  bottomWrapper: {
-
-
+  mainContent: {
+    flex: 1,
+    paddingBottom: 60 // Ajustar según altura de los botones
+  },
+  bottomButtons: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#fff',
+    borderTopWidth: 1,
+    borderTopColor: '#e0e0e0'
   }
 });
 export default Home;

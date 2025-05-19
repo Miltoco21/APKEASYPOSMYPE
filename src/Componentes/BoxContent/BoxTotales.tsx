@@ -41,7 +41,7 @@ const BoxTotales = ({
   }
 
   return (
-    <Surface style={styles.container}>
+    <View style={styles.container}>
       <Title style={styles.totalText}>TOTAL: ${grandTotal}</Title>
       <View style={styles.buttonRow}>
         <Button mode="contained" style={styles.button} onPress={abrirBoleta}>
@@ -68,14 +68,14 @@ const BoxTotales = ({
 
       <PagarBoleta openDialog={showModalPagarBoleta} setOpenDialog={setShowModalPagarBoleta} />
       <UltimaVenta visible={showUltimaVenta} onCancel={()=>setShowUltimaVenta(false)}/>
-    </Surface>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     // marginTop: 100,
-    padding: 5,
+    padding: 3,
     elevation: 3,
     borderRadius: 8,
     backgroundColor: '#fff',

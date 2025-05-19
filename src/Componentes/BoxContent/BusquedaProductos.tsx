@@ -284,11 +284,14 @@ const BoxProducts = () => {
       // Si el precio es válido, agregar directamente
       Keyboard.dismiss();
       addToSalesData(product);
+      console.log(product);
+      
+     
       setSearchText("");
       focusSearchInput();
     }
     if (product.pesable) {
-      console.log('Producto pesable seleccionado:');
+      Log('Producto pesable seleccionado:',product);
     }
     
   };

@@ -23,7 +23,7 @@ const BottomButtons = () => {
 
 
   const [index, setIndex] = useState(0);
-  const { colors } = useTheme();
+ 
 
   const routes = [
     { key: 'clear', title: 'Limpiar', icon: 'trash' as const },
@@ -49,7 +49,7 @@ const BottomButtons = () => {
 
 
   return (
-    <SafeAreaView style={styles.safeContainer} >
+    <View style={styles.safeContainer} >
 
 
       <View style={styles.container}>
@@ -63,7 +63,7 @@ const BottomButtons = () => {
             <Ionicons name={route.icon} size={24} color={focused ? "#283048" : color} />
           )}
           shifting={false}
-          barStyle={[styles.bar, { backgroundColor: colors.background }]}
+          //barStyle={[styles.bar, { backgroundColor: colors.background }]}
           onTabPress={({ route }) => {
             if (route.key === 'clear') {
               if (salesData.length < 1) {
@@ -138,7 +138,7 @@ const BottomButtons = () => {
 
 
 
-    </SafeAreaView>
+    </View>
 
   );
 };
@@ -147,18 +147,27 @@ export default BottomButtons;
 
 const styles = StyleSheet.create({
   safeContainer: {
-    flex: 1,
+  flex:1,
     backgroundColor: '#fff',
-    paddingBottom: 2
+   
   },
   modalSafeContainer: {
     flex: 1,
     backgroundColor: '#fff',
   },
   container: {
-    flex: 1,
+    //flex: 1,
 
+    height: 80, // Alto fijo para el contenedor de navegación
+    justifyContent: 'flex-end', // Alinea la navegación al fondo
     backgroundColor: '#fff',
+    borderTopWidth: 1,
+    borderTopColor: '#e0e0e0',
+    elevation: 8, // Sombras para Android
+    shadowColor: '#000', // Sombras para iOS
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
 
 
 
@@ -206,13 +215,13 @@ const styles = StyleSheet.create({
     //paddingBottom: Platform.OS === 'ios' ? 25 : 12,
     elevation: 8,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    borderTopWidth: 0.5,
-    borderTopColor: 'rgba(0,0,0,0.1)',
+   
+    // shadowOpacity: 0.1,
+    // shadowRadius: 3,
+    // borderTopWidth: 0.1,
+    //borderTopColor: 'rgba(0,0,0,0.1)',
   }, n: {
-    marginTop: 4,
+    marginTop: 1,
   },
   label: {
     fontSize: 12,
