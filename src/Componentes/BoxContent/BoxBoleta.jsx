@@ -151,13 +151,12 @@ const BoxBoleta = ({ onClose, visible }) => {
           }
         });
       },
-      () => {}
+      () => { }
     );
   };
 
   useEffect(() => {
     aplicarOfertas();
-    PrinterBluetooth.prepareBluetooth()
   }, []);
 
   // Función para procesar el pago
@@ -308,7 +307,9 @@ const BoxBoleta = ({ onClose, visible }) => {
         const cantidad = await ModelConfig.get("cantidadTicketImprimir");
         const cantAImprimir = parseInt(cantidad);
         // PrinterBluetooth.printAll(requestBody,response, cantAImprimir);
-        PrinterBluetooth.printAll(requestBody,response);
+        PrinterBluetooth.prepareBluetooth(() => {
+          PrinterBluetooth.printAll(requestBody, response);
+        })
 
         // const cantAImprimir = parseInt(ModelConfig.get("cantidadTicketImprimir"));
         // Printer.printAll(response, cantAImprimir);
@@ -548,7 +549,7 @@ const styles = StyleSheet.create({
   finalButton: {
     backgroundColor: Colors.azul,
     padding: 16,
-    marginBottom:6,
+    marginBottom: 6,
     borderRadius: 8,
     alignItems: "center",
     justifyContent: "center",

@@ -7,11 +7,7 @@ import {
   TouchableOpacity,
   StyleSheet, ActivityIndicator
 } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import { SelectedOptionsContext } from '../Componentes/Context/SelectedOptionsProvider';
-import Product from '../Models/Product';
-import NewProductModal from './NewProductModal'; // Asegúrate de que la ruta sea la correcta
-import BluAdmin from '@/Pages/BluAdmin';
 import SmallButton from 'src/Componentes/Elements/SmallButton';
 import Blu from '@/Pages/Blu';
 

@@ -196,8 +196,8 @@ export default function Login() {
   const cargaInicial = async () => {
     if (await ModelConfig.get("usarImpresoraBluetooth")) {
       permisosBluetooth(PERMISSIONS.ANDROID.BLUETOOTH_CONNECT)
-      // permisosBluetooth(PERMISSIONS.ANDROID.BLUETOOTH_SCAN)
-      // permisosBluetooth(PERMISSIONS.ANDROID.BLUETOOTH_ADVERTISE)
+      permisosBluetooth(PERMISSIONS.ANDROID.BLUETOOTH_SCAN)
+      permisosBluetooth(PERMISSIONS.ANDROID.BLUETOOTH_ADVERTISE)
     }
 
     const logueado = await User.getInstance().getFromSesion()

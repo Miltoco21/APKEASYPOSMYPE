@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet, Switch, ScrollView } from 'react-native';
+import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet, Switch, ScrollView, Alert } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import BaseConfig, { OrdenListado } from '../definitions/BaseConfig';
 import InputName from 'src/Componentes/Elements/CompuestosMobile/InputName';
@@ -14,6 +14,8 @@ import InputNumber from 'src/Componentes/Elements/CompuestosMobile/InputNumber';
 import Log from 'src/Models/Log';
 import ImpresoraBluetooth from './ImpresoraBluetooth';
 import Box from 'src/Componentes/Box';
+import System from 'src/Helpers/System';
+import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 
 const BaseConfigModal = ({
   openDialog,
@@ -104,6 +106,73 @@ const BaseConfigModal = ({
     loadConfigs()
     cargarOrdenesListados()
   }, [openDialog])
+
+
+  const pedirPermiso = async (cual, callbackok, callbackwrong) => {
+
+    try {
+
+      const checkResult = await check(cual);
+      console.log("checkResult", checkResult)
+      // if (checkResult === RESULTS.UNAVAILABLE) {
+      //   console.log("version vieja")
+      //   console.log("pidiendo permiso ", cual)
+      //   var granted = await PermissionsAndroid.request(
+      //     cual,
+      //     {
+      //       title: 'Permiso ' + cual,
+      //       message:
+      //         'Se requiere permiso: ' + cual,
+      //       buttonNeutral: 'Ask Me Later',
+      //       buttonNegative: 'Cancel',
+      //       buttonPositive: 'OK',
+      //     },
+      //   );
+      //   console.log("resultado de la solicitud", granted)
+      //   if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      //     callbackok()
+      //   } else {
+      //     callbackwrong(cual + ' denied');
+      //   }
+      //   return
+      // }
+
+      if (checkResult !== RESULTS.GRANTED) {
+        const requestResult = await request(cual);
+        if (requestResult === RESULTS.GRANTED) {
+          // Alert.alert('Camera permission granted');
+          callbackok()
+        } else {
+          callbackwrong()
+        }
+      }
+    } catch (err) {
+      System.mostrarError(err)
+    }
+  }
+
+
+  const permisosBluetooth = async (quePermiso) => {
+    await pedirPermiso(quePermiso, () => { }, async () => {
+      // Alert.alert('Se necesita el permiso del bluetooh');
+      if (await ModelConfig.get("usarImpresoraBluetooth")) {
+        setTimeout(async () => {
+          await permisosBluetooth(quePermiso)
+        }, 10000);
+      }
+    })
+  }
+
+  const iniciarImpresora = async () => {
+    // Alert.alert("iniciarImpresora")
+    permisosBluetooth(PERMISSIONS.ANDROID.BLUETOOTH_CONNECT)
+    permisosBluetooth(PERMISSIONS.ANDROID.BLUETOOTH_SCAN)
+    permisosBluetooth(PERMISSIONS.ANDROID.BLUETOOTH_ADVERTISE)
+  }
+
+  useEffect(() => {
+    iniciarImpresora()
+  }, [usaImpresora])
 
   return (
     <Modal

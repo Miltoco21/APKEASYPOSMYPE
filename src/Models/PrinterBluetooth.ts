@@ -14,6 +14,7 @@ import {
 } from 'react-native-bluetooth-escpos-printer';
 import Log from './Log';
 import User from './User';
+import { Alert } from 'react-native';
 
 class PrinterBluetooth {
     static printerInited = false
@@ -21,16 +22,18 @@ class PrinterBluetooth {
     static printerConnected = false
     static lastAlign = ""
 
-    static async prepareBluetooth() {
-        // if (PrinterBluetooth.printerInited) return
+    static async prepareBluetooth(callback) {
+        // Alert.alert("prepareBluetooth")
         PrinterBluetooth.printerInited = (await ModelConfig.get("impresoraBluetooth")) != ""
         if (PrinterBluetooth.printerInited) {
             const dis = JSON.parse(await ModelConfig.get("impresoraBluetooth"))
-            this.conectarBlue(dis.address)
+            this.conectarBlue(dis.address, callback)
+        } else {
+            Alert.alert("Not initiated")
         }
     }
 
-    static async conectarBlue(address) {
+    static async conectarBlue(address, callback) {
         // Log("conectarBlue3..", address)
         await BluetoothManager.connect(address) // the device address scanned.
             .then(async (s) => {
@@ -38,22 +41,36 @@ class PrinterBluetooth {
                 //   loading: false,
                 //   boundAddress: direccionDispositivo
                 // })
-                // alert("Realizado correctamente")
+                // alert("Conectado correctamente")
+                callback()
                 // setDispositivosConectados([...dispositivosConectados, dispositivoObj])
                 PrinterBluetooth.printerConnected = true
                 try {
                     await BluetoothEscposPrinter.printerInit();
                 } catch (er) {
-                    alert("no se pudo iniciar.." + er)
+                    System.mostrarError(er)
                 }
             }, (e) => {
                 PrinterBluetooth.printerIntentConect++
+                // Alert.alert("PrinterBluetooth.printerIntentConect" + PrinterBluetooth.printerIntentConect)
                 if (PrinterBluetooth.printerIntentConect < 5) {
+                    Alert.alert("Reintentando conexion a bluetooth")
                     setTimeout(() => {
-                        PrinterBluetooth.conectarBlue(address)
+                        PrinterBluetooth.conectarBlue(address, callback)
                     }, 1000);
                 } else {
+                    Alert.alert("Se han superado los intentos permitidos")
                 }
+            })
+    }
+
+
+    static async desvincularDispositivo(address) {
+        await BluetoothManager.unpaire(address) // the device address scanned.
+            .then((s) => {
+                Alert.alert("Desvinculado correctamente")
+            }, (e) => {
+                System.mostrarError(e);
             })
     }
 
@@ -266,10 +283,9 @@ class PrinterBluetooth {
             await this.impEnter()
         } catch (err) {
             PrinterBluetooth.printerIntentConect = 0
-            PrinterBluetooth.prepareBluetooth()
-            setTimeout(() => {
+            PrinterBluetooth.prepareBluetooth(() => {
                 PrinterBluetooth.printAll(requestBody, response)
-            }, 1000);
+            })
             return
         }
 
@@ -352,6 +368,10 @@ class PrinterBluetooth {
             await this.impTexto("www.easypos.cl")
             await this.impEnter()
             await this.impEnter()
+
+
+            const dis = JSON.parse(await ModelConfig.get("impresoraBluetooth"))
+            // await this.desvincularDispositivo(dis.address)
 
         } else {
 

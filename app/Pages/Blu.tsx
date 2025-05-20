@@ -44,6 +44,8 @@ export default function Blu({
   const [dispositivosConectados, setDispositivosConectados] = useState([]);
 
   const listadoDispositivosDisponibles = () => {
+    // showAlert("listadoDispositivosDisponibles")
+    // return
     BluetoothManager.enableBluetooth().then((r) => {
       var paired = [];
       if (r && r.length > 0) {
@@ -59,7 +61,7 @@ export default function Blu({
       setDispositivosDisponibles(paired)
     }, (err) => {
       console.log("error z", err)
-      Alert.alert(err)
+      System.mostrarError(err)
     });
 
   }
@@ -70,7 +72,7 @@ export default function Blu({
         System.mostrarError("Realizado correctamente")
         setDispositivosConectados([...dispositivosConectados, dispositivoObj])
       }, (e) => {
-        if(e.message === "Unable to connect device"){
+        if (e.message === "Unable to connect device") {
           Alert.alert("No se pudo conectar.\nReintentar nuevamente.")
           return
         }
@@ -91,12 +93,12 @@ export default function Blu({
         })
         setDispositivosConectados([...lis])
       }, (e) => {
-        Alert.alert("No se pudo desvincular: " + e);
+        System.mostrarError(e);
       })
 
   }
 
-  
+
   const impTexto = async (texto) => {
     await BluetoothEscposPrinter.printText(texto + "\n\r", {
       encoding: 'GBK',
@@ -122,7 +124,7 @@ export default function Blu({
       impTexto("hola")
       impEnter()
     } catch (err) {
-      if(err.message === "COMMAND_NOT_SEND"){
+      if (err.message === "COMMAND_NOT_SEND") {
         Alert.alert("No se pudo imprimir. Revisar si esta conectada la impresora o reintentar nuevamente.")
         return
       }
@@ -257,8 +259,8 @@ export default function Blu({
         </View>
         <View style={{
           flex: 1,
-          width:"100%",
-          padding:0,
+          width: "100%",
+          padding: 0,
           // backgroundColor:"red",
           flexDirection: "row"
         }}>
@@ -266,12 +268,12 @@ export default function Blu({
           <Button style={{
             backgroundColor: "rgb(85 204 0)",
             borderRadius: 10,
-            width:"50%",
+            width: "50%",
             // height:50
           }} onPress={() => {
-            if(dispositivosConectados.length<1){
+            if (dispositivosConectados.length < 1) {
               onSave("")
-            }else{
+            } else {
               onSave(dispositivosConectados[0])
             }
           }}>
@@ -283,9 +285,9 @@ export default function Blu({
           <Button style={{
             backgroundColor: "rgb(201 199 201)",
             borderRadius: 10,
-            width:"48%",
-            height:50,
-            marginLeft:"1%"
+            width: "48%",
+            height: 50,
+            marginLeft: "1%"
           }} onPress={() => {
             // Alert.alert("conectar:" + dis.name)
             onCancel()
