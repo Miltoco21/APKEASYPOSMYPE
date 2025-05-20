@@ -57,14 +57,7 @@ const BoxTotales = ({
          Factura
         </Button> */}
       </View>
-      {/* <View style={styles.buttonRow}>
-        <Button mode="contained" style={styles.button} onPress={onOpcion3}>
-    btn 1
-        </Button>
-        <Button mode="contained" style={styles.button} onPress={onOpcion4}>
-          btn 2
-        </Button>
-      </View> */}
+
 
       <PagarBoleta openDialog={showModalPagarBoleta} setOpenDialog={setShowModalPagarBoleta} />
       <UltimaVenta visible={showUltimaVenta} onCancel={()=>setShowUltimaVenta(false)}/>
@@ -84,16 +77,28 @@ const styles = StyleSheet.create({
     fontSize: 24,
     textAlign: 'center',
     marginBottom: 16,
+
+
+
   },
   buttonRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    //flexDirection: 'row',
+    //justifyContent: 'center',
+    gap: 10, // Espacio entre botones
     marginBottom: 8,
+
   },
   button: {
-    flex: 1,
-    marginHorizontal: 4,
+    // flex: 1,
+    // marginHorizontal: 4,
     backgroundColor: Colors.azul,
+    //flex: 1,
+    //minWidth: '48%', // Ancho mínimo relativo
+    marginHorizontal: 5,
+    height: 63, // Altura fija
+    justifyContent: 'center', // Centrar texto verticalmente
+    borderRadius: 8, // Bordes redondeados
+    
   },
 });
 
