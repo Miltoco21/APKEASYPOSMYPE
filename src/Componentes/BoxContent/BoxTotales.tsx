@@ -48,7 +48,7 @@ const BoxTotales = ({
           Hacer el pago
         </Button>
 
-        <Button mode="contained" style={styles.button} onPress={()=>{
+        <Button mode="contained" style={styles.buttonU} onPress={()=>{
           setShowUltimaVenta(true)
         }}>
           Ultima venta
@@ -94,6 +94,17 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.azul,
     //flex: 1,
     //minWidth: '48%', // Ancho mínimo relativo
+    marginHorizontal: 5,
+    height: 63, // Altura fija
+    justifyContent: 'center', // Centrar texto verticalmente
+    borderRadius: 8, // Bordes redondeados
+    
+  },
+  buttonU: {
+
+    backgroundColor: Colors.gris,
+    //flex: 1,
+    width: '48%', 
     marginHorizontal: 5,
     height: 63, // Altura fija
     justifyContent: 'center', // Centrar texto verticalmente
