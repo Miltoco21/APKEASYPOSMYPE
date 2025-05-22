@@ -446,7 +446,8 @@ const BoxBoleta = ({ onClose, visible }) => {
             setAplicaRedondeo={setAplicaRedondeo}
             setFaltaPagar={setFaltaPagar}
             setTotalFinal={setTotalFinal}
-            excluirMetodos={["TRANSFERENCIA", "CUENTACORRIENTE"]}
+            //excluirMetodos={["TRANSFERENCIA", "CUENTACORRIENTE"]}
+             excluirMetodos={[ "CUENTACORRIENTE"]}
           />
         </View>
       </View>
