@@ -25,6 +25,9 @@ import IngresoPLU from 'src/Modals/IngresoPLU';
 import IngresoPrecio from 'src/Modals/IngresoPrecio';
 import NewProductModal from 'src/Modals/NewProductModal';
 import Validator from 'src/Helpers/Validator';
+import AsignarPeso from '../ScreenDialog/AsignarPeso';
+import ProductSold from 'src/Models/ProductSold';
+
 
 
 
@@ -61,6 +64,9 @@ const BoxProducts = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   const [showNewProductModal, setShowNewProductModal] = useState(false)
+  const [showWeightModal, setShowWeightModal] = useState(false);
+
+
 
   const handlePLUConfirm = (pluValue) => {
     setShowPLUModal(false);
@@ -290,9 +296,18 @@ const BoxProducts = () => {
       setSearchText("");
       focusSearchInput();
     }
-    if (product.pesable) {
-      Log('Producto pesable seleccionado:',product);
-    }
+    const isPesable = ProductSold.getInstance().esPesable(product);
+    if (isPesable) {
+      // Abrir modal de peso
+      setSelectedProduct(product);
+      setShowWeightModal(true);
+  } else {
+      // Agregar directamente si no es pesable
+      Keyboard.dismiss();
+      addToSalesData(product);
+      setSearchText("");
+      focusSearchInput();
+  }
     
   };
   // Función para manejar la actualización del precio
@@ -454,6 +469,23 @@ const BoxProducts = () => {
           setSelectedProduct(null);
         }}
       />
+      <AsignarPeso
+    visible={showWeightModal}
+    onClose={() => setShowWeightModal(false)}
+    product={selectedProduct}
+    currentWeight={selectedProduct?.cantidad || 0}
+    onSave={(peso) => {
+        const updatedProduct = {
+            ...selectedProduct,
+            cantidad: peso,
+            total: selectedProduct.precioVenta * peso
+        };
+        addToSalesData(updatedProduct);
+        setShowWeightModal(false);
+        setSearchText("");
+        focusSearchInput();
+    }}
+/>
 
     </View>
 
