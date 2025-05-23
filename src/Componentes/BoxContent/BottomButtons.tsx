@@ -47,6 +47,19 @@ const BottomButtons = () => {
     // mas: () => null,
   });
 
+  const renderModalHeader = (title: string, onClose: () => void) => (
+    <View style={styles.modalHeader}>
+      <Text style={styles.modalTitle}>{title}</Text>
+      <TouchableOpacity
+        style={styles.closeButton}
+        onPress={onClose}
+      >
+        <Ionicons name="close" size={24} color="#000" />
+      </TouchableOpacity>
+    </View>
+  );
+
+
 
   return (
     <View style={styles.safeContainer} >
@@ -111,14 +124,11 @@ const BottomButtons = () => {
         animationType="slide"
         onRequestClose={() => setShowFamiliasModal(false)}
       >
-        <SafeAreaView style={styles.modalContainer}>
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={() => setShowFamiliasModal(false)}
-          >
-            <Text style={styles.closeButtonText}>Cerrar</Text>
-          </TouchableOpacity>
-          <BoxProductoFamilia />
+        <SafeAreaView style={styles.modalSafeContainer}>
+          {renderModalHeader("Búsqueda por Familias", () => setShowFamiliasModal(false))}
+          <View style={styles.modalContent}>
+            <BoxProductoFamilia />
+          </View>
         </SafeAreaView>
       </Modal>
 
@@ -128,21 +138,12 @@ const BottomButtons = () => {
         animationType="slide"
         onRequestClose={() => setShowBusquedaRapidaModal(false)}
       >
-        <SafeAreaView style={styles.modalSafeContainer}>
-    <View style={styles.modalHeader}>
-      <Text style={styles.modalTitle}>Búsqueda Rápida</Text>
-      <TouchableOpacity
-        style={styles.closeButton}
-        onPress={() => setShowBusquedaRapidaModal(false)}
-      >
-        <Ionicons name="close" size={24} color="#000" />
-      </TouchableOpacity>
-    </View>
-    
-    <View style={styles.modalContent}>
-      <BoxBusquedaRapida />
-    </View>
-  </SafeAreaView>
+         <SafeAreaView style={styles.modalSafeContainer}>
+          {renderModalHeader("Búsqueda Rápida", () => setShowBusquedaRapidaModal(false))}
+          <View style={styles.modalContent}>
+            <BoxBusquedaRapida />
+          </View>
+        </SafeAreaView>
 
       </Modal>
 
@@ -166,8 +167,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   container: {
-    //flex: 1,
-
     height: 80, // Alto fijo para el contenedor de navegación
     justifyContent: 'flex-end', // Alinea la navegación al fondo
     backgroundColor: '#fff',
@@ -185,8 +184,10 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 18,
     fontWeight: 'bold',
+    color: '#333',
 
   },
+  
 
   modalContent: {
     flex: 1,
@@ -212,7 +213,7 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     
-    alignSelf: 'flex-end',
+   // alignSelf: 'flex-end',
     padding: 5,
   },
   closeButtonText: {

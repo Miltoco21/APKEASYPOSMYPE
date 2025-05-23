@@ -67,7 +67,7 @@ const BoxTotales = ({
 
 const styles = StyleSheet.create({
   container: {
-    // marginTop: 100,
+    marginTop: 6,
     padding: 3,
     elevation: 3,
     borderRadius: 8,

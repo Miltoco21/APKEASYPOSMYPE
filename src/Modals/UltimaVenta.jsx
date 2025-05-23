@@ -164,6 +164,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#283048",
     borderRadius: 4,
     marginRight: 2,
+    
   }
 });
 
