@@ -278,38 +278,64 @@ const BoxProducts = () => {
     }
   };
 
-  
   const handleAddProduct = (product) => {
+    // Primero verificar si necesita editar precio
     if (product.precioVenta <= 0) {
-      
-      
-      // Si el precio es cero, mostrar modal de edición
       setSelectedProduct(product);
       setShowEditPriceModal(true);
+      return; // Salir hasta que editen el precio
+    }
+  
+    // Verificar si es pesable
+    const isPesable = ProductSold.getInstance().esPesable(product);
+    
+    if (isPesable) {
+      // Mostrar modal de peso sin agregar el producto
+      setSelectedProduct(product);
+      setShowWeightModal(true);
     } else {
-      // Si el precio es válido, agregar directamente
+      // Agregar directamente si no es pesable
       Keyboard.dismiss();
-      addToSalesData(product);
-      console.log(product);
-      
-     
+      addToSalesData({ 
+        ...product,
+        cantidad: 1, // Asegurar cantidad
+        total: product.precioVenta * 1 
+      });
       setSearchText("");
       focusSearchInput();
     }
-    const isPesable = ProductSold.getInstance().esPesable(product);
-    if (isPesable) {
-      // Abrir modal de peso
-      setSelectedProduct(product);
-      setShowWeightModal(true);
-  } else {
-      // Agregar directamente si no es pesable
-      Keyboard.dismiss();
-      addToSalesData(product);
-      setSearchText("");
-      focusSearchInput();
-  }
-    
   };
+  // const handleAddProduct = (product) => {
+  //   if (product.precioVenta <= 0) {
+      
+      
+  //     // Si el precio es cero, mostrar modal de edición
+  //     setSelectedProduct(product);
+  //     setShowEditPriceModal(true);
+  //   } else {
+  //     // Si el precio es válido, agregar directamente
+  //     Keyboard.dismiss();
+  //     addToSalesData(product);
+  //     console.log(product);
+      
+     
+  //     setSearchText("");
+  //     focusSearchInput();
+  //   }
+  //   const isPesable = ProductSold.getInstance().esPesable(product);
+  //   if (isPesable) {
+  //     // Abrir modal de peso
+  //     setSelectedProduct(product);
+  //     setShowWeightModal(true);
+  // } else {
+  //     // Agregar directamente si no es pesable
+  //     Keyboard.dismiss();
+  //     addToSalesData(product);
+  //     setSearchText("");
+  //     focusSearchInput();
+  // }
+    
+  // };
   // Función para manejar la actualización del precio
 
   const handlePriceUpdate = (updatedProduct) => {
@@ -334,6 +360,7 @@ const BoxProducts = () => {
     setShowNewProductModal(false);
   };
 
+  Log("SALESDATA",salesData)
 
   return (
     <View>
