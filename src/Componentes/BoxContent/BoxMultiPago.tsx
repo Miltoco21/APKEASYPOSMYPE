@@ -186,12 +186,14 @@ const BoxMultiPago = ({
         setShowSelectClientUser(true)//mostrar alert
       } else if (metodoPago == "TRANSFERENCIA") {
 
-        if (await ModelConfig.get("pedirDatosTransferencia")) {
+        if (false) {
+          
+        //if (await ModelConfig.get("pedirDatosTransferencia")) {
           setOpenTransferenciaModal(true);
         } else {
           confirmPagoTransferencia({
             "idCuentaCorrientePago": 0,
-            "nombre": "string",
+            "nombre": " ",
             "rut": "string",
             "banco": "string",
             "tipoCuenta": "string",

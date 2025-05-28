@@ -28,6 +28,7 @@ import UserEvent from "../../Models/UserEvent";
 import StorageSesion from "src/Helpers/StorageSesion";
 import dayjs from "dayjs";
 //import ScreenDialogBuscarCliente from "../ScreenDialog/BuscarCliente";
+import Log from "src/Models/Log";
 
 export const SelectedOptionsContext = React.createContext();
 export const SelectedOptionsProvider = ({ children }) => {
@@ -204,8 +205,8 @@ export const SelectedOptionsProvider = ({ children }) => {
 
   const [userData, setUserData] = useState(null);
 
-  const updateUserData = (data) => {
-    setUserData(User.getInstance().saveInSesion(data));
+  const updateUserData = async (data) => {
+    setUserData(await User.getInstance().saveInSesion(data));
   };
 
   const getUserData = async () => {
@@ -217,6 +218,7 @@ export const SelectedOptionsProvider = ({ children }) => {
     if (!userData)
       getUserData()
   }, [userData]);
+  Log(userData)
 
   useEffect(() => {
     setGrandTotal(sales.getTotal());
