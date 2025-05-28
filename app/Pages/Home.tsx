@@ -7,6 +7,7 @@ import BusquedaProductos from "../../src/Componentes/BoxContent/BusquedaProducto
 import BottomButtons from "../../src/Componentes/BoxContent/BottomButtons";
 import BoxTotales from "../../src/Componentes/BoxContent/BoxTotales";
 import AbrirCaja from "src/Componentes/ScreenDialog/AbrirCaja";
+import Log from "src/Models/Log";
 
 
 import { SelectedOptionsContext } from '../../src/Componentes/Context/SelectedOptionsProvider';
@@ -27,20 +28,33 @@ const Home = ({
   } = useContext(SelectedOptionsContext);
 
   const [isCajaOpen, setIsCajaOpen] = useState(false);
-
+ console.log("userdatacaja",userData);
+ 
   // Función para cerrar el componente AbrirCaja
   const handleCloseCaja = () => {
     setIsCajaOpen(false);
   };
 
 
+  // useEffect(() => {
+  //   if (userData && !Array.isArray(userData) && !userData.inicioCaja) {
+  //     console.log("no tiene iniciada la caja");
+  //    Log("userdata para caja",userData)
+  //     setIsCajaOpen(true);
+  //   }
+  // }, [userData])
   useEffect(() => {
-    if (userData && !Array.isArray(userData) && !userData.inicioCaja) {
-      console.log("no tiene iniciada la caja");
-      // console.log(userData)
+    // Verifica si userData está cargado y si la caja NO está iniciada
+    if (userData && !userData.inicioCaja) {
+      console.log("Caja NO iniciada - Mostrando modal");
       setIsCajaOpen(true);
+    } else {
+      setIsCajaOpen(false);
     }
-  }, [userData])
+  }, [userData]); // Se ejecuta cuando userData cambia
+
+  
+ 
 
   return (
 
