@@ -140,6 +140,7 @@ import AperturaCaja from "../../Models/AperturaCaja";
 import System from "../../Helpers/System";
 import Printer from "../../Models/Printer";
 import UserEvent from "../../Models/UserEvent";
+import Colors from "../Colores/Colores";
 
 const AbrirCaja = ({ openDialog, setOpenDialog }) => {
   const { 
@@ -260,6 +261,7 @@ const styles = StyleSheet.create({
   },
   button: {
     width: '100%',
+    backgroundColor: Colors.azul,
   },
 });
 
