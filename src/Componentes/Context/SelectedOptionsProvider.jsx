@@ -16,6 +16,9 @@ import {
   StyleSheet,
   Image,
   Alert,
+  ToastAndroid,
+  Platform ,
+
 } from "react-native";
 import { Snackbar } from "react-native-paper";
 import Product from "../../Models/Product";
@@ -50,6 +53,22 @@ export const SelectedOptionsProvider = ({ children }) => {
     }, 100);
   };
 
+  const showAlert = (title, text) => {
+  if (!text) {
+    text = title;
+    title = "Atención";
+  }
+
+  // Para Android: usar ToastAndroid
+  if (Platform.OS === 'android') {
+    //ToastAndroid.show(text, ToastAndroid.SHORT);
+    ToastAndroid.show(text, ToastAndroid.LONG);
+  } 
+  // Para iOS: mantener el Alert.alert tradicional
+  else {
+    Alert.alert(title, text);
+  }
+};
 
 
 
@@ -111,13 +130,13 @@ export const SelectedOptionsProvider = ({ children }) => {
   };
 
   //ocultar el dialog en x milisegundos
-  const hideLoadingDialog = (timeOut = 200) => {
+  const hideLoadingDialog = (timeOut = 10) => {
     setTimeout(function () {
       setShowLoadingDialog(false);
     }, timeOut);
   };
 
-  const hideLoading = (timeOut = 200) => {
+  const hideLoading = (timeOut = 10) => {
     setTimeout(function () {
       setShowLoadingDialog(false);
     }, timeOut);
@@ -186,13 +205,7 @@ export const SelectedOptionsProvider = ({ children }) => {
 
   const [modoAvion, setModoAvion] = useState(true);
 
-  const showAlert = (title, text) => {
-    if (!text) {
-      text = title
-      title = "Atencion"
-    }
-    Alert.alert(title, text);
-  };
+  
 
   const [searchResults, setSearchResults] = useState([]);
   const [textSearchProducts, setTextSearchProducts] = useState(""); //variable del cuadro de busqueda

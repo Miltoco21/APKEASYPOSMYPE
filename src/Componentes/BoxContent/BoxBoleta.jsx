@@ -288,14 +288,19 @@ const BoxBoleta = ({ onClose, visible }) => {
       esModoAvion,
       async (responsex) => {
         let response = { ...responsex };
-
+      
         hideLoading();
+        onClose();
         // showAlert(response.descripcion);
-        showAlert("Realizado correctamente");
+       
+        //onClose();
+      
+
         clearSalesData();
         setVuelto(0);
         setSelectedUser(null);
         setTextSearchProducts("");
+         showAlert("Pago Realizado correctamente");
         setCliente(null);
 
         if (response.imprimirResponse === undefined) {
@@ -336,7 +341,7 @@ const BoxBoleta = ({ onClose, visible }) => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <View contentContainerStyle={styles.container}>
       {/* <TecladoBilletes
   visible={showBilletesModal}
   onClose={() => setShowBilletesModal(false)}
@@ -468,7 +473,7 @@ const BoxBoleta = ({ onClose, visible }) => {
           <Text style={styles.buttonText}>Volver</Text>
         </TouchableOpacity>
       </View>
-    </ScrollView>
+    </View>
   );
 };
 
