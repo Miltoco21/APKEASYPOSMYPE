@@ -16,12 +16,12 @@ import Log from 'src/Models/Log';
 
 const IngresoPrecio = ({ visible, product, onConfirm, onCancel }) => {
   const { showAlert } = useContext(SelectedOptionsContext);
-  const [nuevoPrecio, setNuevoPrecio] = useState('');
+  const [nuevoPrecio, setNuevoPrecio] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (visible && product) {
-      setNuevoPrecio(product.precioVenta?.toString() || '');
+      setNuevoPrecio(product.precioVenta|| '');
     }
   }, [visible, product]);
 

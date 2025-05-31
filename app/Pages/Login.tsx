@@ -39,6 +39,13 @@ export default function Login() {
   const router = useRouter();
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [reintentarPorSesionActiva, setReintentarPorSesionActiva] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+
 
   const handleLogin = async () => {
     // console.log("haciendo login..")
@@ -236,14 +243,34 @@ export default function Login() {
         onChangeText={setRutOrCode}
         keyboardType="numeric"
       />
-      <TextInput
+      {/* <TextInput
         style={styles.input}
         placeholder="Contraseña"
         value={password}
         onChangeText={setPassword}
         keyboardType="numeric"
         secureTextEntry
-      />
+      /> */}
+      <View style={styles.passwordContainer}>
+        <TextInput
+          style={styles.passwordInput}
+          placeholder="Contraseña"
+          value={password}
+          onChangeText={setPassword}
+          keyboardType="numeric"
+          secureTextEntry={!showPassword}
+        />
+        <TouchableOpacity 
+          onPress={togglePasswordVisibility}
+          style={styles.eyeIcon}
+        >
+          <Ionicons 
+            name={showPassword ? "eye-off" : "eye"} 
+            size={24} 
+            color="#666" 
+          />
+        </TouchableOpacity>
+      </View>
 
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Ingresar</Text>
@@ -312,5 +339,22 @@ const styles = StyleSheet.create({
     width: "40%",
     height: "40%",
     resizeMode: 'contain',
-  }
+  },
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    marginBottom: 15,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    backgroundColor: 'white',
+  },
+  passwordInput: {
+    flex: 1,
+    padding: 10,
+  },
+  eyeIcon: {
+    padding: 10,
+  },
 });
