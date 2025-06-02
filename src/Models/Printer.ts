@@ -137,17 +137,17 @@ class Printer {
         keyItems.forEach(async (itPrint) => {
             if (itPrint != undefined && !does) {
                 does = true
-                // console.log("do print item: ")
-                // console.log(itPrint)
+                console.log("do print item: ")
+                console.log(itPrint)
 
                 // Printer.printFlat(Printer.arrPrints[itPrint])
 
                 // print bluetooth
                 if (Printer.printerConnected) {
                     console.log("imprimiendo en bluetooth", itPrint)
-                    this.impEnter()
-                    this.impTexto(itPrint)
-                    this.impEnter()
+                    // this.impEnter()
+                    // this.impTexto(itPrint)
+                    // this.impEnter()
                 } else {
 
                     console.log("no se va a imprimir en bluetooth")

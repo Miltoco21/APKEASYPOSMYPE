@@ -45,10 +45,13 @@ const Home = ({
   // }, [userData])
   useEffect(() => {
     // Verifica si userData está cargado y si la caja NO está iniciada
+    console.log("revision inicio caja")
     if (userData && !userData.inicioCaja) {
       console.log("Caja NO iniciada - Mostrando modal");
+      console.log("debe hacer inicio caja")
       setIsCajaOpen(true);
     } else {
+      console.log("no debe hacer inicio caja")
       setIsCajaOpen(false);
     }
   }, [userData]); // Se ejecuta cuando userData cambia

@@ -22,7 +22,6 @@ import BoxEntregaEnvases from "./BoxEntregaEnvases";
 import BoxPagos from "./BoxPagos";
 import BoxMultiPago from "./BoxMultiPago";
 //import IngresarTexto from '../ScreenDialog/IngresarTexto'; debe quedar vacion reemplza teclado
-import Printer from '../../Models/Printer';
 import LastSale from '../../Models/LastSale';
 import ModelConfig from '../../Models/ModelConfig';
 import UserEvent from '../../Models/UserEvent';
@@ -189,6 +188,7 @@ const BoxBoleta = ({ onClose, visible }) => {
 
     let algunaPreventa = "";
     const requestBody = {
+      operacion: "detalleVenta",
       idUsuario: userData.codigoUsuario,
       fechaIngreso: System.getInstance().getDateForServer(new Date()),
       codigoCliente: 0,

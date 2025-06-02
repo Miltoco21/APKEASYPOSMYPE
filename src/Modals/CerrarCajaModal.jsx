@@ -23,6 +23,7 @@ import UserEvent from '../Models/UserEvent';
 import System from '../Helpers/System';
 import Log from 'src/Models/Log';
 import { useRouter } from "expo-router";
+import PrinterBluetooth from 'src/Models/PrinterBluetooth';
 
 const CierreCajaModal = ({
   visible,
@@ -149,7 +150,13 @@ const CierreCajaModal = ({
           name: "cierre de caja correctamente",
           info: ""
         });
-        Printer.printAll(res);
+
+        data.operacion = "cierreCaja"
+        data.userInfo = System.clone(userData)
+        PrinterBluetooth.prepareBluetooth(() => {
+          PrinterBluetooth.printAll(data, res);
+        })
+
         clearSessionData();
         router.navigate("./Login");
         onDismiss();

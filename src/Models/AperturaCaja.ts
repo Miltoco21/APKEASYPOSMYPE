@@ -149,7 +149,7 @@ class AperturaCaja extends Model implements MovimientoCaja {
             if (!data.codigoSucursal) data.codigoSucursal = await ModelConfig.get("sucursal");
             if (!data.puntoVenta) data.puntoVenta = await ModelConfig.get("puntoVenta");
     
-            console.log("Payload final a enviar:", JSON.stringify(data, null, 2));
+            // console.log("Payload final a enviar:", JSON.stringify(data, null, 2));
     
             const response = await axios.post(url, data, {
                 headers: {
@@ -157,7 +157,7 @@ class AperturaCaja extends Model implements MovimientoCaja {
                 }
             });
     
-            console.log("Respuesta del servidor:", response.data);
+            // console.log("Respuesta del servidor:", response.data);
             callbackOk(response.data);
         } catch (error) {
             console.error("Error en sendToServer:", error.response?.data || error.message);

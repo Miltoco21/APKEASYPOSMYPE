@@ -27,7 +27,7 @@
 //       showMessage("Debe ingresar un monto inicial");
 //       return;
 //     }
-    
+
 //     const ac = new AperturaCaja();
 //     ac.codigoUsuario = userData.codigoUsuario;
 //     ac.fechaIngreso = System.getInstance().getDateForServer();
@@ -39,7 +39,7 @@
 
 //     console.log("para enviar:");
 //     console.log(ac.getFillables());
-    
+
 //     ac.sendToServer(
 //       (res) => {
 //         const user2 = userData;
@@ -100,7 +100,7 @@
 
 // const styles = StyleSheet.create({
 //   containerStyle: {
-    
+
 //     padding: 20,
 //     marginHorizontal: 20,
 //   },
@@ -141,10 +141,11 @@ import System from "../../Helpers/System";
 import Printer from "../../Models/Printer";
 import UserEvent from "../../Models/UserEvent";
 import Colors from "../Colores/Colores";
+import PrinterBluetooth from "src/Models/PrinterBluetooth";
 
 const AbrirCaja = ({ openDialog, setOpenDialog }) => {
-  const { 
-    userData, 
+  const {
+    userData,
     updateUserData,
     showMessage,
     showSnackbarMessage,
@@ -158,7 +159,7 @@ const AbrirCaja = ({ openDialog, setOpenDialog }) => {
       showSnackbarMessage("Debe ingresar un monto inicial");
       return;
     }
-    
+
     const ac = new AperturaCaja();
     ac.codigoUsuario = userData.codigoUsuario;
     ac.fechaIngreso = System.getInstance().getDateForServer();
@@ -170,21 +171,30 @@ const AbrirCaja = ({ openDialog, setOpenDialog }) => {
 
     console.log("para enviar:");
     console.log(ac.getFillables());
-    
+
     ac.sendToServer(
       (res) => {
+
+        console.log("realizado ok. cierre..")
         const user2 = userData;
         user2.inicioCaja = true;
         updateUserData(user2);
-        setOpenDialog(false);
-        Printer.printAll(res);
+        // Printer.printAll(res);
+        ac.operacion = "inicioCaja"
+        PrinterBluetooth.prepareBluetooth(() => {
+          PrinterBluetooth.printAll(ac, res);
+        })
 
         UserEvent.send({
           name: "inicio de caja correctamente",
           info: ""
         });
+        setOpenDialog(false);
+        console.log("llego al final de inicio caja modal")
       },
       (error) => {
+        console.log("error al final de inicio caja modal")
+        Log("error", error)
         showMessage(error);
       }
     );
@@ -194,36 +204,36 @@ const AbrirCaja = ({ openDialog, setOpenDialog }) => {
     <Portal>
       <Modal
         visible={openDialog}
-        onDismiss={() => {}}
+        onDismiss={() => { }}
 
         contentContainerStyle={styles.containerStyle}
       >
-       
-          <View style={styles.modalContent}>
-            <Text style={styles.title} variant="headlineSmall">
-              Apertura de caja
-            </Text>
-            <Text style={styles.title2} >
-            Ingrese el monto inicial para abrir la caja
-            </Text>
 
-            <TextInput
-              mode="outlined"
-              label="Monto Inicial"
-              keyboardType="numeric"
-              value={openAmount.toString()}
-              onChangeText={(text) => setOpenAmount(Number(text))}
-              style={styles.input}
-            />
-            <Button
-              mode="contained"
-              onPress={handlerSaveAction}
-              style={styles.button}
-            >
-              Guardar
-            </Button>
-          </View>
-       
+        <View style={styles.modalContent}>
+          <Text style={styles.title} variant="headlineSmall">
+            Apertura de caja
+          </Text>
+          <Text style={styles.title2} >
+            Ingrese el monto inicial para abrir la caja
+          </Text>
+
+          <TextInput
+            mode="outlined"
+            label="Monto Inicial"
+            keyboardType="numeric"
+            value={openAmount.toString()}
+            onChangeText={(text) => setOpenAmount(Number(text))}
+            style={styles.input}
+          />
+          <Button
+            mode="contained"
+            onPress={handlerSaveAction}
+            style={styles.button}
+          >
+            Guardar
+          </Button>
+        </View>
+
       </Modal>
     </Portal>
   );
@@ -253,7 +263,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
     marginBottom: 20,
-    
+
   },
   input: {
     width: '100%',
