@@ -305,7 +305,7 @@ const BoxProducts = () => {
       focusSearchInput();
     }
   };
-  // const handleAddProduct = (product) => {
+
   //   if (product.precioVenta <= 0) {
       
       

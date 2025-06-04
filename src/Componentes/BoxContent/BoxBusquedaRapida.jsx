@@ -1,3 +1,4 @@
+
 import React, { useState, useContext, useEffect } from "react";
 import {
   View,
@@ -15,6 +16,8 @@ import Product from "../../Models/Product";
 import ModelConfig from "../../Models/ModelConfig";
 import ConfirmOption from "../Dialogs/ConfirmOption";
 import Log from "src/Models/Log";
+import AsignarPeso from "../ScreenDialog/AsignarPeso";
+import ProductSold from "src/Models/ProductSold"; // Asegúrate de importar ProductSold
 
 const BoxBusquedaRapida = () => {
   const {
@@ -34,17 +37,17 @@ const BoxBusquedaRapida = () => {
   const [settingProduct, setSettingProduct] = useState(null);
   const [isChanging, setIsChanging] = useState(false);
 
+  const [showWeightModal, setShowWeightModal] = useState(false);
+  const [productToAdd, setProductToAdd] = useState(null); // Nuevo estado para el producto a agregar
+
   useEffect(() => {
     setProds([]);
     getProducts();
   }, []);
 
-
   const getProducts = () => {
-    // console.log('Iniciando getProducts');
     Product.getInstance().getProductsFastSearch(
       (productosServidor) => {
-        console.log("Productos recibidos del servidor:", productosServidor);
         completarBotonesFaltantes(productosServidor);
       },
       (error) => {
@@ -56,26 +59,17 @@ const BoxBusquedaRapida = () => {
 
   const completarBotonesFaltantes = async (productosServidor) => {
     const cantConfig = await ModelConfig.get("cantidadProductosBusquedaRapida");
-    console.log("cantConfig", cantConfig);
-    console.log("Completando botones. Cantidad configurada:", cantConfig);
-
     const botonesByBotonNum = [];
 
-    // Mapear productos existentes
     productosServidor.forEach((prodSer) => {
       if (prodSer.boton <= cantConfig) {
-        console.log(
-          `Asignando producto ${prodSer.nombre} a botón ${prodSer.boton}`
-        );
         botonesByBotonNum[prodSer.boton] = prodSer;
       }
     });
 
-    // Rellenar botones faltantes
     const filledProds = [];
     for (let i = 1; i <= cantConfig; i++) {
       if (!botonesByBotonNum[i]) {
-        console.log(`Creando placeholder para botón ${i}`);
         filledProds.push({
           boton: i,
           codigoProducto: 0,
@@ -86,10 +80,24 @@ const BoxBusquedaRapida = () => {
       }
     }
 
-    console.log("Productos finales para renderizar:", filledProds);
     setProds(filledProds);
   };
 
+  // Función modificada para manejar productos pesables
+  const handleAddProduct = (product) => {
+    const isPesable = ProductSold.getInstance().esPesable(product);
+    
+    if (isPesable) {
+      setProductToAdd(product);
+      setShowWeightModal(true);
+    } else {
+      addToSalesData({ 
+        ...product,
+        cantidad: 1,
+        total: product.precioVenta * 1 
+      });
+    }
+  };
 
   const onSelect = (product) => {
     setIsChanging(false);
@@ -97,40 +105,40 @@ const BoxBusquedaRapida = () => {
       product.idProducto = product.codigoProducto;
 
       showLoading("Agregando...")
-        Product.getInstance().findByCodigoBarras(
-          {
-            codigoProducto: product.codBarra,
-            codigoCliente: cliente ? cliente.codigoCliente : 0,
-          },
-          (prodsEncontrados) => {
-            hideLoading()
-            if (prodsEncontrados.length < 1) {
-              showAlert(
-                "No se pudo encontrar el producto, intentando eliminar del listado..."
-              );
-              Product.getInstance().removeProductFastSearch(
-                product,
-                (response) => {
-                  hideLoading();
-                  showAlert("Eliminado del listado");
-                  setProds([]);
-                  getProducts();
-                },
-                () => {
-                  hideLoading();
-                  showAlert("No se pudo realizar");
-                }
-              );
-            } else {
-              addToSalesData(prodsEncontrados[0], undefined, true);
-            }
-          },
-          (err) => {
-            hideLoading()
-            showAlert("No se pudo encontrar el producto." + err);
+      Product.getInstance().findByCodigoBarras(
+        {
+          codigoProducto: product.codBarra,
+          codigoCliente: cliente ? cliente.codigoCliente : 0,
+        },
+        (prodsEncontrados) => {
+          hideLoading()
+          if (prodsEncontrados.length < 1) {
+            showAlert(
+              "No se pudo encontrar el producto, intentando eliminar del listado..."
+            );
+            Product.getInstance().removeProductFastSearch(
+              product,
+              (response) => {
+                hideLoading();
+                showAlert("Eliminado del listado");
+                setProds([]);
+                getProducts();
+              },
+              () => {
+                hideLoading();
+                showAlert("No se pudo realizar");
+              }
+            );
+          } else {
+            // Llamamos a la nueva función para manejar la adición
+            handleAddProduct(prodsEncontrados[0]);
           }
-        );
-
+        },
+        (err) => {
+          hideLoading()
+          showAlert("No se pudo encontrar el producto." + err);
+        }
+      );
     } else {
       showConfirm(
         "No está configurado este botón, ¿desea configurarlo ahora?",
@@ -199,17 +207,11 @@ const BoxBusquedaRapida = () => {
     );
   };
 
-
-
   return (
-    <ScrollView
-      contentContainerStyle={styles.container}
-    // style={styles.scrollView}
-    >
+    <ScrollView contentContainerStyle={styles.container}>
       {!showSearchProduct &&
         prods.length > 0 &&
         prods.map((product, index) => {
-          // Usamos un nombre distinto para los estilos locales, evitando el shadowing.
           const buttonStyle = {
             minHeight: 80,
             backgroundColor: product.codigoProducto ? '#fff' : '#465379',
@@ -218,7 +220,6 @@ const BoxBusquedaRapida = () => {
             marginBottom: 10,
             borderRadius: 5,
             width: '48%',
-            // Añadir sombras
             elevation: 3,
             shadowColor: '#000',
             shadowOffset: { width: 0, height: 2 },
@@ -232,8 +233,6 @@ const BoxBusquedaRapida = () => {
               style={buttonStyle}
               onPress={() => onSelect(product)}
               onLongPress={() => {
-                console.log("long click para ");
-                Log("producto", product);
                 setIsChanging(true);
                 if (product.codigoProducto) {
                   setSettingProduct(product);
@@ -280,15 +279,32 @@ const BoxBusquedaRapida = () => {
         }}
         buttonOptions={["Modificar", "Liberar"]}
       />
+      
+      {/* Modal para asignar peso a productos pesables */}
+      <AsignarPeso
+        visible={showWeightModal}
+        onClose={() => setShowWeightModal(false)}
+        product={productToAdd}
+        currentWeight={0}
+        onSave={(peso) => {
+          if (productToAdd) {
+            const productWithWeight = {
+              ...productToAdd,
+              cantidad: peso,
+              total: productToAdd.precioVenta * peso
+            };
+            addToSalesData(productWithWeight);
+            setShowWeightModal(false);
+          }
+        }}
+      />
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-
   scrollView: {
     flex: 1,
-    // Asegura que el ScrollView ocupe todo el espacio disponible
   },
   container: {
     flexGrow: 1,
@@ -355,7 +371,6 @@ const styles = StyleSheet.create({
   },
   containerProducts: {
     flexGrow: 1,
-
     backgroundColor: "#f5f5f5",
   },
 });
