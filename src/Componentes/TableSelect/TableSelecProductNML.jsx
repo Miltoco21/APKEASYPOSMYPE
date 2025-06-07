@@ -143,7 +143,7 @@
 // export default TableSelecProductNML;
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Modal } from 'react-native'; // Agregar Modal
+import { View, Text, StyleSheet, Modal,ScrollView } from 'react-native'; // Agregar Modal
 import SmallButton from '../Elements/SmallButton';
 import Product from '../../Models/Product';
 import System from '../../Helpers/System';
@@ -285,7 +285,7 @@ const TableSelecProductNML = ({
   if (!show) return null;
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <Text style={styles.title}>{title}</Text>
       {productsNML.length > 0 &&
         productsNML.map((product, index) => {
@@ -316,13 +316,15 @@ const TableSelecProductNML = ({
         currentWeight={0} // Peso inicial 0
         onSave={handleWeightSave}
       />
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    padding: 1,
+    padding: 3,
+    height:660
+    
   },
   title: {
     fontSize: 18,
