@@ -36,7 +36,6 @@ const BoxTotales = ({
       return
     }
 
-    Log("ventas", salesData)
     setShowModalPagarBoleta(true)
   }
 

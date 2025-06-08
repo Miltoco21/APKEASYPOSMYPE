@@ -48,9 +48,9 @@ const BoxProducts = () => {
 
   } = useContext(SelectedOptionsContext);
 
-  const refInputBuscar = useRef(null)
-
   const [searchText, setSearchText] = useState('');
+  const [apretoEnterEnBuscar, setApretoEnterEnBuscar] = useState(null);
+
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
@@ -78,18 +78,20 @@ const BoxProducts = () => {
 
     ProductCodeStack.addProductCode(pluValue);
     setSearchText(pluValue); // Actualizar searchText con el PLU
+    console.log("dando foco al input buscar")
+
     focusSearchInput();
   };
 
   const handleSearch = async (searchValue, currentPage = 1) => {
     if (!searchValue.trim() || loading) return;
-  
+
     setLoading(true);
     try {
       const isNumeric = /^\d+$/.test(searchValue);
-      const isCodigoBarras = isNumeric && (searchValue.length === 12 || searchValue.length === 13);
+      const isCodigoBarras = isNumeric //&& (searchValue.length === 12 || searchValue.length === 13);
       let productosEncontrados = [];
-  
+
       // Búsqueda exclusiva por código de barras si cumple formato
       if (isCodigoBarras) {
         productosEncontrados = await new Promise((resolve) => {
@@ -99,29 +101,29 @@ const BoxProducts = () => {
             (error) => { handleError(error); resolve([]); }
           );
         });
-  
+
         // Si no se encontró, mostrar modal inmediatamente
-        if (!productosEncontrados.length) {
+        if (productosEncontrados.length < 1) {
           setShowNewProductModal(true);
           return; // Salir tempranamente
         }
       }
-  
+
       // Resto de búsquedas solo si no es código de barras
       if (!isCodigoBarras) {
         // Búsqueda por código numérico
-        if (isNumeric) {
-          productosEncontrados = await new Promise((resolve) => {
-            Product.getInstance().findByCodigo(
-              { codigoProducto: searchValue, codigoCliente: 0 },
-              (productos) => resolve(productos || []),
-              (error) => { handleError(error); resolve([]); }
-            );
-          });
-        }
-  
+        // if (isNumeric) {
+        //   productosEncontrados = await new Promise((resolve) => {
+        //     Product.getInstance().findByCodigo(
+        //       { codigoProducto: searchValue, codigoCliente: 0 },
+        //       (productos) => resolve(productos || []),
+        //       (error) => { handleError(error); resolve([]); }
+        //     );
+        //   });
+        // }
+
         // Búsqueda por descripción si no se encontró por código
-        if (!productosEncontrados.length) {
+        if (productosEncontrados.length < 1) {
           productosEncontrados = await new Promise((resolve) => {
             Product.getInstance().findByDescriptionPaginado(
               {
@@ -136,116 +138,31 @@ const BoxProducts = () => {
           });
         }
       }
-  
+
       // Actualizar resultados
       if (currentPage === 1) {
         setFilteredProducts(productosEncontrados);
       } else {
         setFilteredProducts(prev => [...prev, ...productosEncontrados]);
       }
-  
+
       // Mostrar modal si no hay resultados en primera página
-      if (!productosEncontrados.length && currentPage === 1) {
+      if (productosEncontrados.length < 1 && currentPage === 1) {
         setShowNewProductModal(true);
       }
-  
+
       setHasMore(productosEncontrados.length === 10);
-  
+
     } catch (error) {
       handleError(error);
     } finally {
       setLoading(false);
     }
   };
-  
-  //   if (!searchValue.trim() || loading) return;
 
-  //   setLoading(true);
-  //   try {
-  //     const isNumeric = /^\d+$/.test(searchValue);
-  //     const isCodigoBarras = isNumeric && (searchValue.length === 12 || searchValue.length === 13);
 
-  //     if (isCodigoBarras) {
-  //       // Priorizar búsqueda por código de barras primero
-  //       await Product.getInstance().findByCodigoBarras(
-  //         { codigoProducto: searchValue, codigoCliente: 0 },
-  //         (productosBarras) => {
-  //           if (productosBarras?.length > 0) {
-  //             setFilteredProducts(productosBarras);
-  //             setHasMore(false);
-  //           } else {
-  //             // Si no encuentra por código de barras, probar con código normal
-  //             searchByCodigoProducto(searchValue);
-  //           }
-  //         },
-  //         handleError
-  //       );
-  //     } else if (isNumeric) {
-  //       // Búsqueda numérica que no cumple formato de código de barras
-  //       searchByCodigoProducto(searchValue);
-  //     } else {
-  //       // Búsqueda por descripción
-  //       searchByDescription(searchValue, currentPage);
-  //     }
-  //   } catch (error) {
-  //     handleError(error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
-  // Función auxiliar para búsqueda por código de producto
-  const searchByCodigoProducto = async (codigo) => {
-    await Product.getInstance().findByCodigo(
-      { codigoProducto: codigo, codigoCliente: 0 },
-      (productos) => {
-        if (productos?.length > 0) {
-          setFilteredProducts(productos);
-          setHasMore(false);
-        } else {
-          // Si no encuentra por código, intentar como descripción numérica
-          searchByDescription(codigo, 1);
-        }
-      },
-      handleError
-    );
-  };
-  const searchByDescription = async (searchValue, currentPage) => {
-    console.log("searchByDescription")
-    // showLoading("Buscando por descripcion")
-    await Product.getInstance().findByDescriptionPaginado(
-      {
-        description: searchValue,
-        codigoCliente: 0,
-        pagina: currentPage,
-        canPorPagina: 10
-      },
-      (productos, response) => {
-        Log("resultado de la busqueda", productos)
-        console.log("currentPage", currentPage)
-        if (currentPage === 1) {
-          setFilteredProducts(productos || []);
-        } else {
-          setFilteredProducts(prev => [...prev, ...(productos || [])]);
-        }
-        if (productos.length < 1) {
-          console.log("preguntar si quiere agregar")
-          setShowNewProductModal(true)
-        }
-        setHasMore(productos?.length === 10);
 
-        // hideLoading()
-        // refInputBuscar.current.blur()
-        // setTimeout(() => {
-        //   refInputBuscar.current.focus()
-        // }, 500);
-
-      }, (err) => {
-        // hideLoading()
-        handleError(err)
-      }
-    );
-  };
 
   const handleError = (error) => {
     console.error("Error en búsqueda:", error);
@@ -254,22 +171,45 @@ const BoxProducts = () => {
   };
 
 
+  const checkBuscar = () => {
+    if (searchText.trim()) {
+      setPage(1);
+      handleSearch(searchText, 1);
+    } else {
+      setFilteredProducts([]);
+      setHasMore(true);
+    }
+
+    if (!capturarCodigo) {
+      console.log("dando foco al input buscar")
+
+      focusSearchInput();
+    }
+  }
+
   useEffect(() => {
-    console.log("cambio searchText", searchText)
-    const debounceTimer = setTimeout(() => {
-      if (searchText.trim()) {
-        setPage(1);
-        handleSearch(searchText, 1);
-      } else {
-        setFilteredProducts([]);
-        setHasMore(true);
-      }
-    }, 500);
-
-    focusSearchInput();
-
-    return () => clearTimeout(debounceTimer);
+    // console.log("cambio searchText", searchText)
+    setFilteredProducts([]);
+    setHasMore(false);
   }, [searchText]);
+
+  useEffect(() => {
+    // console.log("cambio apretoEnterEnBuscar", apretoEnterEnBuscar)
+    if (apretoEnterEnBuscar === null) return
+
+    if (!apretoEnterEnBuscar) {
+      setApretoEnterEnBuscar(true)
+      return
+    }
+    checkBuscar()
+  }, [apretoEnterEnBuscar]);
+
+  useEffect(() => {
+    // Log("filteredProducts length", filteredProducts.length)
+    if (filteredProducts.length === 1) {
+      handleAddProduct(filteredProducts[0])
+    }
+  }, [filteredProducts]);
 
   const loadMoreProducts = () => {
     if (!loading && hasMore) {
@@ -279,34 +219,42 @@ const BoxProducts = () => {
   };
 
   const handleAddProduct = (product) => {
+    setFilteredProducts([]);
+    setHasMore(false);
+
     // 1. Primero verificar si es pesable
     const isPesable = ProductSold.getInstance().esPesable(product);
-    
+
+
     if (isPesable) {
       setSelectedProduct(product);
       setShowWeightModal(true);
       return; // Salir después de abrir modal de peso
     }
-  
+
     // 2. Luego verificar precio
     if (product.precioVenta <= 0) {
       setSelectedProduct(product);
       setShowEditPriceModal(true);
       return;
     }
-  
+
     // 3. Si no es pesable y tiene precio válido, agregar
     Keyboard.dismiss();
-    addToSalesData({ 
+    addToSalesData({
       ...product,
       cantidad: 1,
-      total: product.precioVenta * 1 
+      total: product.precioVenta * 1
     });
     setSearchText("");
-    focusSearchInput();
+    setFilteredProducts([])
+    if (!capturarCodigo) {
+      console.log("dando foco al input buscar")
+      focusSearchInput();
+    }
+
+    console.log("limpia productos encontrados")
   };
-
-
 
   const handlePriceUpdate = (updatedProduct) => {
     addToSalesData(updatedProduct);
@@ -316,6 +264,7 @@ const BoxProducts = () => {
     ));
     setShowEditPriceModal(false);
     setSearchText("");
+    console.log("dando foco al input buscar")
     focusSearchInput();
   };
 
@@ -330,17 +279,16 @@ const BoxProducts = () => {
     setShowNewProductModal(false);
   };
 
-  Log("SALESDATA",salesData)
-
   return (
     <View>
       <CapturaCodigoCamara
         openDialog={capturarCodigo}
         setOpenDialog={setCapturarCodigo}
+        outOnCapture={false}
         onCapture={(cod) => {
           setSearchText(cod)
-          focusSearchInput();
-
+          // focusSearchInput();
+          setApretoEnterEnBuscar(!apretoEnterEnBuscar)
         }}
       />
       <Text style={styles.headerText}>Buscar Productos</Text>
@@ -352,12 +300,12 @@ const BoxProducts = () => {
           placeholderTextColor="#999"
           value={searchText}
           onChangeText={setSearchText}
-          onPointerEnter={(e)=>{
-            console.log("apreto ", e)
-          }}
           ref={searchInputRef}
 
           returnKeyType="search"
+          onSubmitEditing={(e) => {
+            setApretoEnterEnBuscar(!apretoEnterEnBuscar)
+          }}
         />
         <TouchableOpacity style={styles.scanCodButton} onPress={() => {
           setCapturarCodigo(true)
@@ -437,7 +385,7 @@ const BoxProducts = () => {
 
       <IngresoPLU
         visible={showPLUModal}
-         onConfirm={handlePLUConfirm}
+        onConfirm={handlePLUConfirm}
         // onConfirm={(plu) => {
         //   // Lógica para manejar PLU válido
         //   console.log('PLU ingresado:', plu);
@@ -467,22 +415,24 @@ const BoxProducts = () => {
         }}
       />
       <AsignarPeso
-    visible={showWeightModal}
-    onClose={() => setShowWeightModal(false)}
-    product={selectedProduct}
-    currentWeight={selectedProduct?.cantidad || 0}
-    onSave={(peso) => {
-        const updatedProduct = {
+        visible={showWeightModal}
+        onClose={() => setShowWeightModal(false)}
+        product={selectedProduct}
+        currentWeight={selectedProduct?.cantidad || 0}
+        onSave={(peso) => {
+          const updatedProduct = {
             ...selectedProduct,
             cantidad: peso,
             total: selectedProduct.precioVenta * peso
-        };
-        addToSalesData(updatedProduct);
-        setShowWeightModal(false);
-        setSearchText("");
-        focusSearchInput();
-    }}
-/>
+          };
+          addToSalesData(updatedProduct);
+          setShowWeightModal(false);
+          setSearchText("");
+          console.log("dando foco al input buscar")
+
+          focusSearchInput();
+        }}
+      />
 
     </View>
 
