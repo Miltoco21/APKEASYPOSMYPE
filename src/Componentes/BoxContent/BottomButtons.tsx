@@ -28,7 +28,7 @@ const BottomButtons = () => {
   const routes = [
     { key: 'clear', title: 'Limpiar', icon: 'trash' as const },
     { key: 'familias', title: 'Familias', icon: 'shapes' as const },
-    { key: 'busquedarapida', title: 'Productos ', icon: 'search' as const },
+    { key: 'busquedarapida', title: 'Busqueda R.', icon: 'search' as const },
     { key: 'config', title: 'Ajustes', icon: 'settings' as const },
     { key: 'cerrar', title: 'Cierre caja', icon: 'log-out' as const },
     // { key: 'reportes', title: 'Reportes', icon: 'stats-chart'as const },

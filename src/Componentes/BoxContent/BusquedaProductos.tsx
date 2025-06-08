@@ -245,7 +245,7 @@ const BoxProducts = () => {
       ...product,
       cantidad: 1,
       total: product.precioVenta * 1
-    });
+    }, undefined, capturarCodigo);
     setSearchText("");
     setFilteredProducts([])
     if (!capturarCodigo) {
@@ -257,7 +257,7 @@ const BoxProducts = () => {
   };
 
   const handlePriceUpdate = (updatedProduct) => {
-    addToSalesData(updatedProduct);
+    addToSalesData(updatedProduct, undefined, capturarCodigo);
     // Actualizar lista de búsqueda si el producto está visible
     setFilteredProducts(prev => prev.map(p =>
       p.idProducto === updatedProduct.idProducto ? updatedProduct : p
@@ -274,7 +274,7 @@ const BoxProducts = () => {
       ...newProduct,
       quantity: 1,
       total: newProduct.price || 0
-    });
+    }, undefined, capturarCodigo);
     showAlert('Éxito', 'Producto creado y agregado');
     setShowNewProductModal(false);
   };
@@ -425,12 +425,13 @@ const BoxProducts = () => {
             cantidad: peso,
             total: selectedProduct.precioVenta * peso
           };
-          addToSalesData(updatedProduct);
+          addToSalesData(updatedProduct,undefined, true);
           setShowWeightModal(false);
           setSearchText("");
           console.log("dando foco al input buscar")
-
-          focusSearchInput();
+          if(!capturarCodigo){
+            focusSearchInput();
+          }
         }}
       />
 

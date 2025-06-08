@@ -29,7 +29,6 @@ const CapturaCodigoCamara = ({
   const [scannedData, setScannedData] = useState("");
 
   const [border1, setBorder1] = useState(false);
-  const [bgOverlay, setBgOverlay] = useState(1)
 
 
   // Unsubscribe the listener on unmount
@@ -45,9 +44,7 @@ const CapturaCodigoCamara = ({
     if (outOnCapture) {
       setOpenDialog(false)
     } else {
-      setBgOverlay(0.2)
       setTimeout(() => {
-        setBgOverlay(1)
         setScanned(false);
       }, 3000);
     }
@@ -82,12 +79,9 @@ const CapturaCodigoCamara = ({
       <Modal
         visible={openDialog}
         onDismiss={() => { }}
-
         contentContainerStyle={{
           ...styles.containerStyle,
-          opacity: bgOverlay
-        }
-        }
+        }}
       >
         <View style={{
           ...{

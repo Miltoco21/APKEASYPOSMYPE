@@ -32,6 +32,7 @@ import StorageSesion from "src/Helpers/StorageSesion";
 import dayjs from "dayjs";
 //import ScreenDialogBuscarCliente from "../ScreenDialog/BuscarCliente";
 import Log from "src/Models/Log";
+import LastSale from "src/Models/LastSale";
 
 export const SelectedOptionsContext = React.createContext();
 export const SelectedOptionsProvider = ({ children }) => {
@@ -74,8 +75,17 @@ export const SelectedOptionsProvider = ({ children }) => {
 
   const [CONFIG, setCONFIG] = useState(null);
   const init = async () => {
-    // console.log("init de SelectedOptionsProvider");
+    console.log("init de SelectedOptionsProvider");
     setCONFIG(await ModelConfig.getInstance().getFirst());
+
+    if (!ultimoVuelto && await LastSale.getInstance().sesion.hasOne()) {
+      const dt = await LastSale.loadFromSesion()
+      if (dt) {
+        // console.log("cargando ultima venta")
+        // Log("dt", dt)
+        setUltimoVuelto(dt.data.vuelto)
+      }
+    }
   };
 
   useEffect(() => {
@@ -477,7 +487,7 @@ export const SelectedOptionsProvider = ({ children }) => {
         <Snackbar
           visible={visibleSnackbar}
           onDismiss={hideSnackbar}
-          style={{ position: "static", marginHorizontal:"10%",width:"80%", zIndex:10 }}
+          style={{ position: "static", marginHorizontal: "10%", width: "80%", zIndex: 10 }}
           duration={3000}
           action={{
             label: "OK",

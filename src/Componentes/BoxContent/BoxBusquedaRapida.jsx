@@ -95,7 +95,7 @@ const BoxBusquedaRapida = () => {
         ...product,
         cantidad: 1,
         total: product.precioVenta * 1 
-      });
+      }, undefined, true);
     }
   };
 

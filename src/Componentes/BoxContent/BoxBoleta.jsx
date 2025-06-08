@@ -340,7 +340,6 @@ const BoxBoleta = ({ onClose, visible }) => {
 
 
         clearSalesData();
-        setVuelto(0);
         setSelectedUser(null);
         setTextSearchProducts("");
         showAlert("Pago Realizado correctamente");
@@ -362,7 +361,7 @@ const BoxBoleta = ({ onClose, visible }) => {
         // const cantAImprimir = parseInt(ModelConfig.get("cantidadTicketImprimir"));
         // Printer.printAll(response, cantAImprimir);
 
-        setUltimoVuelto(vuelto);
+        setUltimoVuelto(vuelto + 0);
         setTimeout(() => {
           onClose();
           UserEvent.send({
@@ -371,6 +370,8 @@ const BoxBoleta = ({ onClose, visible }) => {
           });
           // setLoading(false);
         }, 500);
+        setVuelto(0);
+
       },
       (error, response) => {
         hideLoading();

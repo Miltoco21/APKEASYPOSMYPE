@@ -113,7 +113,7 @@ const BaseConfigModal = ({
     try {
 
       const checkResult = await check(cual);
-      console.log("checkResult", checkResult)
+      // console.log("checkResult", checkResult)
       // if (checkResult === RESULTS.UNAVAILABLE) {
       //   console.log("version vieja")
       //   console.log("pidiendo permiso ", cual)
