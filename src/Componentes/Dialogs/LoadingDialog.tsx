@@ -15,7 +15,7 @@ const LoadingDialog: React.FC<LoadingDialogProps> = ({
     <Modal
       visible={openDialog}
       transparent={true}
-      // animationType="slide"
+    // animationType="slide"
     >
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
@@ -32,12 +32,15 @@ const LoadingDialog: React.FC<LoadingDialogProps> = ({
 const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   modalContent: {
+    borderWidth: 1,
+    borderColor: "red solid",
     backgroundColor: 'white',
+    boxShadow: "2px 2px 8px 1px black",
     padding: 20,
     borderRadius: 10,
     width: '50%',

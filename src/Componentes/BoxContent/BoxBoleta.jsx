@@ -32,6 +32,7 @@ import { Button } from 'react-native-paper';
 import Log from 'src/Models/Log';
 import TecladoBilletes from './TecladoBilletes';
 import PrinterBluetooth from 'src/Models/PrinterBluetooth';
+import Product from "src/Models/Product";
 
 const BoxBoleta = ({ onClose, visible }) => {
   const {
@@ -153,6 +154,48 @@ const BoxBoleta = ({ onClose, visible }) => {
       () => { }
     );
   };
+
+
+  const agregarPago = (pagoNuevo) => {
+    if (pagoNuevo.montoMetodoPago <= 0) return
+    // console.log("agregarPago")
+    // console.log("pagoNuevo",pagoNuevo)
+    setTotalPagos(totalPagos + pagoNuevo.montoMetodoPago)
+    setPagos([...pagos, pagoNuevo])
+  }
+
+  const confirmarPagoEfectivo = (nuevoMonto) => {
+    console.log("confirmarPagoEfectivo")
+    console.log("nuevoMonto", nuevoMonto)
+    var yaTenia1 = false
+
+    var totalPagosx = 0
+    var totalEfectivo = 0
+    const copiaPagos = System.clone(pagos)
+    pagos.forEach((pago, ix) => {
+      if (pago.metodoPago === "EFECTIVO") {
+        totalEfectivo = copiaPagos[ix].montoMetodoPago + nuevoMonto
+        copiaPagos[ix].montoMetodoPago = totalEfectivo + Product.logicaRedondeoUltimoDigito(totalEfectivo)
+        yaTenia1 = true
+      }
+      totalPagosx += copiaPagos[ix].montoMetodoPago
+    })
+
+    if (yaTenia1) {
+      setPagos([...copiaPagos])
+      setTotalPagos(totalPagosx)
+    } else {
+      agregarPago({
+        "montoMetodoPago": nuevoMonto + Product.logicaRedondeoUltimoDigito(nuevoMonto),
+        "metodoPago": "EFECTIVO"
+      })
+      totalPagosx += nuevoMonto
+    }
+
+    // setTotalYDescuentoYRedondeo(totalVentas - descuentos + logicaRedondeo(totalVentas - descuentos))
+    setPagarCon(0)
+    setCambioManualTeclado(false)
+  }
 
   useEffect(() => {
     aplicarOfertas();
@@ -288,19 +331,19 @@ const BoxBoleta = ({ onClose, visible }) => {
       esModoAvion,
       async (responsex) => {
         let response = { ...responsex };
-      
+
         hideLoading();
         onClose();
         // showAlert(response.descripcion);
-       
+
         //onClose();
-      
+
 
         clearSalesData();
         setVuelto(0);
         setSelectedUser(null);
         setTextSearchProducts("");
-         showAlert("Pago Realizado correctamente");
+        showAlert("Pago Realizado correctamente");
         setCliente(null);
 
         if (response.imprimirResponse === undefined) {
@@ -357,8 +400,8 @@ const BoxBoleta = ({ onClose, visible }) => {
 
         // <--- PASAMOS EL VALOR ACTUAL
         onAmountSelected={(monto) => {
-          setPagarCon(monto);
-          setCambioManualTeclado(true);
+          console.log("agregar pago--", monto)
+          confirmarPagoEfectivo(monto)
         }}
       />
 
@@ -452,7 +495,7 @@ const BoxBoleta = ({ onClose, visible }) => {
             setFaltaPagar={setFaltaPagar}
             setTotalFinal={setTotalFinal}
             //excluirMetodos={["TRANSFERENCIA", "CUENTACORRIENTE"]}
-             excluirMetodos={[ "CUENTACORRIENTE"]}
+            excluirMetodos={["CUENTACORRIENTE"]}
           />
         </View>
       </View>

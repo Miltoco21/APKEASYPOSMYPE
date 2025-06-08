@@ -10,28 +10,28 @@ const TecladoBilletes = ({
   initialValue = 0,
   maxValue = 10000000,
 }) => {
-  const [inputValue, setInputValue] = useState(initialValue.toString()); 
+  const [inputValue, setInputValue] = useState(initialValue.toString());
   const [hasInteracted, setHasInteracted] = useState(false);
 
-   const screenWidth = Dimensions.get('window').width;
+  const screenWidth = Dimensions.get('window').width;
 
-   useEffect(() => {
+  useEffect(() => {
     if (visible) {
       setInputValue(initialValue.toString());
       setHasInteracted(false);
-      onAmountSelected(initialValue);
+      // onAmountSelected(initialValue);
     }
   }, [visible, initialValue]);
 
   // const handleDenomination = (amount) => {
   //   const currentValue = parseInt(inputValue.replace(/\D/g, '') || 0);
   //   const newValue = currentValue + amount;
-    
+
   //   if (newValue > maxValue) {
   //     Alert.alert("Error", "El monto excede el máximo permitido");
   //     return;
   //   }
-    
+
   //   setInputValue(newValue.toString());
   // };
   const handleDenomination = (amount) => {
@@ -49,7 +49,7 @@ const TecladoBilletes = ({
     //   Alert.alert("Error", "El monto excede el máximo permitido");
     //   return;
     // }
-    
+
     setInputValue(newValue.toString());
   };
   const handleInputChange = (text) => {
@@ -102,7 +102,7 @@ const TecladoBilletes = ({
           </View>
 
           <View style={styles.denominationRow}>
-            {[2000,1000, 500,].map((amount) => (
+            {[2000, 1000, 500,].map((amount) => (
               <TouchableOpacity
                 key={amount}
                 style={styles.denominationButton}
@@ -113,7 +113,7 @@ const TecladoBilletes = ({
             ))}
           </View>
           <View style={styles.denominationRow}>
-            {[100,50,10].map((amount) => (
+            {[100, 50, 10].map((amount) => (
               <TouchableOpacity
                 key={amount}
                 style={styles.denominationButton}
@@ -122,12 +122,12 @@ const TecladoBilletes = ({
                 <Text style={styles.buttonText}>${amount.toLocaleString()}</Text>
               </TouchableOpacity>
             ))}
-           
+
           </View>
 
           <View style={styles.actionRow}>
-      
-            
+
+
             <TouchableOpacity
               style={[styles.actionButton, styles.acceptButton]}
               onPress={handleAccept}
@@ -138,20 +138,20 @@ const TecladoBilletes = ({
               style={[styles.actionButton, styles.clearButton]}
               onPress={handleClear}
             >
-              <Text style={styles.buttonText}>Limpiar</Text>
+              <Text style={styles.buttonClearText}>Limpiar</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.actionRow}>
-      
-            
-      <TouchableOpacity
-         style={[styles.actionButton, styles.cancelButton]}
-         onPress={onClose}
-      >
-        <Text style={styles.buttonText}>Cerrar</Text>
-      </TouchableOpacity>
-   
-    </View>
+
+
+            <TouchableOpacity
+              style={[styles.actionButton, styles.cancelButton]}
+              onPress={onClose}
+            >
+              <Text style={styles.buttonText}>Cerrar</Text>
+            </TouchableOpacity>
+
+          </View>
         </View>
       </View>
     </Modal>
@@ -190,13 +190,12 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   denominationButton: {
-    width: 98,
-    height: 50,
+    width: "33%",
+    height: 80,
     backgroundColor: '#81E7AF',
     borderWidth: 2,
     borderColor: '#6b6767',
     borderRadius: 10,
-    margin: 4,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#c1c1c1',
@@ -206,11 +205,20 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   buttonText: {
-    color: '#4f4e4e',
+    color: '#000000',
     fontSize: 18,
     fontWeight: 'bold',
     fontFamily: 'Victor Mono',
   },
+
+  buttonClearText: {
+    color: 'rgb(255 255 255)',
+    fontSize: 18,
+    fontWeight: 'bold',
+    fontFamily: 'Victor Mono',
+  },
+
+
   actionRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -229,8 +237,7 @@ const styles = StyleSheet.create({
   clearButton: {
     backgroundColor: 'red',
     width: 80,
-    height: 50,
-
+    height: 70,
     borderWidth: 2,
     borderColor: '#6b6767',
     borderRadius: 10,
@@ -245,8 +252,8 @@ const styles = StyleSheet.create({
   },
   acceptButton: {
     backgroundColor: '#2196F3',
-     width: 80,
-    height: 50,
+    width: 80,
+    height: 70,
 
     borderWidth: 2,
     borderColor: '#6b6767',
@@ -263,7 +270,7 @@ const styles = StyleSheet.create({
   cancelButton: {
     backgroundColor: '#9E9E9E',
     width: 80,
-    height: 50,
+    height: 70,
     borderWidth: 2,
     borderColor: '#6b6767',
     borderRadius: 10,

@@ -13,7 +13,6 @@ import ModelConfig from "../../Models/ModelConfig";
 import Product from "../../Models/Product";
 import TecladoBilletes from "../BoxContent/TecladoBilletes";
 
-import TPago from '../../Types/TPago'
 
 const BoxMultiPago = ({
   pagarCon,
@@ -61,7 +60,7 @@ const BoxMultiPago = ({
 
   // ACCIONES
   // ACCIONES
-  const agregarPago = (pagoNuevo:TPago) => {
+  const agregarPago = (pagoNuevo) => {
     if (pagoNuevo.montoMetodoPago <= 0) return
     // console.log("agregarPago")
     // console.log("pagoNuevo",pagoNuevo)
@@ -74,7 +73,7 @@ const BoxMultiPago = ({
       "montoMetodoPago": parseFloat(pagarCon),
       "metodoPago": "TRANSFERENCIA",
       "transferencia": dataTransferencia
-    } as TPago)
+    })
 
     setMetodoPago("")
     setPagarCon(0)
@@ -87,7 +86,7 @@ const BoxMultiPago = ({
       "montoMetodoPago": parseFloat(pagarCon),
       "metodoPago": "CUENTACORRIENTE",
       "data": dataUser
-    } as TPago)
+    })
 
     // console.log("datauser", dataUser)
     setMetodoPago("")
@@ -102,7 +101,7 @@ const BoxMultiPago = ({
       "montoMetodoPago": parseFloat(pagarCon),
       "metodoPago": "CUENTACORRIENTE",
       "data": dataClient
-    } as TPago)
+    })
 
     setMetodoPago("")
     setCliente(null)
@@ -135,7 +134,7 @@ const BoxMultiPago = ({
       agregarPago({
         "montoMetodoPago": nuevoMonto + Product.logicaRedondeoUltimoDigito(nuevoMonto),
         "metodoPago": "EFECTIVO"
-      } as TPago)
+      })
       totalPagosx += nuevoMonto
     }
 
@@ -152,7 +151,7 @@ const BoxMultiPago = ({
       "montoMetodoPago": parseFloat(pagarCon),
       "metodoPago": "TARJETA",
       "tipoTarjeta": tipo
-    }as TPago)
+    })
 
     setTotalYDescuentoYRedondeo(totalVentas - descuentos)
     setMetodoPago("")
