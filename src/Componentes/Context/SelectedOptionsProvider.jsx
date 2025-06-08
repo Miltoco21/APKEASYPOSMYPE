@@ -17,7 +17,7 @@ import {
   Image,
   Alert,
   ToastAndroid,
-  Platform ,
+  Platform,
 
 } from "react-native";
 import { Snackbar } from "react-native-paper";
@@ -54,21 +54,21 @@ export const SelectedOptionsProvider = ({ children }) => {
   };
 
   const showAlert = (title, text) => {
-  if (!text) {
-    text = title;
-    title = "Atención";
-  }
+    if (!text) {
+      text = title;
+      title = "Atención";
+    }
 
-  // Para Android: usar ToastAndroid
-  if (Platform.OS === 'android') {
-    //ToastAndroid.show(text, ToastAndroid.SHORT);
-    ToastAndroid.show(text, ToastAndroid.LONG);
-  } 
-  // Para iOS: mantener el Alert.alert tradicional
-  else {
-    Alert.alert(title, text);
-  }
-};
+    // Para Android: usar ToastAndroid
+    if (Platform.OS === 'android') {
+      //ToastAndroid.show(text, ToastAndroid.SHORT);
+      ToastAndroid.show(text, ToastAndroid.LONG);
+    }
+    // Para iOS: mantener el Alert.alert tradicional
+    else {
+      Alert.alert(title, text);
+    }
+  };
 
 
 
@@ -205,7 +205,7 @@ export const SelectedOptionsProvider = ({ children }) => {
 
   const [modoAvion, setModoAvion] = useState(true);
 
-  
+
 
   const [searchResults, setSearchResults] = useState([]);
   const [textSearchProducts, setTextSearchProducts] = useState(""); //variable del cuadro de busqueda
@@ -231,7 +231,6 @@ export const SelectedOptionsProvider = ({ children }) => {
     if (!userData)
       getUserData()
   }, [userData]);
-  Log(userData)
 
   useEffect(() => {
     setGrandTotal(sales.getTotal());
@@ -300,26 +299,30 @@ export const SelectedOptionsProvider = ({ children }) => {
 
       var totalAntesPrecio = sales.getTotal();
       var totalAntesCantidad = sales.getTotalCantidad();
+      setSalesData([]);
       sales.addProduct(product, quantity);
-      var totalDespuesPrecio = sales.getTotal();
-      var totalDespuesCantidad = sales.getTotalCantidad();
 
-      // console.log("totalAntesPrecio", totalAntesPrecio)
-      // console.log("totalDespuesPrecio", totalDespuesPrecio)
-      // console.log("totalAntesCantidad", totalAntesCantidad)
-      // console.log("totalDespuesCantidad", totalDespuesCantidad)
+      setTimeout(async () => {
+        setSalesData(await sales.loadFromSesion());
 
-      if (
-        totalAntesPrecio != totalDespuesPrecio ||
-        totalAntesCantidad != totalDespuesCantidad
-      )
-        if (withAlert) {
-          showAlert("Agregado correctamente");
-        } else {
-          showMessage("Agregado correctamente");
-        }
-      setGrandTotal(sales.getTotal());
-      setSalesData(sales.products);
+        var totalDespuesPrecio = sales.getTotal();
+        var totalDespuesCantidad = sales.getTotalCantidad();
+
+        // console.log("totalAntesPrecio", totalAntesPrecio)
+        // console.log("totalDespuesPrecio", totalDespuesPrecio)
+        // console.log("totalAntesCantidad", totalAntesCantidad)
+        // console.log("totalDespuesCantidad", totalDespuesCantidad)
+
+        if (
+          totalAntesPrecio != totalDespuesPrecio ||
+          totalAntesCantidad != totalDespuesCantidad
+        )
+          if (withAlert) {
+            showAlert("Agregado correctamente");
+          } else {
+            showMessage("Agregado correctamente");
+          }
+      }, 300);
 
       setUltimoVuelto(null);
 
@@ -327,7 +330,7 @@ export const SelectedOptionsProvider = ({ children }) => {
         name: "agrega producto " + product.nombre,
       });
 
-      focusSearchInput();
+      // focusSearchInput();
       // setTimeout(() => {
       //   searchInputRef.current.focus()
       // }, 500);
@@ -474,7 +477,7 @@ export const SelectedOptionsProvider = ({ children }) => {
         <Snackbar
           visible={visibleSnackbar}
           onDismiss={hideSnackbar}
-          style={{ position: "absolute", bottom: 20, left: 20, right: 20 }}
+          style={{ position: "static", marginHorizontal:"10%",width:"80%", zIndex:10 }}
           duration={3000}
           action={{
             label: "OK",
@@ -544,7 +547,7 @@ export const SelectedOptionsProvider = ({ children }) => {
           codigoIngresado={codigoNuevoExpress}
         /> */}
 
-       
+
 
         {/* <PedirSupervision
           openDialog={verPedirSupervision}

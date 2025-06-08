@@ -28,8 +28,6 @@ const Home = ({
   } = useContext(SelectedOptionsContext);
 
   const [isCajaOpen, setIsCajaOpen] = useState(false);
- console.log("userdatacaja",userData);
- 
   // Función para cerrar el componente AbrirCaja
   const handleCloseCaja = () => {
     setIsCajaOpen(false);

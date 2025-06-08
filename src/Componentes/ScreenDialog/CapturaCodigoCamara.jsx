@@ -14,6 +14,7 @@ const CapturaCodigoCamara = ({
   openDialog,
   onCapture,
   setOpenDialog,
+  outOnCapture = true
 }) => {
   const {
     userData,
@@ -28,6 +29,8 @@ const CapturaCodigoCamara = ({
   const [scannedData, setScannedData] = useState("");
 
   const [border1, setBorder1] = useState(false);
+  const [bgOverlay, setBgOverlay] = useState(1)
+
 
   // Unsubscribe the listener on unmount
 
@@ -39,7 +42,15 @@ const CapturaCodigoCamara = ({
     setScanned(true);
     // showAlert(`Bar code with type ${type} and data ${data} has been scanned!`);
     onCapture(data)
-    setOpenDialog(false)
+    if (outOnCapture) {
+      setOpenDialog(false)
+    } else {
+      setBgOverlay(0.2)
+      setTimeout(() => {
+        setBgOverlay(1)
+        setScanned(false);
+      }, 3000);
+    }
   };
   useEffect(() => {
     getCameraPermissions();
@@ -65,20 +76,26 @@ const CapturaCodigoCamara = ({
     console.log("scanner", scanned)
   }, [scanned])
 
+
   return (
     <Portal>
       <Modal
         visible={openDialog}
         onDismiss={() => { }}
 
-        contentContainerStyle={styles.containerStyle}
+        contentContainerStyle={{
+          ...styles.containerStyle,
+          opacity: bgOverlay
+        }
+        }
       >
         <View style={{
           ...{
             ...styles.containerCamera,
-            borderWidth:2,
+            borderWidth: 2,
             borderColor: (border1 ? "red" : "transparent"),
-          }}
+          }
+        }
         } >
           <CameraView
             onBarcodeScanned={scanned ? undefined : handleBarcodeScanned}
@@ -89,19 +106,19 @@ const CapturaCodigoCamara = ({
           />
         </View>
 
-      <TouchableOpacity style={{
-        width: "90%",
-      }} onPress={()=>{
-        setOpenDialog(false)
-      }}>
-        <Text style={{
-          ...{
-            ...styles.cancelbutton,
-            borderColor: (border1 ? "red" : "transparent"),
-          }
-        }}>Cancelar</Text>
-      </TouchableOpacity>
-    </Modal>
+        <TouchableOpacity style={{
+          width: "90%",
+        }} onPress={() => {
+          setOpenDialog(false)
+        }}>
+          <Text style={{
+            ...{
+              ...styles.cancelbutton,
+              borderColor: (border1 ? "red" : "transparent"),
+            }
+          }}>Cancelar</Text>
+        </TouchableOpacity>
+      </Modal>
     </Portal >
   );
 };
@@ -114,7 +131,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     display: "flex",
-    alignItems: "center"
+    alignItems: "center",
   },
   containerCamera: {
     width: "90%",
