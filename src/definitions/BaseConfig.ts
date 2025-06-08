@@ -14,6 +14,14 @@ export const OrdenListado = {
 
 const BaseConfig = {
   urlBase: apiUrl,
+  emitirBoleta: true,
+  tienePasarelaPago: true,
+  excluirMediosEnBoleta: [
+    // MetodosPago.EFECTIVO,
+    // MetodosPago.TRANSFERENCIA,
+    // MetodosPago.CUENTA_CORRIENTE
+  ],
+
   sesionExprire: 2 * 60 * 1000, //en milisegundos
 
   codBalanza: "250", //
@@ -53,10 +61,11 @@ const BaseConfig = {
   verBotonPreventa: true,
   verBotonEnvases: true,
   verBotonPagarFactura: true,
-  
+
   impresoraBluetooth: "",
 
-  usarImpresoraBluetooth: false
+  usarImpresoraBluetooth: false,
+
 };
 
 export default BaseConfig;

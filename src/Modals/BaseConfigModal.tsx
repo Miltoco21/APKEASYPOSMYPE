@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet, Switch, ScrollView, Alert } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import BaseConfig, { OrdenListado } from '../definitions/BaseConfig';
@@ -16,12 +16,22 @@ import ImpresoraBluetooth from './ImpresoraBluetooth';
 import Box from 'src/Componentes/Box';
 import System from 'src/Helpers/System';
 import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
+import { SelectedOptionsContext } from '../Componentes/Context/SelectedOptionsProvider';
+import MetodosPago from 'src/definitions/MetodosPago';
+import BoxOptionListMulti from 'src/Componentes/BoxContent/BoxOptionListMulti';
+
 
 const BaseConfigModal = ({
   openDialog,
   setOpenDialog,
   onChange,
 }) => {
+
+
+  const {
+    setModoAvion
+  } = useContext(SelectedOptionsContext);
+
   const [urlBase, setUrlBase] = useState("")
   const [cantBusqRap, setCantBusqRap] = useState(20);
   const [pedirDatosTransferencia, setPedirDatosTransferencia] = useState(false)
@@ -40,6 +50,11 @@ const BaseConfigModal = ({
 
   const [showModalPrinter, setShowModalPrinter] = useState(false)
   const [usaImpresora, setUsaImpresora] = useState(false)
+
+  const [emitirBoleta, setEmitirBoleta] = useState(false)
+  const [tienePasarelaPago, setTienePasarelaPago] = useState(false)
+  const [excluirMediosEnBoleta, setExcluirMediosEnBoleta] = useState([])
+
 
   const cargarOrdenesListados = () => {
     var seleccionables = []
@@ -72,9 +87,20 @@ const BaseConfigModal = ({
     setImpresoraBluetooth(await ModelConfig.get("impresoraBluetooth"))
     setUsaImpresora(await ModelConfig.get("usarImpresoraBluetooth"))
 
+    setEmitirBoleta(await ModelConfig.get("emitirBoleta"))
+
+
+    setTienePasarelaPago(await ModelConfig.get("tienePasarelaPago"))
+    setExcluirMediosEnBoleta(await ModelConfig.get("excluirMediosEnBoleta"))
+
   }
 
+
   const handleSave = async () => {
+    if (!await ModelConfig.isEqual("emitirBoleta", emitirBoleta)) {
+      setModoAvion(!emitirBoleta)
+    }
+
     await ModelConfig.change("urlBase", urlBase);
     await ModelConfig.change("pedirDatosTransferencia", pedirDatosTransferencia)
     await ModelConfig.change("pagarConCuentaCorriente", pagarConCuentaCorriente)
@@ -90,6 +116,10 @@ const BaseConfigModal = ({
     await ModelConfig.change("impresoraBluetooth", impresoraBluetooth)
     await ModelConfig.change("usarImpresoraBluetooth", usaImpresora)
 
+    await ModelConfig.change("emitirBoleta", emitirBoleta)
+
+    await ModelConfig.change("tienePasarelaPago", tienePasarelaPago)
+    await ModelConfig.change("excluirMediosEnBoleta", excluirMediosEnBoleta)
     onClose()
   };
 
@@ -227,6 +257,48 @@ const BaseConfigModal = ({
               />
             </Grid> */}
 
+            <Grid item xs={12} md={12} lg={12} style={{
+              alignContent: "left",
+              alignItems: "start",
+              // backgroundColor: "red",
+              padding: 10,
+              marginVertical: 20,
+              borderWidth: 1,
+              borderRadius: 5
+            }}>
+              <Text>Emision de Boleta</Text>
+
+              <Grid item xs={12} md={12} lg={12}>
+                <InputCheckbox
+                  inputState={[emitirBoleta, setEmitirBoleta]}
+                  label={"Emitir boleta"}
+                />
+              </Grid>
+
+
+              <Grid item xs={12} md={12} lg={12}>
+                <InputCheckbox
+                  inputState={[tienePasarelaPago, setTienePasarelaPago]}
+                  label={"Tiene pasarela de pago"}
+                />
+              </Grid>
+
+              <Grid item xs={12} md={12} lg={12}>
+                <Text
+                  style={{
+                    userSelect: "none",
+                    fontSize: 19,
+                    marginVertical: 10
+                  }}>
+                  No emitir Boleta en:
+                </Text>
+                <BoxOptionListMulti
+                  optionSelected={excluirMediosEnBoleta}
+                  setOptionSelected={setExcluirMediosEnBoleta}
+                  options={System.arrayIdValueFromObject(MetodosPago, true)}
+                />
+              </Grid>
+            </Grid>
 
 
             <Grid item xs={12} lg={12}>

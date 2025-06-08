@@ -76,8 +76,10 @@ export const SelectedOptionsProvider = ({ children }) => {
 
   const [CONFIG, setCONFIG] = useState(null);
   const init = async () => {
-    console.log("init de SelectedOptionsProvider");
+    // console.log("init de SelectedOptionsProvider");
     setCONFIG(await ModelConfig.getInstance().getFirst());
+
+    setModoAvion(!await ModelConfig.get("emitirBoleta"))
 
     if (!ultimoVuelto && await LastSale.getInstance().sesion.hasOne()) {
       const dt = await LastSale.loadFromSesion()
@@ -92,10 +94,6 @@ export const SelectedOptionsProvider = ({ children }) => {
   useEffect(() => {
     init();
   }, []);
-
-  useEffect(() => {
-    console.log("cambio tieneFocoTeclado", tieneFocoTeclado)
-  }, [tieneFocoTeclado]);
 
   //set general dialog variables
   const [showLoadingDialog, setShowLoadingDialogx] = useState(false);
@@ -218,7 +216,7 @@ export const SelectedOptionsProvider = ({ children }) => {
   const [titleMsg, setTitleMsg] = useState("");
   const [textMsg, setTextMsg] = useState("");
 
-  const [modoAvion, setModoAvion] = useState(true);
+  const [modoAvion, setModoAvion] = useState(true)
 
 
 
@@ -481,10 +479,6 @@ export const SelectedOptionsProvider = ({ children }) => {
   // };
 
 
-
-  useEffect(() => {
-    console.log("cambio showLoadingDialog", showLoadingDialog)
-  }, [showLoadingDialog])
 
   const GeneralElements = () => {
     return (

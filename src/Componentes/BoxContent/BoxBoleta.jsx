@@ -323,8 +323,9 @@ const BoxBoleta = ({ onClose, visible }) => {
     console.log("cancelando");
     setLoading(false);
 
-    const esModoAvion = true; // await PagoBoleta.analizarSiEsModoAvion(requestBody); // Esperar resolución
-
+    const esModoAvion = await PagoBoleta.analizarSiEsModoAvion(requestBody); // Esperar resolución
+    requestBody.esModoAvion = esModoAvion;
+    
     showLoading("Haciendo el pago");
     await MPago.hacerPago(
       requestBody,

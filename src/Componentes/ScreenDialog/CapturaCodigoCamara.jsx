@@ -69,11 +69,6 @@ const CapturaCodigoCamara = ({
     }
   }, [openDialog, border1]);
 
-  useEffect(() => {
-    console.log("scanner", scanned)
-  }, [scanned])
-
-
   return (
     <Portal>
       <Modal

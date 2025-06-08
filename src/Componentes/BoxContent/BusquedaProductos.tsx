@@ -52,13 +52,11 @@ const BoxProducts = () => {
 
   useEffect(() => {
     Keyboard.addListener("keyboardDidHide", () => {
-      // console.log("perdio foco el teclado")
       setTieneFocoTeclado(false)
     })
 
     Keyboard.addListener("keyboardDidShow", () => {
       setTieneFocoTeclado(true)
-      // console.log("tiene foco el teclado")
     })
 
   }, [])

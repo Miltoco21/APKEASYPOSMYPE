@@ -51,25 +51,24 @@ class PagoBoleta extends Model implements IPagoBoleta {
       var index = metodosArr.indexOf(metodoAdaptado)
       if (index != -1 && excluirMediosEnBoleta.includes(index)) {
         algunExcluido = true
+      } else {
+        // console.log("index: ", index)
+        // Log(metodoAdaptado + " no esta en ", excluirMediosEnBoleta)
       }
     })
 
+    // console.log("algunExcluido", algunExcluido)
     return !algunExcluido
   }
 
-  static analizarSiEsModoAvion(infoAEnviar) {
-    return !this.analizarSiHaceBoleta(infoAEnviar)
+  static async analizarSiEsModoAvion(infoAEnviar) {
+    return !await this.analizarSiHaceBoleta(infoAEnviar)
   }
 
   async hacerPago(data, modo_avion, callbackOk, callbackWrong) {
-    // console.log("modo avion?" + (modo_avion ? "si" : "no"))
-    // const configs = ModelConfig.get()
-    // var url = configs.urlBase
-
     var url = await ModelConfig.get("urlBase");
+
     if (modo_avion) {
-      // url += "/api/Ventas/RedelcomImprimirTicket"
-      // url += "/api/Imprimir/Ticket"
       url += "/api/Imprimir/TicketNew"
     } else {
       url += "/api/Imprimir/Boleta"
@@ -79,7 +78,7 @@ class PagoBoleta extends Model implements IPagoBoleta {
     if (!data.codigoClienteSucursal) data.codigoClienteSucursal = "0"
     if (!data.puntoVenta) data.puntoVenta = await ModelConfig.get("puntoVenta")
 
-    // Log("url", url)
+    Log("url", url)
     // Log("datos a enviar", data)
     await EndPoint.sendPost(url, data, (responseData, response) => {
       callbackOk(responseData, response);

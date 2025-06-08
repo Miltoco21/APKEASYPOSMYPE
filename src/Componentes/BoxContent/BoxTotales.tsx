@@ -9,6 +9,7 @@ import Log from 'src/Models/Log';
 import Colors from '../Colores/Colores';
 import UltimaVenta from 'src/Modals/UltimaVenta';
 import System from 'src/Helpers/System';
+import ModelConfig from 'src/Models/ModelConfig';
 
 
 const BoxTotales = ({
@@ -28,7 +29,10 @@ const BoxTotales = ({
     showAlert,
     ultimoVuelto,
     tieneFocoTeclado,
-    setTieneFocoTeclado
+    setTieneFocoTeclado,
+    showMessage,
+    modoAvion,
+    setModoAvion
   } = useContext(SelectedOptionsContext);
 
   const [showModalPagarBoleta, setShowModalPagarBoleta] = useState(false);
@@ -60,7 +64,22 @@ const BoxTotales = ({
           <Text style={styles.textCard}>Venta</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.buttonCardPay} onPress={abrirBoleta}>
+        <TouchableOpacity style={{
+          ...{ ...styles.buttonCardPay }, ...{
+            backgroundColor: (modoAvion ? "#F3FEFF" : "#DEFEDE"),
+          }
+        }}
+          onLongPress={async () => {
+            if (modoAvion) {
+              showAlert("Cambiado a modo normal")
+            } else {
+              showAlert("Cambiado a modo avion")
+            }
+            setModoAvion(!modoAvion)
+
+            await ModelConfig.change("emitirBoleta", modoAvion)
+
+          }} onPress={abrirBoleta}>
           <Icon source={"currency-usd"} size={35} />
           <Text style={styles.textCard}>Registrar el</Text>
           <Text style={styles.textCardGrande}>PAGO</Text>

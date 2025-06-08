@@ -20,9 +20,11 @@ export default function ({
     sm = null,
     md = null,
     lg = null,
+
+    style = {}
 }) {
     return (
-        <View style={styles.container}>
+        <View style={{ ...styles.container,...style}}>
             {children}
         </View>
     );

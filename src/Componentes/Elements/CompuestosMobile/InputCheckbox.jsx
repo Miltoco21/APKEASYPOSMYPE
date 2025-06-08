@@ -18,7 +18,9 @@ const InputCheckbox = ({
     <View style={{
       display: "flex",
       flexDirection: "row",
-      backgroundColor: "#F8F8F8",
+      borderWidth: 1,
+      borderColor: "#F5F0FE",
+      backgroundColor: "#F9F7FC",
     }}>
       {withLabel && (
         <View style={{
@@ -26,7 +28,7 @@ const InputCheckbox = ({
           padding: 0,
           width: "80%"
         }}>
-          <TouchableOpacity onPress={()=>{ setInputValue(!inputValue) }} style={{
+          <TouchableOpacity onPress={() => { setInputValue(!inputValue) }} style={{
           }}>
             <Text style={{
               paddingHorizontal: 2,
@@ -40,9 +42,12 @@ const InputCheckbox = ({
       <View style={{
         width: "20%"
       }}>
-        <Switch
+        <Switch style={{
+          position: "relative",
+          top: 15
+        }}
           value={inputValue}
-          onValueChange={()=>{ setInputValue(!inputValue) }}
+          onValueChange={() => { setInputValue(!inputValue) }}
         />
       </View>
     </View>
