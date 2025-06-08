@@ -26,7 +26,9 @@ const BoxTotales = ({
     clearSalesData,
     salesDataTimestamp,
     showAlert,
-    ultimoVuelto
+    ultimoVuelto,
+    tieneFocoTeclado,
+    setTieneFocoTeclado
   } = useContext(SelectedOptionsContext);
 
   const [showModalPagarBoleta, setShowModalPagarBoleta] = useState(false);
@@ -42,7 +44,11 @@ const BoxTotales = ({
   }
 
   return (
-    <View style={styles.container}>
+    <View style={{
+      ...styles.container, ...{
+        display: (tieneFocoTeclado ? "none" : "flex")
+      }
+    }}>
       <Title style={styles.totalText}>TOTAL: ${System.formatMonedaLocal(grandTotal, false)}</Title>
       <ScrollView horizontal={true} style={styles.buttonsRow}>
 
@@ -130,7 +136,7 @@ const styles = StyleSheet.create({
   buttonCardPay: {
     borderWidth: 1,
     // backgroundColor: "#DEFEDE",//boleta
-    backgroundColor:"#F3FEFF",//ticket
+    backgroundColor: "#F3FEFF",//ticket
     borderColor: "#ccc",
     marginHorizontal: "3%",
     paddingHorizontal: 10,

@@ -42,6 +42,7 @@ export const SelectedOptionsProvider = ({ children }) => {
 
   const [snackMessage, setSnackMessage] = useState("");
   const [visibleSnackbar, setVisibleSnackbar] = useState(false);
+  const [tieneFocoTeclado, setTieneFocoTeclado] = useState(false);
   //valor oara mostrar snackbar
 
   const searchInputRef = useRef(null);
@@ -91,6 +92,10 @@ export const SelectedOptionsProvider = ({ children }) => {
   useEffect(() => {
     init();
   }, []);
+
+  useEffect(() => {
+    console.log("cambio tieneFocoTeclado", tieneFocoTeclado)
+  }, [tieneFocoTeclado]);
 
   //set general dialog variables
   const [showLoadingDialog, setShowLoadingDialogx] = useState(false);
@@ -681,7 +686,11 @@ export const SelectedOptionsProvider = ({ children }) => {
         pedirSupervision,
         hideSnackbar,
         searchInputRef,
-        focusSearchInput
+        focusSearchInput,
+
+
+        tieneFocoTeclado,
+        setTieneFocoTeclado
 
       }}
     >

@@ -44,9 +44,30 @@ const BoxProducts = () => {
     showMessage,
     showAlert,
     searchInputRef,
-    focusSearchInput
+    focusSearchInput,
+    tieneFocoTeclado,
+    setTieneFocoTeclado
 
   } = useContext(SelectedOptionsContext);
+
+  useEffect(() => {
+    Keyboard.addListener("keyboardDidHide", () => {
+      // console.log("perdio foco el teclado")
+      setTieneFocoTeclado(false)
+    })
+
+    Keyboard.addListener("keyboardDidShow", () => {
+      setTieneFocoTeclado(true)
+      // console.log("tiene foco el teclado")
+    })
+
+  }, [])
+
+  useEffect(() => {
+    if (searchInputRef && searchInputRef.current) {
+      searchInputRef.current.focus()
+    }
+  }, [searchInputRef])
 
   const [searchText, setSearchText] = useState('');
   const [apretoEnterEnBuscar, setApretoEnterEnBuscar] = useState(null);
@@ -279,6 +300,12 @@ const BoxProducts = () => {
     setShowNewProductModal(false);
   };
 
+  useEffect(() => {
+    if (capturarCodigo) {
+      Keyboard.dismiss();
+    }
+  }, [capturarCodigo])
+
   return (
     <View>
       <CapturaCodigoCamara
@@ -301,7 +328,6 @@ const BoxProducts = () => {
           value={searchText}
           onChangeText={setSearchText}
           ref={searchInputRef}
-
           returnKeyType="search"
           onSubmitEditing={(e) => {
             setApretoEnterEnBuscar(!apretoEnterEnBuscar)
@@ -425,11 +451,11 @@ const BoxProducts = () => {
             cantidad: peso,
             total: selectedProduct.precioVenta * peso
           };
-          addToSalesData(updatedProduct,undefined, true);
+          addToSalesData(updatedProduct, undefined, true);
           setShowWeightModal(false);
           setSearchText("");
           console.log("dando foco al input buscar")
-          if(!capturarCodigo){
+          if (!capturarCodigo) {
             focusSearchInput();
           }
         }}
