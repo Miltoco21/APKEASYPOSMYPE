@@ -3,7 +3,9 @@ import { View,Text } from 'react-native';
 import BoxFamilias from '../BoxContent/BoxFamilias';
 import { SelectedOptionsContext } from '../Context/SelectedOptionsProvider';
 
-const BoxProductoFamilia = () => {
+const BoxProductoFamilia = ({
+  onSelect = ()=>{}
+}) => {
   const {
     userData,
     addToSalesData,
@@ -14,14 +16,16 @@ const BoxProductoFamilia = () => {
     cliente
   } = useContext(SelectedOptionsContext);
 
-  const handleSelectProduct = (product) => {
-    addToSalesData(product);
-  };
+  // const handleSelectProduct = (product) => {
+  //   addToSalesData(product);
+  //   onSelect()
+  // };
 
   return (
     <View>
     
-      <BoxFamilias onSelect={handleSelectProduct} />
+      {/* <BoxFamilias onSelect={handleSelectProduct} /> */}
+      <BoxFamilias onSelect={onSelect} />
     </View>
   );
 };

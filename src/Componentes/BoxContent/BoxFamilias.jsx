@@ -104,21 +104,18 @@ const BoxFamilias = ({ onSelect }) => {
     setSubfamilyId(subfamily.idSubFamilia);
     setRecorrido(
       "/" +
-        category.descripcion +
-        "/" +
-        subcategory.descripcion +
-        "/" +
-        family.descripcion +
-        "/" +
-        subfamily.descripcion
+      category.descripcion +
+      "/" +
+      subcategory.descripcion +
+      "/" +
+      family.descripcion +
+      "/" +
+      subfamily.descripcion
     );
     setShowProduct(true);
     setShowSubfamily(false);
   };
 
-  const handleSelectProduct = (product) => {
-    onSelect(product);
-  };
 
   const handlePrevClick = () => {
     if (showSubcategory) {
@@ -196,7 +193,7 @@ const BoxFamilias = ({ onSelect }) => {
         subcategoryId={subcategoryId}
         familyId={familyId}
         subfamilyId={subfamilyId}
-        onSelect={handleSelectProduct}
+        onSelect={() => onSelect(product)}
         excludeIfText={["AGREGA", "SIN"]}
       />
 
@@ -211,13 +208,13 @@ const BoxFamilias = ({ onSelect }) => {
 
 const styles = StyleSheet.create({
   container: {
-    
-    
+
+
   },
   buttonContainer: {
     width: "100%",
     alignItems: "center",
-    
+
   },
 });
 

@@ -19,7 +19,9 @@ import Log from "src/Models/Log";
 import AsignarPeso from "../ScreenDialog/AsignarPeso";
 import ProductSold from "src/Models/ProductSold"; // Asegúrate de importar ProductSold
 
-const BoxBusquedaRapida = () => {
+const BoxBusquedaRapida = ({
+  onSelect = () => { }
+}) => {
   const {
     userData,
     addToSalesData,
@@ -95,19 +97,18 @@ const BoxBusquedaRapida = () => {
       setProductToAdd(product);
       setTextSearchProducts(product.idProducto + "")
       setApretoEnterEnBuscar(!apretoEnterEnBuscar)
-
-      console.log("x add pesable ", product)
-      // setShowWeightModal(true);
+      onSelect()
     } else {
       addToSalesData({
         ...product,
         cantidad: 1,
         total: product.precioVenta * 1
       }, undefined, true);
+      onSelect()
     }
   };
 
-  const onSelect = (product) => {
+  const onSelectProd = (product) => {
     setIsChanging(false);
     if (product.codigoProducto) {
       product.idProducto = product.codigoProducto;
@@ -239,7 +240,7 @@ const BoxBusquedaRapida = () => {
             <TouchableOpacity
               key={index}
               style={buttonStyle}
-              onPress={() => onSelect(product)}
+              onPress={() => onSelectProd(product)}
               onLongPress={() => {
                 setIsChanging(true);
                 if (product.codigoProducto) {

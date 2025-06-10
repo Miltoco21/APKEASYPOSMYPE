@@ -64,7 +64,7 @@ export default function Login() {
     await user.doLoginInServer((info) => {
       updateUserData(info.responseUsuario);
 
-      console.log("devuelve el login de la api", info.responseUsuario)
+      // console.log("devuelve el login de la api", info.responseUsuario)
 
 
 

@@ -32,7 +32,6 @@ const TableSelecProductNML = ({
 
   const [productsNML, setProductsNML] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null); // Para almacenar el producto seleccionado
-  const [showWeightModal, setShowWeightModal] = useState(false); // Controlar visibilidad del modal
 
   useEffect(() => {
     if (!show) return;
@@ -115,41 +114,11 @@ const TableSelecProductNML = ({
   };
 
   const handleSelectProduct = (product) => {
-    // Verificar si el producto es pesable
-    const isPesable = ProductSold.getInstance().esPesable(product);
+    setSelectedProduct(product);
+    setTextSearchProducts(product.idProducto + "")
+    setApretoEnterEnBuscar(!apretoEnterEnBuscar)
+    onSelect(product)
 
-    if (isPesable) {
-      // Si es pesable, guardar el producto y abrir modal de peso
-      setSelectedProduct(product);
-      setTextSearchProducts(product.idProducto + "")
-      setApretoEnterEnBuscar(!apretoEnterEnBuscar)
-      // setShowWeightModal(true);
-    } else {
-      // Si no es pesable, llamar a onSelect directamente
-      onSelect({
-        ...product,
-        cantidad: 1,
-        total: product.precioVenta
-      });
-    }
-  };
-
-  const handleWeightSave = (peso) => {
-    if (selectedProduct) {
-      // Crear producto con peso asignado
-      const productWithWeight = {
-        ...selectedProduct,
-        cantidad: peso,
-        total: selectedProduct.precioVenta * peso
-      };
-
-      // Llamar a onSelect con el producto modificado
-      onSelect(productWithWeight);
-
-      // Cerrar modal y resetear estado
-      setShowWeightModal(false);
-      setSelectedProduct(null);
-    }
   };
 
   if (!show) return null;
@@ -177,15 +146,6 @@ const TableSelecProductNML = ({
             ) : null
           );
         })}
-
-      {/* Modal para asignar peso */}
-      {/* <AsignarPeso
-        visible={showWeightModal}
-        onClose={() => setShowWeightModal(false)}
-        product={selectedProduct}
-        currentWeight={0} // Peso inicial 0
-        onSave={handleWeightSave}
-      /> */}
     </ScrollView>
   );
 };

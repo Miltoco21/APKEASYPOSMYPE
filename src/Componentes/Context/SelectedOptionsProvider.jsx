@@ -74,12 +74,12 @@ export const SelectedOptionsProvider = ({ children }) => {
 
   const [CONFIG, setCONFIG] = useState(null);
   const init = async () => {
-    console.log("init de SelectedOptionsProvider");
+    // console.log("init de SelectedOptionsProvider");
     setCONFIG(await ModelConfig.getInstance().getFirst());
 
     setModoAvion(!await ModelConfig.get("emitirBoleta"))
     const tieneUltimaVenta = await LastSale.getInstance().sesion.hasOne()
-    console.log("tieneUltimaVenta", tieneUltimaVenta)
+    // console.log("tieneUltimaVenta", tieneUltimaVenta)
     if (tieneUltimaVenta) {
       const dt = await LastSale.loadFromSesion()
       console.log("dt", Object.keys(dt))
@@ -96,6 +96,7 @@ export const SelectedOptionsProvider = ({ children }) => {
   useEffect(() => {
     init();
   }, []);
+
 
   //set general dialog variables
   const [showLoadingDialog, setShowLoadingDialogx] = useState(false);

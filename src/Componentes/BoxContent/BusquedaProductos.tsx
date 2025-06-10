@@ -70,7 +70,7 @@ const BoxProducts = () => {
 
 
   useEffect(() => {
-    console.log("cambio userdata", userData)
+    // console.log("cambio userdata", userData)
     if (userData) {
       focusSearchInput()
     }
@@ -229,6 +229,7 @@ const BoxProducts = () => {
     } else {
       setFilteredProducts([]);
       setHasMore(true);
+      console.log("cancelamos la busqueda porque es vacio searchText ", searchText)
     }
 
     if (!capturarCodigo) {
@@ -247,13 +248,14 @@ const BoxProducts = () => {
   useEffect(() => {
     // console.log("cambio apretoEnterEnBuscar", apretoEnterEnBuscar)
     if (apretoEnterEnBuscar === null) return
-
     if (!apretoEnterEnBuscar) {
       setApretoEnterEnBuscar(true)
       return
     }
-    checkBuscar()
-  }, [apretoEnterEnBuscar]);
+    if (searchText) {
+      checkBuscar()
+    }
+  }, [apretoEnterEnBuscar, searchText]);
 
   useEffect(() => {
     // Log("filteredProducts length", filteredProducts.length)
@@ -346,7 +348,7 @@ const BoxProducts = () => {
       <CapturaCodigoCamara
         openDialog={capturarCodigo}
         setOpenDialog={setCapturarCodigo}
-        outOnCapture={false}
+        // outOnCapture={false}
         onCapture={(cod) => {
           setSearchText(cod)
           // focusSearchInput();
@@ -364,19 +366,7 @@ const BoxProducts = () => {
           onChangeText={setSearchText}
           ref={searchInputRef}
           returnKeyType="search"
-          onBlur={async () => {
-            console.log("on blur")
-          }}
 
-          onFocus={async () => {
-            console.log("on focus")
-            const debe = await ModelConfig.get("mantenerTecladoVisible")
-
-            // console.log("tengo foco..soy input search ..debe?", debe)
-            if (!debe) {
-              // Keyboard.dismiss()
-            }
-          }}
           onSubmitEditing={(e) => {
             setApretoEnterEnBuscar(!apretoEnterEnBuscar)
           }}
@@ -445,16 +435,11 @@ const BoxProducts = () => {
 
       <View style={[styles.selectedBox, { maxHeight: 369 }]}>
         <Text style={styles.boxHeader}>Productos Seleccionados:</Text>
-        {salesData.length === 0 ? (
-          <Text style={styles.noProductsText}>No hay productos agregados.</Text>
-        ) : (
-          <ProductList
-            data={salesData}
-            onRefresh={() => {
-
-            }}
-          />
-        )}
+        <ProductList
+          data={salesData}
+          onRefresh={() => {
+          }}
+        />
       </View>
 
       <IngresoPLU

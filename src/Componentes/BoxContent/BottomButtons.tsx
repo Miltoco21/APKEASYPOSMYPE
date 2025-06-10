@@ -12,7 +12,7 @@ const BottomButtons = () => {
   const {
     salesData,
     clearSalesData,
-    showAlert,showConfirm
+    showAlert, showConfirm
   } = useContext(SelectedOptionsContext);
 
   const [showSettingsModal, setShowSettingsModal] = useState(false);
@@ -23,7 +23,7 @@ const BottomButtons = () => {
 
 
   const [index, setIndex] = useState(0);
- 
+
 
   const routes = [
     { key: 'clear', title: 'Limpiar', icon: 'trash' as const },
@@ -84,7 +84,7 @@ const BottomButtons = () => {
                 return
               }
               showConfirm(
-                "¿Eliminar todos los elementos?", 
+                "¿Eliminar todos los elementos?",
                 () => {
                   // Si confirman
                   clearSalesData();
@@ -127,7 +127,7 @@ const BottomButtons = () => {
         <SafeAreaView style={styles.modalSafeContainer}>
           {renderModalHeader("Búsqueda por Familias", () => setShowFamiliasModal(false))}
           <View style={styles.modalContent}>
-            <BoxProductoFamilia />
+            <BoxProductoFamilia onSelect={() => setShowFamiliasModal(false)} />
           </View>
         </SafeAreaView>
       </Modal>
@@ -138,10 +138,10 @@ const BottomButtons = () => {
         animationType="slide"
         onRequestClose={() => setShowBusquedaRapidaModal(false)}
       >
-         <SafeAreaView style={styles.modalSafeContainer}>
+        <SafeAreaView style={styles.modalSafeContainer}>
           {renderModalHeader("Búsqueda Rápida", () => setShowBusquedaRapidaModal(false))}
           <View style={styles.modalContent}>
-            <BoxBusquedaRapida />
+            <BoxBusquedaRapida onSelect={() => setShowBusquedaRapidaModal(false)} />
           </View>
         </SafeAreaView>
 
@@ -158,9 +158,9 @@ export default BottomButtons;
 
 const styles = StyleSheet.create({
   safeContainer: {
-  flex:1,
+    flex: 1,
     backgroundColor: '#fff',
-   
+
   },
   modalSafeContainer: {
     flex: 1,
@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
     color: '#333',
 
   },
-  
+
 
   modalContent: {
     flex: 1,
@@ -212,8 +212,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   closeButton: {
-    
-   // alignSelf: 'flex-end',
+
+    // alignSelf: 'flex-end',
     padding: 5,
   },
   closeButtonText: {
@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
     //paddingBottom: Platform.OS === 'ios' ? 25 : 12,
     elevation: 8,
     shadowColor: '#000',
-   
+
     // shadowOpacity: 0.1,
     // shadowRadius: 3,
     // borderTopWidth: 0.1,
