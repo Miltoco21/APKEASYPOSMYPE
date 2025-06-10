@@ -8,7 +8,8 @@ import {
   FlatList,
   ActivityIndicator,
   InteractionManager,
-  Keyboard
+  Keyboard,
+  BackHandler
 } from 'react-native';
 import { SelectedOptionsContext } from '../Context/SelectedOptionsProvider';
 import Product from "../../Models/Product";
@@ -27,6 +28,7 @@ import NewProductModal from 'src/Modals/NewProductModal';
 import Validator from 'src/Helpers/Validator';
 import AsignarPeso from '../ScreenDialog/AsignarPeso';
 import ProductSold from 'src/Models/ProductSold';
+import System from 'src/Helpers/System';
 
 
 
@@ -46,29 +48,58 @@ const BoxProducts = () => {
     searchInputRef,
     focusSearchInput,
     tieneFocoTeclado,
-    setTieneFocoTeclado
+    setTieneFocoTeclado,
+    userData,
 
+    apretoEnterEnBuscar,
+    setApretoEnterEnBuscar,
+
+    textSearchProducts,
   } = useContext(SelectedOptionsContext);
 
   useEffect(() => {
+    // System.intentarFoco(searchInputRef)
     Keyboard.addListener("keyboardDidHide", () => {
       setTieneFocoTeclado(false)
     })
 
-    Keyboard.addListener("keyboardDidShow", () => {
+    Keyboard.addListener("keyboardDidShow", async () => {
       setTieneFocoTeclado(true)
     })
-
   }, [])
 
+
   useEffect(() => {
-    if (searchInputRef && searchInputRef.current) {
-      searchInputRef.current.focus()
+    console.log("cambio userdata", userData)
+    if (userData) {
+      focusSearchInput()
     }
-  }, [searchInputRef])
+  }, [userData])
+
+  useEffect(() => {
+    const handleBackButtonPress = () => {
+      // console.log("apreto atras")
+      // console.log("userData", userData)
+      if (userData) {
+        return true
+      }
+      return false
+    }
+    BackHandler.addEventListener('hardwareBackPress', handleBackButtonPress);
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', handleBackButtonPress);
+    };
+  }, []);
+
+  useEffect(() => {
+    // console.log("cambio textSearchProducts", textSearchProducts)
+    if (searchInputRef && searchInputRef.current) {
+      setSearchText(textSearchProducts)
+    }
+  }, [textSearchProducts])
 
   const [searchText, setSearchText] = useState('');
-  const [apretoEnterEnBuscar, setApretoEnterEnBuscar] = useState(null);
+
 
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -97,12 +128,13 @@ const BoxProducts = () => {
 
     ProductCodeStack.addProductCode(pluValue);
     setSearchText(pluValue); // Actualizar searchText con el PLU
-    console.log("dando foco al input buscar")
-
+    // console.log("dando foco al input buscar")
+    setApretoEnterEnBuscar(!apretoEnterEnBuscar)
     focusSearchInput();
   };
 
   const handleSearch = async (searchValue, currentPage = 1) => {
+    // console.log("handleSearch de busqueda de productos")
     if (!searchValue.trim() || loading) return;
 
     setLoading(true);
@@ -200,7 +232,7 @@ const BoxProducts = () => {
     }
 
     if (!capturarCodigo) {
-      console.log("dando foco al input buscar")
+      // console.log("dando foco al input buscar")
 
       focusSearchInput();
     }
@@ -238,8 +270,11 @@ const BoxProducts = () => {
   };
 
   const handleAddProduct = (product) => {
+    // console.log("handleAddProduct handleAddProduct")
     setFilteredProducts([]);
     setHasMore(false);
+    // console.log("poniendo '' al searchtext")
+    setSearchText("");
 
     // 1. Primero verificar si es pesable
     const isPesable = ProductSold.getInstance().esPesable(product);
@@ -259,20 +294,21 @@ const BoxProducts = () => {
     }
 
     // 3. Si no es pesable y tiene precio válido, agregar
-    Keyboard.dismiss();
+    // Keyboard.dismiss();
     addToSalesData({
       ...product,
       cantidad: 1,
       total: product.precioVenta * 1
     }, undefined, capturarCodigo);
+    // console.log("poniendo '' al searchtext")
     setSearchText("");
     setFilteredProducts([])
     if (!capturarCodigo) {
-      console.log("dando foco al input buscar")
+      // console.log("dando foco al input buscar")
       focusSearchInput();
     }
 
-    console.log("limpia productos encontrados")
+    // console.log("limpia productos encontrados")
   };
 
   const handlePriceUpdate = (updatedProduct) => {
@@ -282,8 +318,9 @@ const BoxProducts = () => {
       p.idProducto === updatedProduct.idProducto ? updatedProduct : p
     ));
     setShowEditPriceModal(false);
+    // console.log("poniendo '' al searchtext")
     setSearchText("");
-    console.log("dando foco al input buscar")
+    // console.log("dando foco al input buscar")
     focusSearchInput();
   };
 
@@ -327,6 +364,19 @@ const BoxProducts = () => {
           onChangeText={setSearchText}
           ref={searchInputRef}
           returnKeyType="search"
+          onBlur={async () => {
+            console.log("on blur")
+          }}
+
+          onFocus={async () => {
+            console.log("on focus")
+            const debe = await ModelConfig.get("mantenerTecladoVisible")
+
+            // console.log("tengo foco..soy input search ..debe?", debe)
+            if (!debe) {
+              // Keyboard.dismiss()
+            }
+          }}
           onSubmitEditing={(e) => {
             setApretoEnterEnBuscar(!apretoEnterEnBuscar)
           }}
@@ -451,8 +501,9 @@ const BoxProducts = () => {
           };
           addToSalesData(updatedProduct, undefined, true);
           setShowWeightModal(false);
+          // console.log("poniendo '' al searchtext")
           setSearchText("");
-          console.log("dando foco al input buscar")
+          // console.log("dando foco al input buscar")
           if (!capturarCodigo) {
             focusSearchInput();
           }

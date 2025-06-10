@@ -65,6 +65,7 @@ const BaseConfig = {
   impresoraBluetooth: "",
 
   usarImpresoraBluetooth: false,
+  mantenerTecladoVisible: false,
 
 };
 

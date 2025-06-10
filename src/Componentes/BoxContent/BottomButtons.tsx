@@ -3,7 +3,7 @@ import { BottomNavigation, useTheme, } from 'react-native-paper';
 import { Platform, StyleSheet, Modal, View, TouchableOpacity, Text, SafeAreaView } from 'react-native';
 import { SelectedOptionsContext } from '../Context/SelectedOptionsProvider';
 import Ionicons from "@expo/vector-icons/Ionicons";
-import BaseConfigModal from 'src/Modals/BaseConfigModal';
+import BaseConfigModal from 'src/Modals/ConfigModal';
 import BoxProductoFamilia from '../BoxContent/BoxProductoFamilia';
 import BoxBusquedaRapida from './BoxBusquedaRapida';
 import CerrarCajaModal from '../../Modals/CerrarCajaModal'

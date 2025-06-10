@@ -28,6 +28,10 @@ const BoxBusquedaRapida = () => {
     showLoading,
     hideLoading,
     cliente,
+
+    apretoEnterEnBuscar,
+    setApretoEnterEnBuscar,
+    setTextSearchProducts,
   } = useContext(SelectedOptionsContext);
 
   const [prods, setProds] = useState([]);
@@ -86,15 +90,19 @@ const BoxBusquedaRapida = () => {
   // Función modificada para manejar productos pesables
   const handleAddProduct = (product) => {
     const isPesable = ProductSold.getInstance().esPesable(product);
-    
+
     if (isPesable) {
       setProductToAdd(product);
-      setShowWeightModal(true);
+      setTextSearchProducts(product.idProducto + "")
+      setApretoEnterEnBuscar(!apretoEnterEnBuscar)
+
+      console.log("x add pesable ", product)
+      // setShowWeightModal(true);
     } else {
-      addToSalesData({ 
+      addToSalesData({
         ...product,
         cantidad: 1,
-        total: product.precioVenta * 1 
+        total: product.precioVenta * 1
       }, undefined, true);
     }
   };
@@ -279,9 +287,9 @@ const BoxBusquedaRapida = () => {
         }}
         buttonOptions={["Modificar", "Liberar"]}
       />
-      
+
       {/* Modal para asignar peso a productos pesables */}
-      <AsignarPeso
+      {/* <AsignarPeso
         visible={showWeightModal}
         onClose={() => setShowWeightModal(false)}
         product={productToAdd}
@@ -297,7 +305,7 @@ const BoxBusquedaRapida = () => {
             setShowWeightModal(false);
           }
         }}
-      />
+      /> */}
     </ScrollView>
   );
 };

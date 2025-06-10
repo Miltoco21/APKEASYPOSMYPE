@@ -152,13 +152,14 @@ class System {
         return allOk
     }
 
-    static intentarFoco(textInfoRef) {
+    static intentarFoco(textInfoRef, onSuccess = () => { }) {
         if (!textInfoRef || textInfoRef.current == null) {
             setTimeout(() => {
                 this.intentarFoco(textInfoRef)
             }, 300);
         } else {
             textInfoRef.current.focus()
+            onSuccess()
         }
     }
 

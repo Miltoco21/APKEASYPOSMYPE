@@ -91,7 +91,7 @@ const BoxTotales = ({
           <Icon source={"book-arrow-left-outline"} size={25} />
           <Text style={styles.textCard}>&Uacute;ltimo Vuelto</Text>
 
-          {ultimoVuelto
+          {ultimoVuelto !== null
             ? (<Text style={styles.textCard}>${System.formatMonedaLocal(ultimoVuelto, false)}</Text>)
             : (<Text style={styles.textCard}>N/D</Text>)}
         </TouchableOpacity>

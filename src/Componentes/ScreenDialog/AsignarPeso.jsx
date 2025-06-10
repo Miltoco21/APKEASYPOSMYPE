@@ -1,6 +1,6 @@
 
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -12,9 +12,18 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Validator from "../../Helpers/Validator";
+import System from "src/Helpers/System";
 
-const AsignarPeso = ({ visible, onClose, product, currentWeight, onSave }) => {
+const AsignarPeso = ({
+  visible,
+  onClose,
+  product,
+  currentWeight,
+  onSave
+}) => {
   const [peso, setPeso] = useState(currentWeight.toString());
+
+  const refInput = useRef(null)
 
   useEffect(() => {
     setPeso(currentWeight.toString());
@@ -25,7 +34,7 @@ const AsignarPeso = ({ visible, onClose, product, currentWeight, onSave }) => {
     const cleanedText = text
       .replace(/[^0-9.]/g, '')
       .replace(/(\..*)\./g, '$1');
-    
+
     setPeso(cleanedText);
   };
 
@@ -34,17 +43,25 @@ const AsignarPeso = ({ visible, onClose, product, currentWeight, onSave }) => {
       alert("Peso inválido");
       return;
     }
-    
+
     const numericValue = parseFloat(peso);
-    
+
     if (isNaN(numericValue)) {
       alert("Peso inválido");
       return;
     }
-    
+
     onSave(numericValue);
     onClose();
   };
+
+  useEffect(() => {
+    if (!visible) return
+    setTimeout(() => {
+      // console.log("dando foco al input del peso", refInput.current)
+      System.intentarFoco(refInput)
+    }, 300);
+  }, [visible])
 
   return (
     <Modal
@@ -64,13 +81,31 @@ const AsignarPeso = ({ visible, onClose, product, currentWeight, onSave }) => {
               style={styles.input}
               keyboardType="numeric"
               value={peso}
+              ref={refInput}
               onChangeText={handleInputChange}
               placeholder="0.0"
               autoFocus={true}
               selectTextOnFocus={true}
             />
-            <Text style={styles.unitText}>kg</Text>
+            {/* <Text style={styles.unitText}>kg</Text> */}
           </View>
+
+
+          {peso > 0 && peso < 1 ? (
+            <View style={styles.priceContainer}>
+              <Text style={styles.priceValue}>
+                {(peso * 1000).toFixed(0)}
+              </Text>
+              <Text style={styles.priceLabel}>GRAMOS</Text>
+            </View>
+          ) : (
+            <View style={styles.priceContainer}>
+              <Text style={styles.priceValue}>
+                {parseInt(peso + "")}
+              </Text>
+              <Text style={styles.priceLabel}>KG</Text>
+            </View>
+          )}
 
           <View style={styles.priceContainer}>
             <Text style={styles.priceLabel}>Precio unitario:</Text>

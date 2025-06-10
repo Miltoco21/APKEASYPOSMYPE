@@ -171,7 +171,7 @@ class Product extends Model implements IProduct {
         
         const url = `${configs.urlBase}/api/ProductosTmp/GetProductosByCodigoBarra?${params}`;
         await EndPoint.sendGet(url, (responseData, response) => {
-            console.log("listo")
+            // console.log("listo")
             Product.enviando = false;
             callbackOk(responseData.productos, response);
         }, (err) => {

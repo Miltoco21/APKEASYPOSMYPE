@@ -18,7 +18,7 @@ import {
   Alert,
   ToastAndroid,
   Platform,
-
+  Keyboard
 } from "react-native";
 import { Snackbar } from "react-native-paper";
 import Product from "../../Models/Product";
@@ -47,12 +47,10 @@ export const SelectedOptionsProvider = ({ children }) => {
 
   const searchInputRef = useRef(null);
 
+  const [apretoEnterEnBuscar, setApretoEnterEnBuscar] = useState(null);
+
   const focusSearchInput = () => {
-    setTimeout(() => {
-      if (searchInputRef.current) {
-        searchInputRef.current.focus();
-      }
-    }, 100);
+    System.intentarFoco(searchInputRef, () => { })
   };
 
   const showAlert = (title, text) => {
@@ -76,17 +74,21 @@ export const SelectedOptionsProvider = ({ children }) => {
 
   const [CONFIG, setCONFIG] = useState(null);
   const init = async () => {
-    // console.log("init de SelectedOptionsProvider");
+    console.log("init de SelectedOptionsProvider");
     setCONFIG(await ModelConfig.getInstance().getFirst());
 
     setModoAvion(!await ModelConfig.get("emitirBoleta"))
-
-    if (!ultimoVuelto && await LastSale.getInstance().sesion.hasOne()) {
+    const tieneUltimaVenta = await LastSale.getInstance().sesion.hasOne()
+    console.log("tieneUltimaVenta", tieneUltimaVenta)
+    if (tieneUltimaVenta) {
       const dt = await LastSale.loadFromSesion()
+      console.log("dt", Object.keys(dt))
       if (dt) {
-        // console.log("cargando ultima venta")
-        // Log("dt", dt)
-        setUltimoVuelto(dt.data.vuelto)
+        if (!ultimoVuelto) {
+          console.log("dt.data.vuelto", dt.data.vuelto)
+          setUltimoVuelto(dt.data.vuelto)
+        }
+        setAskLastSale(dt)
       }
     }
   };
@@ -684,7 +686,10 @@ export const SelectedOptionsProvider = ({ children }) => {
 
 
         tieneFocoTeclado,
-        setTieneFocoTeclado
+        setTieneFocoTeclado,
+
+        apretoEnterEnBuscar,
+        setApretoEnterEnBuscar
 
       }}
     >

@@ -55,6 +55,7 @@ const BaseConfigModal = ({
   const [tienePasarelaPago, setTienePasarelaPago] = useState(false)
   const [excluirMediosEnBoleta, setExcluirMediosEnBoleta] = useState([])
 
+  const [mantenerTecladoVisible, setMantenerTecladoVisible] = useState(false)
 
   const cargarOrdenesListados = () => {
     var seleccionables = []
@@ -93,6 +94,7 @@ const BaseConfigModal = ({
     setTienePasarelaPago(await ModelConfig.get("tienePasarelaPago"))
     setExcluirMediosEnBoleta(await ModelConfig.get("excluirMediosEnBoleta"))
 
+    setMantenerTecladoVisible(await ModelConfig.get("mantenerTecladoVisible"))
   }
 
 
@@ -120,6 +122,7 @@ const BaseConfigModal = ({
 
     await ModelConfig.change("tienePasarelaPago", tienePasarelaPago)
     await ModelConfig.change("excluirMediosEnBoleta", excluirMediosEnBoleta)
+    await ModelConfig.change("mantenerTecladoVisible", mantenerTecladoVisible)
     onClose()
   };
 
@@ -311,6 +314,13 @@ const BaseConfigModal = ({
                 options={ordenesMostrarListado}
               />
             </Grid>
+
+            {/* <Grid item xs={12} md={12} lg={12}>
+              <InputCheckbox
+                inputState={[mantenerTecladoVisible, setMantenerTecladoVisible]}
+                label={"Mantener Teclado Visible"}
+              />
+            </Grid> */}
 
             <Grid>
               <InputNumber

@@ -81,26 +81,17 @@ const SoldProductItem = ({
     const newQuantity = parseInt(product.quantity - 1);
     if (newQuantity < 1) return
     changeQuantity(newQuantity)
-    setTimeout(() => {
-      searchInputRef.current.focus()
-    }, 500);
   }
 
   const addQuantity = () => {
     const newQuantity = parseInt(product.quantity + 1);
     changeQuantity(newQuantity)
 
-    setTimeout(() => {
-      searchInputRef.current.focus()
-    }, 500);
   }
 
   const confirmarEliminar = () => {
     removeFromSalesData(itemIndex)
     showMessage("Eliminado " + salesData[itemIndex].description)
-    setTimeout(() => {
-      searchInputRef.current.focus()
-    }, 500);
   }
 
   const handleRemoveFromSalesData = () => {
@@ -124,9 +115,6 @@ const SoldProductItem = ({
       }
 
     }, () => {
-      setTimeout(() => {
-        searchInputRef.current.focus()
-      }, 500);
     })
   }
 
@@ -146,9 +134,6 @@ const SoldProductItem = ({
       }
     })
 
-    setTimeout(() => {
-      searchInputRef.current.focus()
-    }, 500);
 
   }
 
@@ -188,9 +173,6 @@ const SoldProductItem = ({
               openDialog={showTecladoQuantity}
               setOpenDialog={(v) => {
                 if (!v) {
-                  setTimeout(() => {
-                    searchInputRef.current.focus()
-                  }, 500);
                 }
                 setShowTecladoQuantity(v)
               }}

@@ -14,7 +14,7 @@ import {
 import Box from "../../src/Componentes/Box"
 import { useRouter } from "expo-router";
 import BaseConfig from "../../src/definitions/BaseConfig";
-import BaseConfigModal from "../../src/Modals/BaseConfigModal";
+import BaseConfigModal from "../../src/Modals/ConfigModal";
 import { SelectedOptionsContext } from '../../src/Componentes/Context/SelectedOptionsProvider';
 import CONSTANTS from "../../src/definitions/Constants";
 import Ionicons from "@expo/vector-icons/Ionicons"

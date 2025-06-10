@@ -55,6 +55,9 @@ const IngresoPLU = ({ visible, onConfirm, onCancel }) => {
         showAlert('Error', 'El PLU debe contener solo números');
         return;
       }
+
+      onConfirm(inputValue);
+      return
       setLoadingPLU(true);
 
       await Product.getInstance().findByCodigoBarras(
