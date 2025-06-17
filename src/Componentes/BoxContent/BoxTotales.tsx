@@ -66,7 +66,9 @@ const BoxTotales = ({
 
         <TouchableOpacity style={{
           ...{ ...styles.buttonCardPay }, ...{
-            backgroundColor: (modoAvion ? "#F3FEFF" : "#DEFEDE"),
+            backgroundColor: (modoAvion ? "#FFFFFF" : "#118D11"),
+            color: (!modoAvion ? "#FFFFFF" : "#5AF55A"),
+
           }
         }}
           onLongPress={async () => {
@@ -80,9 +82,18 @@ const BoxTotales = ({
             await ModelConfig.change("emitirBoleta", modoAvion)
 
           }} onPress={abrirBoleta}>
-          <Icon source={"currency-usd"} size={35} />
-          <Text style={styles.textCard}>Registrar el</Text>
-          <Text style={styles.textCardGrande}>PAGO</Text>
+          <Icon source={"currency-usd"} color={(!modoAvion ? "#FFFFFF" : "#000")} size={35} />
+          <Text style={{
+            ...{ ...styles.textCard }, ...{
+              color: (!modoAvion ? "#FFFFFF" : "#000"),
+            }
+          }}>Registrar el</Text>
+          <Text style={{
+            ...{ ...styles.textCardGrande }, ...{
+              color: (!modoAvion ? "#FFFFFF" : "#000"),
+            }
+          }
+          }>PAGO</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.buttonCard} onPress={() => {
