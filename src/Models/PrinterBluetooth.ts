@@ -205,10 +205,19 @@ class PrinterBluetooth {
     }
 
     static async impImg(imagen) {
-        await BluetoothEscposPrinter.printPic(imagen, {
-            width: 120,
-            height: 57
-        });
+        console.log("impImg")
+
+        try {
+            await BluetoothEscposPrinter.printText("" + "\n", {});
+            await BluetoothEscposPrinter.printPic(imagen, {
+                // width: 500,
+                // height: 100
+            });
+
+            console.log("se supone que imprimio")
+        } catch (e) {
+            console.log(e)
+        }
     }
 
     static async impTexto(texto) {
@@ -345,13 +354,19 @@ class PrinterBluetooth {
 
         await this.impTexto("Fecha " + System.formatDateServer(requestBody.fechaIngreso))
         await this.impAlignDerecha()
-        await this.impTexto("Total: $" + requestBody.total + "")
+        await this.impTexto("Total: $" + requestBody.subtotal + "")
         await this.impTexto("T.Envase: $" + totalEnvases + "")//envase
         await this.impTexto("Descuento: $0")
         await this.impTexto("Pagado: $" + requestBody.totalPagado)
         await this.impTexto("Redondeado: $" + requestBody.totalRedondeado)
         await this.impTexto("Vuelto: $" + requestBody.vuelto)
 
+        if (response.pdf417) {
+            console.log("tiene pdf417 deberia imprimir")
+            await this.impImg(response.pdf417)
+        }else{
+            console.log("no tiene pdf417")
+        }
         await this.impEnter()
         await this.impAlignCentro()
         await this.impTexto("www.easypos.cl")
@@ -397,10 +412,10 @@ class PrinterBluetooth {
 
         // const user = new User()
         // var infoUser = await user.getFromSesion()
-        await this.impTexto("Turno: " +  requestBody.idTurno)
-        await this.impTexto("Venta total: $ " +  requestBody.totalSistema)
-        await this.impTexto("Diferencia: $ " +  requestBody.diferencia)
-        
+        await this.impTexto("Turno: " + requestBody.idTurno)
+        await this.impTexto("Venta total: $ " + requestBody.totalSistema)
+        await this.impTexto("Diferencia: $ " + requestBody.diferencia)
+
         await this.impTexto("Usuario: " + requestBody.userInfo.codigoUsuario + " - " + requestBody.userInfo.nombres + " " + requestBody.userInfo.apellidos)
         await this.impTexto("Sucursal: " + await ModelConfig.get("sucursal"))
         await this.impTexto("Punto venta: " + await ModelConfig.get("puntoVenta"))
