@@ -29,6 +29,7 @@ import Validator from 'src/Helpers/Validator';
 import AsignarPeso from '../ScreenDialog/AsignarPeso';
 import ProductSold from 'src/Models/ProductSold';
 import System from 'src/Helpers/System';
+import User from 'src/Models/User';
 
 
 
@@ -78,12 +79,10 @@ const BoxProducts = () => {
 
   useEffect(() => {
     const handleBackButtonPress = () => {
-      // console.log("apreto atras")
-      // console.log("userData", userData)
-      if (userData) {
+      if (User.getInstance().sesion.hasOne()) {
         return true
       }
-      return false
+      console.log("permite ir atras")
     }
     BackHandler.addEventListener('hardwareBackPress', handleBackButtonPress);
     return () => {
@@ -208,6 +207,7 @@ const BoxProducts = () => {
       handleError(error);
     } finally {
       setLoading(false);
+      setApretoEnterEnBuscar(false)
     }
   };
 
@@ -249,7 +249,7 @@ const BoxProducts = () => {
     // console.log("cambio apretoEnterEnBuscar", apretoEnterEnBuscar)
     if (apretoEnterEnBuscar === null) return
     if (!apretoEnterEnBuscar) {
-      setApretoEnterEnBuscar(true)
+      // setApretoEnterEnBuscar(true)
       return
     }
     if (searchText) {
