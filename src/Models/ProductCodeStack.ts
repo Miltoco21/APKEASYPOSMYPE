@@ -38,8 +38,8 @@ class ProductCodeStack extends Model {
     }
 
     static addProductCode(codigo) {
-        // console.log("addProductCode.. de ProductStack..")
-        // console.log("codigo", codigo)
+        console.log("addProductCode.. de ProductStack..")
+        console.log("codigo", codigo)
         const largo = codigo.length
         // if (largo % 13 == 0) {
             // console.log("es multiplo de 13")

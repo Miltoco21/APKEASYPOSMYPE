@@ -58,6 +58,42 @@ const BoxProducts = () => {
     textSearchProducts,
   } = useContext(SelectedOptionsContext);
 
+  const procesarBusqueda = (codigoBusqueda) => {
+    // console.log("procesando la busqueda", codigoBusqueda)
+
+    var codigoCliente = 0
+    // if (cliente) codigoCliente = cliente.codigoCliente
+    Product.getInstance().findByCodigoBarras({
+      codigoProducto: codigoBusqueda,
+      codigoCliente: codigoCliente },
+      (products, response) => {
+      // console.log("Respuesta de la IdBYCODIGO:", response.data);
+      // console.log("Cantidad registros:", response.data.cantidadRegistros);
+      products.forEach((produ) => {
+        if (parseFloat(produ.precioVenta) <= 0) {
+          // console.log("el producto " + produ.nombre + ", #" + produ.idProducto + " tiene precio 0")
+        }
+      })
+
+      if (response.data.cantidadRegistros > 0) {
+        const productoEncontrado = products[0];
+        addToSalesData(productoEncontrado);
+        // setProductByCodigo(productoEncontrado);
+        // setTextSearchProducts("");
+        // searchInputRef.current.focus()
+      } else {
+        // buscarValoresBalanza(codigoBusqueda)
+
+        // setProductByCodigo(null);
+        // setTextSearchProducts("")
+      }
+    },
+      (error) => {
+        // console.error("Error al buscar el producto:", error);
+        showMessage("No se encontraron resultados para: " + codigoBusqueda);
+      })
+  }
+
   useEffect(() => {
     // System.intentarFoco(searchInputRef)
     Keyboard.addListener("keyboardDidHide", () => {
@@ -67,6 +103,8 @@ const BoxProducts = () => {
     Keyboard.addListener("keyboardDidShow", async () => {
       setTieneFocoTeclado(true)
     })
+
+    ProductCodeStack.processFunction = procesarBusqueda
   }, [])
 
 
@@ -102,8 +140,6 @@ const BoxProducts = () => {
 
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
   const [capturarCodigo, setCapturarCodigo] = useState(false);
 
 
@@ -115,8 +151,6 @@ const BoxProducts = () => {
   const [showNewProductModal, setShowNewProductModal] = useState(false)
   const [showWeightModal, setShowWeightModal] = useState(false);
 
-
-
   const handlePLUConfirm = (pluValue) => {
     setShowPLUModal(false);
 
@@ -126,14 +160,10 @@ const BoxProducts = () => {
     }
 
     ProductCodeStack.addProductCode(pluValue);
-    setSearchText(pluValue); // Actualizar searchText con el PLU
-    // console.log("dando foco al input buscar")
-    setApretoEnterEnBuscar(!apretoEnterEnBuscar)
-    focusSearchInput();
+    // focusSearchInput();
   };
 
   const handleSearch = async (searchValue, currentPage = 1) => {
-    // console.log("handleSearch de busqueda de productos")
     if (!searchValue.trim() || loading) return;
 
     setLoading(true);
@@ -144,13 +174,16 @@ const BoxProducts = () => {
 
       // Búsqueda exclusiva por código de barras si cumple formato
       if (isCodigoBarras) {
-        productosEncontrados = await new Promise((resolve) => {
-          Product.getInstance().findByCodigoBarras(
-            { codigoProducto: searchValue, codigoCliente: 0 },
-            (productos) => resolve(productos || []),
-            (error) => { handleError(error); resolve([]); }
-          );
-        });
+        ProductCodeStack.addProductCode(searchValue);
+        setSearchText("")
+        return;
+        // productosEncontrados = await new Promise((resolve) => {
+        //   Product.getInstance().findByCodigoBarras(
+        //     { codigoProducto: searchValue, codigoCliente: 0 },
+        //     (productos) => resolve(productos || []),
+        //     (error) => { handleError(error); resolve([]); }
+        //   );
+        // });
 
         // Si no se encontró, mostrar modal inmediatamente
         if (productosEncontrados.length < 1) {
@@ -190,18 +223,17 @@ const BoxProducts = () => {
       }
 
       // Actualizar resultados
-      if (currentPage === 1) {
-        setFilteredProducts(productosEncontrados);
-      } else {
-        setFilteredProducts(prev => [...prev, ...productosEncontrados]);
-      }
+      // if (currentPage === 1) {
+      setFilteredProducts(productosEncontrados);
+      // } else {
+      //   setFilteredProducts(prev => [...prev, ...productosEncontrados]);
+      // }
 
       // Mostrar modal si no hay resultados en primera página
-      if (productosEncontrados.length < 1 && currentPage === 1) {
+      if (productosEncontrados.length < 1) {
         setShowNewProductModal(true);
       }
 
-      setHasMore(productosEncontrados.length === 10);
 
     } catch (error) {
       handleError(error);
@@ -218,17 +250,14 @@ const BoxProducts = () => {
   const handleError = (error) => {
     console.error("Error en búsqueda:", error);
     setFilteredProducts([]);
-    setHasMore(false);
   };
 
 
   const checkBuscar = () => {
     if (searchText.trim()) {
-      setPage(1);
       handleSearch(searchText, 1);
     } else {
       setFilteredProducts([]);
-      setHasMore(true);
       console.log("cancelamos la busqueda porque es vacio searchText ", searchText)
     }
 
@@ -242,7 +271,6 @@ const BoxProducts = () => {
   useEffect(() => {
     // console.log("cambio searchText", searchText)
     setFilteredProducts([]);
-    setHasMore(false);
   }, [searchText]);
 
   useEffect(() => {
@@ -264,17 +292,9 @@ const BoxProducts = () => {
     }
   }, [filteredProducts]);
 
-  const loadMoreProducts = () => {
-    if (!loading && hasMore) {
-      setPage(prev => prev + 1);
-      handleSearch(searchText, page + 1);
-    }
-  };
-
   const handleAddProduct = (product) => {
     // console.log("handleAddProduct handleAddProduct")
     setFilteredProducts([]);
-    setHasMore(false);
     // console.log("poniendo '' al searchtext")
     setSearchText("");
 
@@ -350,9 +370,7 @@ const BoxProducts = () => {
         setOpenDialog={setCapturarCodigo}
         // outOnCapture={false}
         onCapture={(cod) => {
-          setSearchText(cod)
-          // focusSearchInput();
-          setApretoEnterEnBuscar(!apretoEnterEnBuscar)
+          ProductCodeStack.addProductCode(cod);
         }}
       />
       <Text style={styles.headerText}>Buscar Productos</Text>
@@ -427,7 +445,7 @@ const BoxProducts = () => {
                 </TouchableOpacity>
               </View>
             )}
-            onEndReached={loadMoreProducts}
+            // onEndReached={loadMoreProducts}
             onEndReachedThreshold={0.5}
           />
         </View>
@@ -445,14 +463,8 @@ const BoxProducts = () => {
       <IngresoPLU
         visible={showPLUModal}
         onConfirm={handlePLUConfirm}
-        // onConfirm={(plu) => {
-        //   // Lógica para manejar PLU válido
-        //   console.log('PLU ingresado:', plu);
-        //   setShowPLUModal(false);
-        // }}
         onCancel={() => setShowPLUModal(false)}
       />
-
 
       <NewProductModal
         visible={showNewProductModal}
@@ -462,7 +474,6 @@ const BoxProducts = () => {
         confirmation={true}
         confirmationMessage="Producto no encontrado. ¿Desea agregarlo?"
       />
-
 
       <IngresoPrecio
         visible={showEditPriceModal}
@@ -494,13 +505,8 @@ const BoxProducts = () => {
           }
         }}
       />
-
     </View>
-
   );
-
-
-
 };
 
 const styles = StyleSheet.create({
