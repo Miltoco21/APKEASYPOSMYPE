@@ -1,11 +1,9 @@
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import React, { useState, useEffect, useMemo, useRef, useContext } from "react";
 import ModelConfig from "../../Models/ModelConfig";
 import User from "../../Models/User";
 import ModelSales from "../../Models/Sales";
 import ProductSold from "../../Models/ProductSold";
 import LoadingDialog from "../Dialogs/LoadingDialog";
-
-import TecladoAlfaNumerico from "../Teclados/TecladoAlfaNumerico";
 
 import {
   SafeAreaView,
@@ -24,18 +22,63 @@ import { Snackbar } from "react-native-paper";
 import Product from "../../Models/Product";
 import System from "../../Helpers/System";
 //import NuevoProductoExpress from "../ScreenDialog/NuevoProductoExpress";
-import AsignarPeso from "../ScreenDialog/AsignarPrecio";
 import Client from "../../Models/Client";
 //import PedirSupervision from "../ScreenDialog/PedirSupervision";
 import UserEvent from "../../Models/UserEvent";
 import StorageSesion from "src/Helpers/StorageSesion";
-import dayjs from "dayjs";
 //import ScreenDialogBuscarCliente from "../ScreenDialog/BuscarCliente";
 import Log from "src/Models/Log";
 import LastSale from "src/Models/LastSale";
 
+import { ProviderModalesContext } from "../Context/ProviderModales";
+
 export const SelectedOptionsContext = React.createContext();
 export const SelectedOptionsProvider = ({ children }) => {
+
+  const {
+    setShowAsignarPeso,
+    productoSinPeso,
+    setProductoSinPeso,
+    setonAsignWeight,
+    onConfirmAsignWeight,
+
+    setShowNuevoExpress,
+    setCodigoNuevoExpress,
+    setHandleGuardarNuevoProducto,
+    codigoNuevoExpress,
+
+    productoSinPrecio,
+    setProductoSinPrecio,
+    showAsignarPrecio,
+    setShowAsignarPrecio,
+    setOnAsignPrice
+
+    // setShowConfirmDialog,
+    // textConfirm,
+    // setTextConfirm,
+    // setHandleConfirm,
+    // setHandleNotConfirm,
+
+    // setOpenSnackbar,
+    // snackMessage,
+    // setSnackMessage,
+
+
+    // setShowAlert,
+    // setTitleMsg,
+    // textMsg,
+    // setTextMsg,
+
+    // showDialogSelectClientModal,
+    // setShowDialogSelectClientModal,
+    // setClienteModal,
+    // clienteModal,
+    // setAskLastSaleModal,
+    // setAddToSalesDataModal,
+
+  } = useContext(ProviderModalesContext);
+
+
   //init configs values
   const [sales, setSales] = useState(new ModelSales());
   const [ultimoVuelto, setUltimoVuelto] = useState(null);
@@ -50,6 +93,7 @@ export const SelectedOptionsProvider = ({ children }) => {
   const [apretoEnterEnBuscar, setApretoEnterEnBuscar] = useState(null);
 
   const focusSearchInput = () => {
+    console.log("focusSearchInput")
     System.intentarFoco(searchInputRef, () => { })
   };
 
@@ -122,6 +166,7 @@ export const SelectedOptionsProvider = ({ children }) => {
   };
 
   const showMessage = (message) => {
+    console.log("showMessage..", message)
     setSnackMessage(message)
     setVisibleSnackbar(true)
   }
@@ -279,27 +324,24 @@ export const SelectedOptionsProvider = ({ children }) => {
     })();
   }, [cliente]);
 
-  const [productoSinPrecio, setProductoSinPrecio] = useState(null);
-  const [showAsignarPrecio, setShowAsignarPrecio] = useState(false);
-  const [showNuevoExpress, setShowNuevoExpress] = useState(false);
-  const [codigoNuevoExpress, setCodigoNuevoExpress] = useState(0);
 
-  const [showAsignarPeso, setShowAsignarPeso] = useState(false);
-  const [productoSinPeso, setProductoSinPeso] = useState(null);
 
-  const addToSalesData = (product, quantity, withAlert = false) => {
+  const addToSalesData = async (product, quantity, withAlert = false) => {
+    console.log("addToSalesData")
+    Log("product", product)
     // console.log("")
     // console.log("")
-    // console.log("")
-    // console.log("")
-    // console.log("addToSalesData", product, "..quantity", quantity)
+
+    console.log("quantity", quantity)
     if (!quantity && product.cantidad) quantity = product.cantidad;
 
-    const sePuedeVenderPrecio0 = ModelConfig.get("permitirVentaPrecio0");
+    const sePuedeVenderPrecio0 = await ModelConfig.get("permitirVentaPrecio0");
 
+    console.log("sePuedeVenderPrecio0", sePuedeVenderPrecio0)
     if (parseFloat(product.precioVenta) <= 0 && !sePuedeVenderPrecio0) {
-      setShowAsignarPrecio(true);
+      console.log("debe asignar precio")
       setProductoSinPrecio(product);
+      // setShowAsignarPrecio(true);
     } else {
       // if (
       //   (quantity === 1 || quantity == undefined)
@@ -310,47 +352,43 @@ export const SelectedOptionsProvider = ({ children }) => {
       // } else {
 
       if (!quantity && ProductSold.getInstance().esPesable(product)) {
-        product.quantity = 1;
+        // product.quantity = 1;
+        console.log("debe asignar peso")
+        setProductoSinPeso(product)
+      } else {
+        var totalAntesPrecio = sales.getTotal();
+        var totalAntesCantidad = sales.getTotalCantidad();
+        setSalesData([]);
+        sales.addProduct(product, quantity);
+
+        setTimeout(async () => {
+          setSalesData(await sales.loadFromSesion());
+
+          var totalDespuesPrecio = sales.getTotal();
+          var totalDespuesCantidad = sales.getTotalCantidad();
+
+          // console.log("totalAntesPrecio", totalAntesPrecio)
+          // console.log("totalDespuesPrecio", totalDespuesPrecio)
+          // console.log("totalAntesCantidad", totalAntesCantidad)
+          // console.log("totalDespuesCantidad", totalDespuesCantidad)
+
+          if (
+            totalAntesPrecio != totalDespuesPrecio ||
+            totalAntesCantidad != totalDespuesCantidad
+          )
+            if (withAlert) {
+              showAlert("Agregado correctamente");
+            } else {
+              showMessage("Agregado correctamente");
+            }
+        }, 300);
+
+        setUltimoVuelto(null);
+
+        UserEvent.send({
+          name: "agrega producto " + product.nombre,
+        });
       }
-
-      var totalAntesPrecio = sales.getTotal();
-      var totalAntesCantidad = sales.getTotalCantidad();
-      setSalesData([]);
-      sales.addProduct(product, quantity);
-
-      setTimeout(async () => {
-        setSalesData(await sales.loadFromSesion());
-
-        var totalDespuesPrecio = sales.getTotal();
-        var totalDespuesCantidad = sales.getTotalCantidad();
-
-        // console.log("totalAntesPrecio", totalAntesPrecio)
-        // console.log("totalDespuesPrecio", totalDespuesPrecio)
-        // console.log("totalAntesCantidad", totalAntesCantidad)
-        // console.log("totalDespuesCantidad", totalDespuesCantidad)
-
-        if (
-          totalAntesPrecio != totalDespuesPrecio ||
-          totalAntesCantidad != totalDespuesCantidad
-        )
-          if (withAlert) {
-            showAlert("Agregado correctamente");
-          } else {
-            showMessage("Agregado correctamente");
-          }
-      }, 300);
-
-      setUltimoVuelto(null);
-
-      UserEvent.send({
-        name: "agrega producto " + product.nombre,
-      });
-
-      // focusSearchInput();
-      // setTimeout(() => {
-      //   searchInputRef.current.focus()
-      // }, 500);
-      // }
     }
   };
 
@@ -360,13 +398,8 @@ export const SelectedOptionsProvider = ({ children }) => {
     setGrandTotal(sales.getTotal());
   };
 
-  const onAsignWeight = (newPeso) => {
-    addToSalesData(productoSinPeso, newPeso);
-    setProductoSinPeso(null);
-    setShowAsignarPeso(false);
-  };
-
-  const onAsignPrice = (newPrice) => {
+  const handlerOnAsignPrice = (newPrice) => {
+    console.log("onAsignPrice..newPrice", newPrice)
     // productoSinPrecio.codigoSucursal = 0
     // productoSinPrecio.puntoVenta = "0000"
     productoSinPrecio.fechaIngreso = System.getInstance().getDateForServer();
@@ -386,10 +419,30 @@ export const SelectedOptionsProvider = ({ children }) => {
     );
   };
 
+
+  useEffect(() => {
+    if (productoSinPrecio) {
+      setOnAsignPrice((x) => handlerOnAsignPrice)
+      setShowAsignarPrecio(true)
+    } else {
+      setShowAsignarPrecio(false)
+    }
+  }, [productoSinPrecio])
+
+
+  useEffect(() => {
+    if (codigoNuevoExpress != 0) {
+      setHandleGuardarNuevoProducto((x) => handleGuardarNuevoProducto)
+      setShowNuevoExpress(true)
+    } else {
+      setShowNuevoExpress(false)
+    }
+  }, [codigoNuevoExpress])
+
   const addNewProductFromCode = (code) => {
+    console.log("addNewProductFromCode..", code)
     if (code < 0) code = code * -1;
     setCodigoNuevoExpress(code);
-    setShowNuevoExpress(true);
   };
 
   const handleGuardarNuevoProducto = (nuevoProducto) => {
@@ -471,15 +524,27 @@ export const SelectedOptionsProvider = ({ children }) => {
     setSalesData(sales.decrementQuantityByIndex(index, 1));
   };
 
-  // const suspenderVenta = async (salesData) => {
-  //   sales.suspendOne(salesData,(response)=>{
-  //     clearSalesData(); // Clear sales data after suspending the sale
-  //     setPlu(""); // Clear the PLU code
-  //     setPeso("");
-  //   },()=>{
 
-  //   })
-  // };
+
+  useEffect(() => {
+
+    if (productoSinPeso) {
+      const realOnAsignWeight = (newPeso) => {
+        // console.log("realOnAsignWeight")
+        // console.log("realOnAsignWeight..newPeso", newPeso)
+        // console.log("realOnAsignWeight..productoSinPeso", productoSinPeso)
+        addToSalesData(productoSinPeso, newPeso)
+        setProductoSinPeso(null)
+        setShowAsignarPeso(false)
+      }
+      // console.log("setonAsignWeight", realOnAsignWeight)
+      setonAsignWeight((x) => realOnAsignWeight)
+      setShowAsignarPeso(true)
+      // setHandleConfirm(() => callbackYes)
+    } else {
+      setShowAsignarPeso(false)
+    }
+  }, [productoSinPeso]);
 
 
 
@@ -538,19 +603,6 @@ export const SelectedOptionsProvider = ({ children }) => {
 
 
         <LoadingDialog openDialog={showLoadingDialog} text={loadingDialogText} />
-        {/* <AsignarPrecio
-          openDialog={showAsignarPrecio}
-          setOpenDialog={setShowAsignarPrecio}
-          product={productoSinPrecio}
-          onAsignPrice={onAsignPrice}
-        />
-
-        <AsignarPeso
-          openDialog={showAsignarPeso}
-          setOpenDialog={setShowAsignarPeso}
-          product={productoSinPeso}
-          onAsignWeight={onAsignWeight}
-        /> */}
 
         {/* <NuevoProductoExpress
           openDialog={showNuevoExpress}
@@ -558,6 +610,7 @@ export const SelectedOptionsProvider = ({ children }) => {
           onComplete={handleGuardarNuevoProducto}
           codigoIngresado={codigoNuevoExpress}
         /> */}
+
 
 
 
@@ -594,6 +647,7 @@ export const SelectedOptionsProvider = ({ children }) => {
 
         showConfirm,
         showAlert,
+        showMessage,
 
         showLoadingDialog,
         setShowLoadingDialog,

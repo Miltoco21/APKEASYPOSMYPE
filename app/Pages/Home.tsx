@@ -11,11 +11,16 @@ import Log from "src/Models/Log";
 
 
 import { SelectedOptionsContext } from '../../src/Componentes/Context/SelectedOptionsProvider';
+import { ProviderModalesContext } from '../../src/Componentes/Context/ProviderModales';
 
 
 const Home = ({
 
 }) => {
+
+  const {
+    GeneralElements2,
+  } = useContext(ProviderModalesContext);
 
   const {
     userData,
@@ -61,6 +66,7 @@ const Home = ({
 
     <Box style={styles.container}>
     <GeneralElements />
+    <GeneralElements2 />
     <AbrirCaja openDialog={isCajaOpen} setOpenDialog={setIsCajaOpen} />
     
     {/* Contenido principal */}

@@ -36,13 +36,16 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack } from "expo-router";
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import SelectedOptionsProvider from "../src/Componentes/Context/SelectedOptionsProvider";
+import ProviderModales from "../src/Componentes/Context/ProviderModales";
 export default function Layout() {
   return (
     <PaperProvider>
       <SafeAreaProvider>
-        <SelectedOptionsProvider>
-          <Stack />
-        </SelectedOptionsProvider>
+        <ProviderModales>
+          <SelectedOptionsProvider>
+            <Stack />
+          </SelectedOptionsProvider>
+        </ProviderModales>
       </SafeAreaProvider>
     </PaperProvider>
   );

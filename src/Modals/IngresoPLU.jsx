@@ -6,29 +6,21 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Keyboard,
-  ActivityIndicator
+  ActivityIndicator,
+  Alert
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { SelectedOptionsContext } from '../Componentes/Context/SelectedOptionsProvider';
-import Product from '../Models/Product';
-import ProductSold from '../Models/ProductSold';
-import NewProductModal from '../Modals/NewProductModal';
-import AsignarPeso from "../Componentes/ScreenDialog/AsignarPeso"
+// import { SelectedOptionsContext } from '../Componentes/Context/SelectedOptionsProvider';
 import System from 'src/Helpers/System';
 
 const IngresoPLU = ({ visible, onConfirm, onCancel }) => {
-  const {
-    userData,
-    showAlert,
-    addToSalesData
-  } = useContext(SelectedOptionsContext);
+  // const {
+  //   userData,
+  //   showAlert,
+  //   addToSalesData
+  // } = useContext(SelectedOptionsContext);
   const [inputValue, setInputValue] = useState('');
-  const [showNewProductModal, setShowNewProductModal] = useState(false);
-  const [currentPLU, setCurrentPLU] = useState('');
   const [loadingPLU, setLoadingPLU] = useState(false);
-  const [foundProduct, setFoundProduct] = useState(null);
-  const [showWeightModal, setShowWeightModal] = useState(false);
 
   const refInput = useRef(null)
 
@@ -36,7 +28,6 @@ const IngresoPLU = ({ visible, onConfirm, onCancel }) => {
     if (!visible) {
       setInputValue('');
       setLoadingPLU(false);
-      setFoundProduct(null);
     } else {
       setTimeout(() => {
         System.intentarFoco(refInput)
@@ -45,91 +36,18 @@ const IngresoPLU = ({ visible, onConfirm, onCancel }) => {
   }, [visible]);
 
   const handleConfirm = async () => {
-    try {
-      if (!inputValue) {
-        showAlert('Error', 'El campo PLU no puede estar vacío');
-        return;
-      }
-
-      if (!/^\d+$/.test(inputValue)) {
-        showAlert('Error', 'El PLU debe contener solo números');
-        return;
-      }
-
-      onConfirm(inputValue);
-      return
-      setLoadingPLU(true);
-
-      await Product.getInstance().findByCodigoBarras(
-        {
-          codigoProducto: inputValue,
-          codigoCliente: userData?.codigoCliente || 0
-        },
-        (productos, response) => {
-          setLoadingPLU(false);
-          if (productos?.length > 0) {
-            const producto = productos[0];
-
-            // Verificar si el producto es pesable
-            const isPesable = ProductSold.getInstance().esPesable(producto);
-
-            if (isPesable) {
-              setFoundProduct(producto);
-              setShowWeightModal(true);
-            } else {
-              addToSalesData(producto);
-              showAlert('Éxito', 'Producto agregado correctamente');
-              onConfirm(inputValue);
-            }
-          } else {
-            setCurrentPLU(inputValue);
-            setShowNewProductModal(true);
-          }
-        },
-        (error) => {
-          setLoadingPLU(false);
-          showAlert('Error', `Falló la búsqueda: ${error.message}`);
-          onCancel();
-        }
-      );
-    } catch (error) {
-      showAlert('Error crítico', error.message);
-      onCancel();
+    if (!inputValue) {
+      Alert.alert('Error', 'El campo PLU no puede estar vacío');
+      return;
     }
-  };
 
-  const handleCreateProduct = (newProduct) => {
-    const isPesable = ProductSold.getInstance().esPesable(newProduct);
-
-    if (isPesable) {
-      setFoundProduct(newProduct);
-      setShowNewProductModal(false);
-      setShowWeightModal(true);
-    } else {
-      addToSalesData({
-        ...newProduct,
-        quantity: 1,
-        total: newProduct.price || 0
-      });
-      showAlert('Éxito', 'Producto creado y agregado');
-      setShowNewProductModal(false);
-      onConfirm(currentPLU);
+    if (!/^\d+$/.test(inputValue)) {
+      Alert.alert('Error', 'El PLU debe contener solo números');
+      return;
     }
-  };
 
-  const handleWeightSave = (peso) => {
-    if (foundProduct) {
-      const productWithWeight = {
-        ...foundProduct,
-        cantidad: peso,
-        total: foundProduct.precioVenta * peso
-      };
+    onConfirm(inputValue);
 
-      addToSalesData(productWithWeight);
-      showAlert('Éxito', 'Producto pesable agregado correctamente');
-      setShowWeightModal(false);
-      onConfirm(inputValue);
-    }
   };
 
   return (
@@ -180,24 +98,6 @@ const IngresoPLU = ({ visible, onConfirm, onCancel }) => {
           </View>
         </View>
       </Modal>
-
-      <NewProductModal
-        visible={showNewProductModal}
-        pluCode={currentPLU}
-        onSave={handleCreateProduct}
-        onCancel={() => setShowNewProductModal(false)}
-        confirmation={true}
-        confirmationMessage="Producto no encontrado. ¿Desea agregarlo?"
-      />
-
-      {/* Usar el componente AsignarPeso existente */}
-      <AsignarPeso
-        visible={showWeightModal}
-        onClose={() => setShowWeightModal(false)}
-        product={foundProduct}
-        currentWeight={0} // Peso inicial 0
-        onSave={handleWeightSave}
-      />
     </>
   );
 };

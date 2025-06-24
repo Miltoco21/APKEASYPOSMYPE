@@ -23,10 +23,7 @@ import BalanzaUnidad from '../../Models/BalanzaUnidad';
 import { Button, Icon, IconButton } from 'react-native-paper';
 import CapturaCodigoCamara from '../ScreenDialog/CapturaCodigoCamara';
 import IngresoPLU from 'src/Modals/IngresoPLU';
-import IngresoPrecio from 'src/Modals/IngresoPrecio';
-import NewProductModal from 'src/Modals/NewProductModal';
 import Validator from 'src/Helpers/Validator';
-import AsignarPeso from '../ScreenDialog/AsignarPeso';
 import ProductSold from 'src/Models/ProductSold';
 import System from 'src/Helpers/System';
 import User from 'src/Models/User';
@@ -56,6 +53,7 @@ const BoxProducts = () => {
     setApretoEnterEnBuscar,
 
     textSearchProducts,
+    addNewProductFromCode
   } = useContext(SelectedOptionsContext);
 
   const procesarBusqueda = (codigoBusqueda) => {
@@ -65,29 +63,30 @@ const BoxProducts = () => {
     // if (cliente) codigoCliente = cliente.codigoCliente
     Product.getInstance().findByCodigoBarras({
       codigoProducto: codigoBusqueda,
-      codigoCliente: codigoCliente },
-      (products, response) => {
-      // console.log("Respuesta de la IdBYCODIGO:", response.data);
-      // console.log("Cantidad registros:", response.data.cantidadRegistros);
-      products.forEach((produ) => {
-        if (parseFloat(produ.precioVenta) <= 0) {
-          // console.log("el producto " + produ.nombre + ", #" + produ.idProducto + " tiene precio 0")
-        }
-      })
-
-      if (response.data.cantidadRegistros > 0) {
-        const productoEncontrado = products[0];
-        addToSalesData(productoEncontrado);
-        // setProductByCodigo(productoEncontrado);
-        // setTextSearchProducts("");
-        // searchInputRef.current.focus()
-      } else {
-        // buscarValoresBalanza(codigoBusqueda)
-
-        // setProductByCodigo(null);
-        // setTextSearchProducts("")
-      }
+      codigoCliente: codigoCliente
     },
+      (products, response) => {
+        // console.log("Respuesta de la IdBYCODIGO:", response.data);
+        // console.log("Cantidad registros:", response.data.cantidadRegistros);
+        products.forEach((produ) => {
+          if (parseFloat(produ.precioVenta) <= 0) {
+            // console.log("el producto " + produ.nombre + ", #" + produ.idProducto + " tiene precio 0")
+          }
+        })
+
+        if (response.data.cantidadRegistros > 0) {
+          const productoEncontrado = products[0];
+          addToSalesData(productoEncontrado);
+          // setProductByCodigo(productoEncontrado);
+          // setTextSearchProducts("");
+          // searchInputRef.current.focus()
+        } else {
+          // buscarValoresBalanza(codigoBusqueda)
+          addNewProductFromCode(codigoBusqueda)
+          // setProductByCodigo(null);
+          // setTextSearchProducts("")
+        }
+      },
       (error) => {
         // console.error("Error al buscar el producto:", error);
         showMessage("No se encontraron resultados para: " + codigoBusqueda);
@@ -98,10 +97,12 @@ const BoxProducts = () => {
     // System.intentarFoco(searchInputRef)
     Keyboard.addListener("keyboardDidHide", () => {
       setTieneFocoTeclado(false)
+      console.log("quitando teclado")
     })
 
     Keyboard.addListener("keyboardDidShow", async () => {
       setTieneFocoTeclado(true)
+      console.log("muestra teclado")
     })
 
     ProductCodeStack.processFunction = procesarBusqueda
@@ -144,12 +145,7 @@ const BoxProducts = () => {
 
 
   const [showPLUModal, setShowPLUModal] = useState(false);
-
   const [showEditPriceModal, setShowEditPriceModal] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState(null);
-
-  const [showNewProductModal, setShowNewProductModal] = useState(false)
-  const [showWeightModal, setShowWeightModal] = useState(false);
 
   const handlePLUConfirm = (pluValue) => {
     setShowPLUModal(false);
@@ -177,61 +173,27 @@ const BoxProducts = () => {
         ProductCodeStack.addProductCode(searchValue);
         setSearchText("")
         return;
-        // productosEncontrados = await new Promise((resolve) => {
-        //   Product.getInstance().findByCodigoBarras(
-        //     { codigoProducto: searchValue, codigoCliente: 0 },
-        //     (productos) => resolve(productos || []),
-        //     (error) => { handleError(error); resolve([]); }
-        //   );
-        // });
-
-        // Si no se encontró, mostrar modal inmediatamente
-        if (productosEncontrados.length < 1) {
-          setShowNewProductModal(true);
-          return; // Salir tempranamente
-        }
       }
 
       // Resto de búsquedas solo si no es código de barras
-      if (!isCodigoBarras) {
-        // Búsqueda por código numérico
-        // if (isNumeric) {
-        //   productosEncontrados = await new Promise((resolve) => {
-        //     Product.getInstance().findByCodigo(
-        //       { codigoProducto: searchValue, codigoCliente: 0 },
-        //       (productos) => resolve(productos || []),
-        //       (error) => { handleError(error); resolve([]); }
-        //     );
-        //   });
-        // }
+      console.log("busca por nombre")
 
-        // Búsqueda por descripción si no se encontró por código
-        if (productosEncontrados.length < 1) {
-          productosEncontrados = await new Promise((resolve) => {
-            Product.getInstance().findByDescriptionPaginado(
-              {
-                description: searchValue,
-                codigoCliente: 0,
-                pagina: currentPage,
-                canPorPagina: 10
-              },
-              (productos) => resolve(productos || []),
-              (error) => { handleError(error); resolve([]); }
-            );
-          });
-        }
-      }
+      productosEncontrados = await new Promise((resolve) => {
+        Product.getInstance().findByDescriptionPaginado(
+          {
+            description: searchValue,
+            codigoCliente: 0,
+            pagina: currentPage,
+            canPorPagina: 10
+          },
+          (productos) => resolve(productos || []),
+          (error) => { handleError(error); resolve([]); }
+        );
+      });
 
-      // Actualizar resultados
-      // if (currentPage === 1) {
       setFilteredProducts(productosEncontrados);
-      // } else {
-      //   setFilteredProducts(prev => [...prev, ...productosEncontrados]);
-      // }
-
-      // Mostrar modal si no hay resultados en primera página
       if (productosEncontrados.length < 1) {
-        setShowNewProductModal(true);
+        showMessage("No se encontraron resultados para: " + searchText);
       }
 
 
@@ -293,72 +255,16 @@ const BoxProducts = () => {
   }, [filteredProducts]);
 
   const handleAddProduct = (product) => {
-    // console.log("handleAddProduct handleAddProduct")
-    setFilteredProducts([]);
-    // console.log("poniendo '' al searchtext")
-    setSearchText("");
-
-    // 1. Primero verificar si es pesable
-    const isPesable = ProductSold.getInstance().esPesable(product);
-
-
-    if (isPesable) {
-      setSelectedProduct(product);
-      setShowWeightModal(true);
-      return; // Salir después de abrir modal de peso
-    }
-
-    // 2. Luego verificar precio
-    if (product.precioVenta <= 0) {
-      setSelectedProduct(product);
-      setShowEditPriceModal(true);
-      return;
-    }
-
-    // 3. Si no es pesable y tiene precio válido, agregar
-    // Keyboard.dismiss();
     addToSalesData({
       ...product,
-      cantidad: 1,
-      total: product.precioVenta * 1
+      // cantidad: 1,
+      // total: product.precioVenta * 1
     }, undefined, capturarCodigo);
-    // console.log("poniendo '' al searchtext")
-    setSearchText("");
-    setFilteredProducts([])
-    if (!capturarCodigo) {
-      // console.log("dando foco al input buscar")
-      focusSearchInput();
-    }
-
-    // console.log("limpia productos encontrados")
-  };
-
-  const handlePriceUpdate = (updatedProduct) => {
-    addToSalesData(updatedProduct, undefined, capturarCodigo);
-    // Actualizar lista de búsqueda si el producto está visible
-    setFilteredProducts(prev => prev.map(p =>
-      p.idProducto === updatedProduct.idProducto ? updatedProduct : p
-    ));
-    setShowEditPriceModal(false);
-    // console.log("poniendo '' al searchtext")
-    setSearchText("");
-    // console.log("dando foco al input buscar")
-    focusSearchInput();
-  };
-
-
-  const handleCreateProduct = (newProduct) => {
-    addToSalesData({
-      ...newProduct,
-      quantity: 1,
-      total: newProduct.price || 0
-    }, undefined, capturarCodigo);
-    showAlert('Éxito', 'Producto creado y agregado');
-    setShowNewProductModal(false);
   };
 
   useEffect(() => {
     if (capturarCodigo) {
+      console.log("captura codigo..quita teclado")
       Keyboard.dismiss();
     }
   }, [capturarCodigo])
@@ -389,6 +295,7 @@ const BoxProducts = () => {
             setApretoEnterEnBuscar(!apretoEnterEnBuscar)
           }}
         />
+
         <TouchableOpacity style={styles.scanCodButton} onPress={() => {
           setCapturarCodigo(true)
         }}>
@@ -460,51 +367,12 @@ const BoxProducts = () => {
         />
       </View>
 
-      <IngresoPLU
+      {/* <IngresoPLU
         visible={showPLUModal}
         onConfirm={handlePLUConfirm}
         onCancel={() => setShowPLUModal(false)}
-      />
+      /> */}
 
-      <NewProductModal
-        visible={showNewProductModal}
-        pluCode={searchText}
-        onSave={handleCreateProduct}
-        onCancel={() => setShowNewProductModal(false)}
-        confirmation={true}
-        confirmationMessage="Producto no encontrado. ¿Desea agregarlo?"
-      />
-
-      <IngresoPrecio
-        visible={showEditPriceModal}
-        product={selectedProduct}
-        onConfirm={handlePriceUpdate}
-        onCancel={() => {
-          setShowEditPriceModal(false);
-          setSelectedProduct(null);
-        }}
-      />
-      <AsignarPeso
-        visible={showWeightModal}
-        onClose={() => setShowWeightModal(false)}
-        product={selectedProduct}
-        currentWeight={selectedProduct?.cantidad || 0}
-        onSave={(peso) => {
-          const updatedProduct = {
-            ...selectedProduct,
-            cantidad: peso,
-            total: selectedProduct.precioVenta * peso
-          };
-          addToSalesData(updatedProduct, undefined, true);
-          setShowWeightModal(false);
-          // console.log("poniendo '' al searchtext")
-          setSearchText("");
-          // console.log("dando foco al input buscar")
-          if (!capturarCodigo) {
-            focusSearchInput();
-          }
-        }}
-      />
     </View>
   );
 };

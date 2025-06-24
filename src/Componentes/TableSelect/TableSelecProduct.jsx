@@ -94,7 +94,7 @@ const TableSelectProduct = ({ show, onSelect, title = "Buscar producto" }) => {
       showSnackbarMessage("Ingrese un valor para buscar");
       return;
     }
-
+    console.log("handleSearch ocultando teclado")
     Keyboard.dismiss();
     parseFloat(searchTerm) ? handlePluSearch() : handleDescripcionSearch();
   };

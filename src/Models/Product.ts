@@ -76,6 +76,7 @@ class Product extends Model implements IProduct {
         canPorPagina = 10,
         pagina = 1
     }, callbackOk, callbackWrong) {
+        console.log("findByDescriptionPaginado")
         var url = await ModelConfig.get("urlBase") +
             "/api/ProductosTmp/GetProductosByDescripcionPaginado?descripcion=" + (description + "")
         if (codigoCliente) {

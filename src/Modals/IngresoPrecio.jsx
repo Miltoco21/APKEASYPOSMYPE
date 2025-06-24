@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import {
   Modal,
   View,
@@ -6,63 +6,56 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  ActivityIndicator
+  ActivityIndicator,
+  Alert
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { SelectedOptionsContext } from '../Componentes/Context/SelectedOptionsProvider';
-import Product from '../Models/Product';
+import System from 'src/Helpers/System';
 import Log from 'src/Models/Log';
 
 
-const IngresoPrecio = ({ visible, product, onConfirm, onCancel }) => {
-  const { showAlert } = useContext(SelectedOptionsContext);
+const IngresoPrecio = ({
+  visible,
+  product,
+  onConfirm,
+  onCancel
+}) => {
   const [nuevoPrecio, setNuevoPrecio] = useState("");
   const [loading, setLoading] = useState(false);
+  const refInput = useRef(null)
 
   useEffect(() => {
-    if (visible && product) {
-      setNuevoPrecio(product.precioVenta|| '');
+    console.log("cambio visible", visible)
+  }, [visible])
+
+  useEffect(() => {
+    if (!visible) {
+      setNuevoPrecio('');
+    } else {
+      setTimeout(() => {
+        System.intentarFoco(refInput)
+      }, 300);
     }
-  }, [visible, product]);
+  }, [visible]);
+
 
   const handleConfirmar = async () => {
+    console.log("handleConfirmar..product", product)
     if (!product) return;
-    
-    const precioNumerico = parseFloat(nuevoPrecio);
-   
-    
-    if (precioNumerico <= 0) {
-      showAlert('Error', 'El precio debe ser mayor a cero');
+
+    if (!nuevoPrecio) {
+      Alert.alert('Error', 'Ingresar el precio');
       return;
     }
 
-    try {
-      setLoading(true);
-      const productoActualizado = {
-        ...product,
-        precioVenta: precioNumerico
-      };
+    const precioNumerico = parseFloat(nuevoPrecio);
 
-      await Product.getInstance().assignPrice(productoActualizado,
-        (response) => {
-          setLoading(false);
-          showAlert('Éxito', 'Precio actualizado correctamente');
-          onConfirm(productoActualizado);
-        },
-        (error) => {
-          console.log(error.message);
-          
-          setLoading(false);
-          showAlert('Error', `Error al actualizar precio: ${error.message}`);
-          onCancel();
-        }
-      );
-      
-    } catch (error) {
-      setLoading(false);
-      showAlert('Error', error.message);
-      onCancel();
+
+    if (precioNumerico <= 0) {
+      Alert.alert('Error', 'El precio debe ser mayor a cero');
+      return;
     }
+    onConfirm(precioNumerico);
   };
 
   return (
@@ -85,9 +78,11 @@ const IngresoPrecio = ({ visible, product, onConfirm, onCancel }) => {
             placeholder="Nuevo precio"
             keyboardType="numeric"
             value={nuevoPrecio}
+            ref={refInput}
             onChangeText={setNuevoPrecio}
-            autoFocus={true}
+          // autoFocus={true}
           />
+
 
           <View style={styles.buttonContainer}>
             <TouchableOpacity

@@ -15,6 +15,7 @@ import { useRouter } from "expo-router";
 import BaseConfig from "../../src/definitions/BaseConfig";
 import BaseConfigModal from "../../src/Modals/ConfigModal";
 import { SelectedOptionsContext } from '../../src/Componentes/Context/SelectedOptionsProvider';
+import { ProviderModalesContext } from '../../src/Componentes/Context/ProviderModales';
 import CONSTANTS from "../../src/definitions/Constants";
 import Ionicons from "@expo/vector-icons/Ionicons"
 import User from "src/Models/User";
@@ -24,6 +25,10 @@ import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 
 
 export default function Login() {
+
+  const {
+    GeneralElements2,
+  } = useContext(ProviderModalesContext);
 
   const {
     userData,
@@ -230,6 +235,7 @@ export default function Login() {
   return (
     <Box style={styles.container}>
       <GeneralElements />
+      <GeneralElements2 />
 
       <Text style={styles.title}>Iniciar Sesión</Text>
       <Image style={styles.foto}

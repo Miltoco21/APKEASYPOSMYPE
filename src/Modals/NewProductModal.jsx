@@ -17,9 +17,6 @@ import Product from '../Models/Product';
 import StorageSesion from '../Helpers/StorageSesion'; // Asegúrate de que la ruta sea correcta
 import dayjs from 'dayjs';
 import User from "src/Models/User";
-import { SelectedOptionsContext } from '../Componentes/Context/SelectedOptionsProvider';
-
-
 
 const NewProductModal = ({
   visible,
@@ -30,7 +27,6 @@ const NewProductModal = ({
   confirmationMessage = ''
 }) => {
 
-  const { showAlert} = useContext(SelectedOptionsContext);
 
   const [productData, setProductData] = useState({ nombre: '', precio: '', tipo: 0 });
   const [tipos, setTipos] = useState([]);
@@ -141,13 +137,13 @@ const NewProductModal = ({
     const { nombre, precio, tipo } = productData;
   
     if (!nombre.trim() || !precio || tipo === 0) {
-      showAlert('Atención', 'Debe completar todos los campos.');
+      Alert.alert('Atención', 'Debe completar todos los campos.');
       return;
     }
   
     const precioNum = parsePrecio(precio);
     if (isNaN(precioNum) || precioNum <= 0) {
-      showAlert('Error', 'Precio no válido.');
+      Alert.alert('Error', 'Precio no válido.');
       return;
     }
   
@@ -158,7 +154,7 @@ const NewProductModal = ({
       sesion = await us.getFromSesion();
       
       if (!sesion) {
-        showAlert("Error de sesión", "No se encontraron datos de sesión.");
+        Alert.alert("Error de sesión", "No se encontraron datos de sesión.");
         return;
       }
       
@@ -169,7 +165,7 @@ const NewProductModal = ({
       console.log("Datos de sesión:", sesion); // Para depuración
       
     } catch (err) {
-      showAlert("Error de sesión", "No se pudo obtener la configuración de sesión: " + err.message);
+      Alert.alert("Error de sesión", "No se pudo obtener la configuración de sesión: " + err.message);
       return;
     }
   
@@ -206,7 +202,7 @@ const NewProductModal = ({
       });
     } catch (err) {
       setError(err.message);
-      showAlert('Error', err.message);
+      Alert.alert('Error', err.message);
     } finally {
       setLoading(false);
     }
