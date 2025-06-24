@@ -367,11 +367,11 @@ const BoxProducts = () => {
         />
       </View>
 
-      {/* <IngresoPLU
+      <IngresoPLU
         visible={showPLUModal}
         onConfirm={handlePLUConfirm}
         onCancel={() => setShowPLUModal(false)}
-      /> */}
+      />
 
     </View>
   );
