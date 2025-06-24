@@ -1,4 +1,3 @@
-
 import React, { useState, useContext, useEffect } from "react";
 import {
   View,
@@ -16,8 +15,6 @@ import Product from "../../Models/Product";
 import ModelConfig from "../../Models/ModelConfig";
 import ConfirmOption from "../Dialogs/ConfirmOption";
 import Log from "src/Models/Log";
-import AsignarPeso from "../ScreenDialog/AsignarPeso";
-import ProductSold from "src/Models/ProductSold"; // Asegúrate de importar ProductSold
 
 const BoxBusquedaRapida = ({
   onSelect = () => { }
@@ -91,21 +88,8 @@ const BoxBusquedaRapida = ({
 
   // Función modificada para manejar productos pesables
   const handleAddProduct = (product) => {
-    const isPesable = ProductSold.getInstance().esPesable(product);
-
-    if (isPesable) {
-      setProductToAdd(product);
-      setTextSearchProducts(product.idProducto + "")
-      setApretoEnterEnBuscar(!apretoEnterEnBuscar)
+      addToSalesData(product, undefined, true);
       onSelect()
-    } else {
-      addToSalesData({
-        ...product,
-        cantidad: 1,
-        total: product.precioVenta * 1
-      }, undefined, true);
-      onSelect()
-    }
   };
 
   const onSelectProd = (product) => {
@@ -289,24 +273,6 @@ const BoxBusquedaRapida = ({
         buttonOptions={["Modificar", "Liberar"]}
       />
 
-      {/* Modal para asignar peso a productos pesables */}
-      {/* <AsignarPeso
-        visible={showWeightModal}
-        onClose={() => setShowWeightModal(false)}
-        product={productToAdd}
-        currentWeight={0}
-        onSave={(peso) => {
-          if (productToAdd) {
-            const productWithWeight = {
-              ...productToAdd,
-              cantidad: peso,
-              total: productToAdd.precioVenta * peso
-            };
-            addToSalesData(productWithWeight);
-            setShowWeightModal(false);
-          }
-        }}
-      /> */}
     </ScrollView>
   );
 };
