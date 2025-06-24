@@ -114,9 +114,10 @@ const TableSelecProductNML = ({
   };
 
   const handleSelectProduct = (product) => {
-    setSelectedProduct(product);
-    setTextSearchProducts(product.idProducto + "")
-    setApretoEnterEnBuscar(!apretoEnterEnBuscar)
+    // setSelectedProduct(product);
+    // setTextSearchProducts(product.idProducto + "")
+    // setApretoEnterEnBuscar(!apretoEnterEnBuscar)
+
     onSelect(product)
 
   };

@@ -193,7 +193,7 @@ const BoxFamilias = ({ onSelect }) => {
         subcategoryId={subcategoryId}
         familyId={familyId}
         subfamilyId={subfamilyId}
-        onSelect={() => onSelect(product)}
+        onSelect={onSelect}
         excludeIfText={["AGREGA", "SIN"]}
       />
 

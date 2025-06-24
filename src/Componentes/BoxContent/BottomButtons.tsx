@@ -12,7 +12,9 @@ const BottomButtons = () => {
   const {
     salesData,
     clearSalesData,
-    showAlert, showConfirm
+    showAlert,
+    showConfirm,
+    addToSalesData,
   } = useContext(SelectedOptionsContext);
 
   const [showSettingsModal, setShowSettingsModal] = useState(false);
@@ -127,7 +129,10 @@ const BottomButtons = () => {
         <SafeAreaView style={styles.modalSafeContainer}>
           {renderModalHeader("Búsqueda por Familias", () => setShowFamiliasModal(false))}
           <View style={styles.modalContent}>
-            <BoxProductoFamilia onSelect={() => setShowFamiliasModal(false)} />
+            <BoxProductoFamilia onSelect={(prod) => {
+              addToSalesData(prod);
+              setShowFamiliasModal(false)
+            }} />
           </View>
         </SafeAreaView>
       </Modal>

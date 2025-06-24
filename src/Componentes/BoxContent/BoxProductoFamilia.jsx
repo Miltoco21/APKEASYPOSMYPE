@@ -4,7 +4,7 @@ import BoxFamilias from '../BoxContent/BoxFamilias';
 import { SelectedOptionsContext } from '../Context/SelectedOptionsProvider';
 
 const BoxProductoFamilia = ({
-  onSelect = ()=>{}
+  onSelect = (prod)=>{}
 }) => {
   const {
     userData,
