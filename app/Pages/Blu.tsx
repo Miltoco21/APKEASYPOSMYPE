@@ -13,7 +13,6 @@ import {
 } from "react-native";
 import Box from "../../src/Componentes/Box"
 import { useRouter } from "expo-router";
-import BaseConfig from "../../src/definitions/BaseConfig";
 import BaseConfigModal from "../../src/Modals/ConfigModal";
 import { SelectedOptionsContext } from '../../src/Componentes/Context/SelectedOptionsProvider';
 import CONSTANTS from "../../src/definitions/Constants";
@@ -25,6 +24,8 @@ import ModelConfig from "src/Models/ModelConfig";
 import { BluetoothManager, BluetoothEscposPrinter, BluetoothTscPrinter } from 'react-native-bluetooth-escpos-printer';
 import { Button } from "react-native-paper";
 import System from "src/Helpers/System";
+import ImpresionManual from "src/Modals/ImpresionManual";
+import STYLES from "src/definitions/Styles";
 
 export default function Blu({
   onSave,
@@ -42,11 +43,14 @@ export default function Blu({
 
   const [dispositivosDisponibles, setDispositivosDisponibles] = useState([]);
   const [dispositivosConectados, setDispositivosConectados] = useState([]);
+  const [verImpManual, setVerImpManual] = useState(false);
 
-  const listadoDispositivosDisponibles = () => {
+  const listadoDispositivosDisponibles = async () => {
     // showAlert("listadoDispositivosDisponibles")
     // return
-    BluetoothManager.enableBluetooth().then((r) => {
+    showLoading("Cargando listado...")
+    await BluetoothManager.enableBluetooth().then((r) => {
+      hideLoading()
       var paired = [];
       if (r && r.length > 0) {
         for (var i = 0; i < r.length; i++) {
@@ -60,29 +64,32 @@ export default function Blu({
       }
       setDispositivosDisponibles(paired)
     }, (err) => {
+      hideLoading()
       console.log("error z", err)
       System.mostrarError(err)
     });
 
   }
 
-  const vincularDispositivo = (dispositivoObj) => {
-    BluetoothManager.connect(dispositivoObj.address) // the device address scanned.
+  const vincularDispositivo = async (dispositivoObj) => {
+    showLoading("Conectando con " + dispositivoObj.name + "...")
+    await BluetoothManager.connect(dispositivoObj.address) // the device address scanned.
       .then((s) => {
-        System.mostrarError("Realizado correctamente")
         setDispositivosConectados([...dispositivosConectados, dispositivoObj])
+        hideLoading()
+        System.mostrarError("Realizado correctamente")
       }, (e) => {
+        hideLoading()
         if (e.message === "Unable to connect device") {
           Alert.alert("No se pudo conectar.\nReintentar nuevamente.")
           return
         }
         System.mostrarError(e);
       })
-
   }
 
-  const desvincularDispositivo = (dispositivoObj) => {
-    BluetoothManager.unpaire(dispositivoObj.address) // the device address scanned.
+  const desvincularDispositivo = async (dispositivoObj) => {
+    await BluetoothManager.unpaire(dispositivoObj.address) // the device address scanned.
       .then((s) => {
         Alert.alert("Realizado correctamente")
         const lis = []
@@ -170,31 +177,50 @@ export default function Blu({
                   <Text >{dis.name}</Text>
                   <Text >{dis.address}</Text>
                 </View>
-                <Button style={{
-                  backgroundColor: "blue",
-                  borderRadius: 10,
-                }} onPress={() => {
+                <TouchableOpacity style={STYLES.BUTTON.PRIMARY} onPress={() => {
                   // Alert.alert("conectar:" + dis.name)
                   vincularDispositivo(dis)
                 }}>
                   <Text style={{
                     color: "white"
                   }}>Conectar</Text>
-                </Button>
+                </TouchableOpacity>
               </View>
             ))}
           </ScrollView>
         )}
 
 
+        <View style={{
+          display: "flex",
+          flex: 1,
+          // flexDirection: "column"
+          width: "100%",
+          marginBottom: 20
+        }}>
+          <Button style={STYLES.BUTTON.PRIMARY} onPress={() => {
+            // Alert.alert("conectar:" + dis.name)
+            setDispositivosDisponibles([])
+            listadoDispositivosDisponibles()
+          }}>
+            <Text style={STYLES.TEXT.BUTTON_MID}>Recargar listado</Text>
+          </Button>
+        </View>
 
 
 
+        <Text style={{
+          marginTop: 20,
+          textAlign: "left",
+          width: "100%",
+          paddingLeft: 10,
+          fontSize: 17
+        }}>Listado dispositivos conectados</Text>
 
         {dispositivosConectados.length < 1 ? (
           <Text>No se encontraron dispositivos conectados</Text>
         ) : (
-          <Text>Listado dispositivos conectados</Text>
+          <Text></Text>
         )}
         {dispositivosConectados.map((dis, ix) => (
           <View style={{
@@ -222,82 +248,65 @@ export default function Blu({
           </View>
         ))}
 
-
         <View style={{
           flex: 1,
-          flexDirection: "row"
+          marginTop: 20,
+          flexDirection: "row",
+          width: "100%",
+          // backgroundColor: "red",
+          display: "flex",
+          alignItems: "center",
+          alignContent: "center",
+          alignSelf: "center",
         }}>
-          <Button style={{
-            backgroundColor: "rgb(70 0 248)",
-            borderRadius: 10,
-            margin: 20
-          }} onPress={() => {
-            // Alert.alert("conectar:" + dis.name)
-            setDispositivosDisponibles([])
-            setTimeout(() => {
-              listadoDispositivosDisponibles()
-            }, 1000);
-          }}>
-            <Text style={{
-              color: "white"
-            }}>Recargar listado</Text>
-          </Button>
-
-          <Button style={{
-            backgroundColor: "#c0c",
-            borderRadius: 10,
-            margin: 20
-          }} onPress={() => {
+          <Button style={STYLES.BUTTON.SECONDARY} onPress={() => {
             // Alert.alert("conectar:" + dis.name)
             prueba1()
           }}>
-            <Text style={{
-              color: "white"
-            }}>Probar imp</Text>
+            <Text style={STYLES.TEXT.BUTTON_MID}>Probar imp</Text>
           </Button>
+
+          <Button style={STYLES.BUTTON.SECONDARY} onPress={() => {
+            setVerImpManual(true)
+          }}>
+            <Text style={STYLES.TEXT.BUTTON_MID}>Manual</Text>
+          </Button>
+
 
         </View>
         <View style={{
           flex: 1,
           width: "100%",
           padding: 0,
+          marginTop: 50,
           // backgroundColor:"red",
-          flexDirection: "row"
+          flexDirection: "row",
         }}>
 
-          <Button style={{
-            backgroundColor: "rgb(85 204 0)",
-            borderRadius: 10,
-            width: "50%",
-            // height:50
-          }} onPress={() => {
+          <TouchableOpacity style={STYLES.BUTTON.ACTION} onPress={() => {
             if (dispositivosConectados.length < 1) {
               onSave("")
             } else {
               onSave(dispositivosConectados[0])
             }
           }}>
-            <Text style={{
-              color: "white"
-            }}>GUARDAR</Text>
-          </Button>
+            <Text style={STYLES.TEXT.BUTTON_ACTION}>GUARDAR</Text>
+          </TouchableOpacity>
 
           <Button style={{
-            backgroundColor: "rgb(201 199 201)",
+            backgroundColor: "#e74c3c",
             borderRadius: 10,
-            width: "48%",
-            height: 50,
-            marginLeft: "1%"
+            justifyContent: "center",
+            flex: 0.5,
           }} onPress={() => {
             // Alert.alert("conectar:" + dis.name)
             onCancel()
           }}>
-            <Text style={{
-              color: "white"
-            }}>VOLVER</Text>
+            <Text style={STYLES.TEXT.BUTTON_ACTION}>VOLVER</Text>
           </Button>
 
           {/* <Image source={img1} /> */}
+          <ImpresionManual visible={verImpManual} onCancel={() => { setVerImpManual(false) }} />
         </View>
       </View>
 
@@ -310,9 +319,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    padding: 20,
+    // padding: 20,
     backgroundColor: "#f5f5f5",
-    overflow: "scroll"
+    overflow: "scroll",
+    flexDirection: "column",
   },
   title: {
     fontSize: 24,
@@ -341,9 +351,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
-  foto: {
-    width: "40%",
-    height: "40%",
-    resizeMode: 'contain',
-  }
+
 });

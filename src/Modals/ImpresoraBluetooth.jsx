@@ -30,14 +30,6 @@ const ImpresoraBluetooth = ({ visible, onConfirm, onCancel }) => {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            {/* <BluAdmin onSave={(info)=>{
-              onConfirm(info)
-            }}
-            onCancel={()=>{
-              onCancel()
-            }} 
-            /> */}
-
             <Blu onSave={(info) => {
               onConfirm(info)
             }}
@@ -46,9 +38,6 @@ const ImpresoraBluetooth = ({ visible, onConfirm, onCancel }) => {
               }}
             />
 
-            <SmallButton textButton={"cancelar"} actionButton={() => {
-              onCancel()
-            }} />
           </View>
         </View>
       </Modal>
