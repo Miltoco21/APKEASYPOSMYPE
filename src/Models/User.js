@@ -68,7 +68,7 @@ class User extends Singleton {
         this.clave = input
     }
 
-    async doLoginInServer(callbackOk, callbackWrong) {
+    async doLoginInServerEasyPos(callbackOk, callbackWrong) {
         // console.log("haciendo doLoginInServer")
         const configs = await ModelConfig.get()
         var url = configs.urlBase
@@ -86,6 +86,34 @@ class User extends Singleton {
 
         // console.log("data a enviar", data)
         // console.log("url", url)
+
+        await EndPoint.sendPost(url, data, (responseData, response) => {
+            if (response.data.responseUsuario
+                && response.data.responseUsuario.codigoUsuario != -1
+            ) {
+                if (!response.data.responseUsuario.activo) {
+                    callbackOk(responseData);
+                } else {
+                    callbackWrong("Usuario activo en otra sesión");
+                }
+            } else {
+                // Log("aca debe enviar correo", response)
+                // EndPoint.admError(response, callbackWrong)
+                callbackWrong(response.data.descripcion);
+            }
+        }, callbackWrong)
+    }
+
+
+    async doLoginInServer(callbackOk, callbackWrong) {
+        var url = "https://softus.com.ar/easypos"
+            + "/check-buyed-licence"
+
+        const data = {
+            unitName: "Mype",
+            user: this.rut,
+            pass: this.clave,
+        }
 
         await EndPoint.sendPost(url, data, (responseData, response) => {
             if (response.data.responseUsuario
