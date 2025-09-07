@@ -80,12 +80,11 @@ class User extends Singleton {
             clave: this.clave,
         }
 
-
         if (!data.codigoSucursal) data.codigoSucursal = await ModelConfig.get("sucursal")
         if (!data.puntoVenta) data.puntoVenta = await ModelConfig.get("puntoVenta")
 
-        // console.log("data a enviar", data)
-        // console.log("url", url)
+        Log("data a enviar", data)
+        console.log("url", url)
 
         await EndPoint.sendPost(url, data, (responseData, response) => {
             if (response.data.responseUsuario
@@ -114,20 +113,20 @@ class User extends Singleton {
             user: this.rut,
             pass: this.clave,
         }
+        if (!data.user) data.user = this.codigoUsuario
 
+        Log("this", this)
+        Log("data a enviar", data)
+        console.log("url", url)
+
+
+        var me = this
         await EndPoint.sendPost(url, data, (responseData, response) => {
-            if (response.data.responseUsuario
-                && response.data.responseUsuario.codigoUsuario != -1
-            ) {
-                if (!response.data.responseUsuario.activo) {
-                    callbackOk(responseData);
-                } else {
-                    callbackWrong("Usuario activo en otra sesión");
-                }
+            Log("response", response)
+            if (response.data.status) {
+                me.doLoginInServerEasyPos(callbackOk, callbackWrong)
             } else {
-                // Log("aca debe enviar correo", response)
-                // EndPoint.admError(response, callbackWrong)
-                callbackWrong(response.data.descripcion);
+                callbackWrong("Datos incorrectos");
             }
         }, callbackWrong)
     }
@@ -180,7 +179,7 @@ class User extends Singleton {
         }, callbackWrong)
     }
 
-    static async getByRut(rut,callbackOk, callbackWrong) {
+    static async getByRut(rut, callbackOk, callbackWrong) {
         const configs = await ModelConfig.get()
         var url = configs.urlBase
             + "/api/Usuarios/GetUsuarioByRut"

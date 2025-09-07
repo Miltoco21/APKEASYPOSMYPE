@@ -79,14 +79,15 @@ const BoxBoleta = ({ onClose, visible }) => {
   const [showBilletesModal, setShowBilletesModal] = useState(false);
   // Función para aplicar ofertas
   const aplicarOfertas = async () => {
-    // console.log("aplicando ofertas");
-    // Log("salesData", salesData)
+    console.log("aplicando ofertas");
+    Log("salesData", salesData)
 
     await Model.getOfertas(
       (ofertas) => {
+        Log("ofertas", ofertas)
         if (ofertas.length > 0) {
           ofertas.forEach((ofer) => {
-            if (ofer.tipo === 5) {
+            if (ofer.tipo === 1) {
               let copiaProductos = salesData;
               Oferta5.setInfo(ofer);
               let resultadoOfertas = {
@@ -121,19 +122,22 @@ const BoxBoleta = ({ onClose, visible }) => {
                 productosVendidosx.push(prod);
               });
 
-              // console.log("total de las ventas aplicando ofertas es $", totalVentasx);
+              console.log("total de las ventas aplicando ofertas es $", totalVentasx);
               setTotalVentas(totalVentasx);
               setProductosVendidos(productosVendidosx);
+            } else {
+              setProductosVendidos(salesData);
+              setTotalVentas(grandTotal);
             }
           });
         } else {
-          // console.log("no hay ofertas")
+          console.log("no hay ofertas")
           setProductosVendidos(salesData);
           setTotalVentas(grandTotal);
         }
       },
       (err) => {
-        // console.log("error de ofertas", err)
+        console.log("error de ofertas", err)
         setProductosVendidos(salesData);
         setTotalVentas(grandTotal);
       }
@@ -325,7 +329,7 @@ const BoxBoleta = ({ onClose, visible }) => {
 
     const esModoAvion = await PagoBoleta.analizarSiEsModoAvion(requestBody); // Esperar resolución
     requestBody.esModoAvion = esModoAvion;
-    
+
     showLoading("Haciendo el pago");
     await MPago.hacerPago(
       requestBody,

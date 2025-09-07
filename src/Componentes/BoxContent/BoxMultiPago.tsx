@@ -250,16 +250,16 @@ const BoxMultiPago = ({
 
 
   useEffect(() => {
-    // console.log("carga inicial")
+    console.log("carga inicial")
     if (totalVentas > 0) {
       // setTotalYDescuentoYRedondeo(totalVentas - descuentos + redondeo)
       setTotalYDescuentoYRedondeo(totalVentas - descuentos)
     }
-    // console.log("sale carga inicial")
+    console.log("sale carga inicial")
   }, [totalVentas]);
 
   useEffect(() => {
-    // console.log("cambio pagarCon", pagarCon)
+    console.log("cambio pagarCon", pagarCon)
     if (pagarCon > totalYDescuentoYRedondeo + 20000) {
       console.log("correccion 1")
       setPagarCon(totalYDescuentoYRedondeo)
@@ -275,8 +275,8 @@ const BoxMultiPago = ({
 
 
   useEffect(() => {
-    // console.log("cambio totalPagos", totalPagos)
-    // console.log("pagos", pagos)
+    console.log("cambio totalPagos", totalPagos)
+    console.log("pagos", pagos)
     if (pagarCon == 0) {
       var nw = totalYDescuentoYRedondeo - totalPagos
       if (nw < 0) nw = 0
