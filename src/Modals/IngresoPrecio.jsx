@@ -25,10 +25,6 @@ const IngresoPrecio = ({
   const refInput = useRef(null)
 
   useEffect(() => {
-    console.log("cambio visible", visible)
-  }, [visible])
-
-  useEffect(() => {
     if (!visible) {
       setNuevoPrecio('');
     } else {

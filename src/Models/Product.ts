@@ -64,6 +64,7 @@ class Product extends Model implements IProduct {
         }
         url += "&codigoSucursal=" + await ModelConfig.get("sucursal")
         url += "&puntoVenta=" + await ModelConfig.get("puntoVenta")
+        url += "&idEmpresa=" + await ModelConfig.get("idEmpresa")
 
         await EndPoint.sendGet(url, (responseData, response) => {
             callbackOk(response.data.productos, response);
@@ -86,6 +87,7 @@ class Product extends Model implements IProduct {
         url += "&rowPage=" + canPorPagina
         url += "&codigoSucursal=" + await ModelConfig.get("sucursal")
         url += "&puntoVenta=" + await ModelConfig.get("puntoVenta")
+        url += "&idEmpresa=" + await ModelConfig.get("idEmpresa")
 
 
         await EndPoint.sendGet(url, (responseData, response) => {
@@ -103,7 +105,7 @@ class Product extends Model implements IProduct {
 
         if (!data.codigoSucursal) data.codigoSucursal = await ModelConfig.get("sucursal")
         if (!data.puntoVenta) data.puntoVenta = await ModelConfig.get("puntoVenta")
-
+        if (!data.idEmpresa) data.idEmpresa = await ModelConfig.get("idEmpresa")
 
         await EndPoint.sendPost(url, data, (responseData, response) => {
             if (response.data.preventa.length > 0) {
@@ -128,36 +130,13 @@ class Product extends Model implements IProduct {
 
         url += "&codigoSucursal=" + await ModelConfig.get("sucursal")
         url += "&puntoVenta=" + await ModelConfig.get("puntoVenta")
+        url += "&idEmpresa=" + await ModelConfig.get("idEmpresa")
 
 
         await EndPoint.sendGet(url, (responseData, response) => {
             callbackOk(response.data.productos, response);
         }, callbackWrong)
     }
-
-    // async findByCodigoBarras({ codigoProducto, codigoCliente }, callbackOk, callbackWrong) {
-    //     if (Product.enviando) return
-
-    //     Product.enviando = true
-
-    //     const configs = await ModelConfig.get()
-    //     var url = configs.urlBase +
-    //         "/api/ProductosTmp/GetProductosByCodigoBarra?codbarra=" + codigoProducto
-    //     if (codigoCliente) {
-    //         url += "&codigoCliente=" + codigoCliente
-    //     }
-
-    //     url += "&codigoSucursal=" + await ModelConfig.get("sucursal")
-    //     url += "&puntoVenta=" + await ModelConfig.get("puntoVenta")
-
-    //     await EndPoint.sendGet(url, (responseData, response) => {
-    //         callbackOk(responseData.productos, response);
-    //         Product.enviando = false
-    //     }, (a, b, c) => {
-    //         Product.enviando = false
-    //         if (callbackWrong) callbackWrong(a, b, c)
-    //     })
-    // }
 
     async findByCodigoBarras({ codigoProducto, codigoCliente }, callbackOk, callbackWrong) {
         if (Product.enviando) return;
@@ -206,6 +185,7 @@ class Product extends Model implements IProduct {
 
         url += "&codigoSucursal=" + await ModelConfig.get("sucursal")
         url += "&puntoVenta=" + await ModelConfig.get("puntoVenta")
+        url += "&idEmpresa=" + await ModelConfig.get("idEmpresa")
         const response = await axios.get(
             url
         );
@@ -229,6 +209,7 @@ class Product extends Model implements IProduct {
 
         url += "&codigoSucursal=" + await ModelConfig.get("sucursal")
         url += "&puntoVenta=" + await ModelConfig.get("puntoVenta")
+        url += "&idEmpresa=" + await ModelConfig.get("idEmpresa")
 
 
         await EndPoint.sendGet(url, (responseData, response) => {
@@ -250,6 +231,7 @@ class Product extends Model implements IProduct {
 
         url += "&codigoSucursal=" + await ModelConfig.get("sucursal")
         url += "&puntoVenta=" + await ModelConfig.get("puntoVenta")
+        url += "&idEmpresa=" + await ModelConfig.get("idEmpresa")
 
         await EndPoint.sendGet(url, (responseData, response) => {
             callbackOk(response.data.subFamilias, response);
@@ -274,6 +256,7 @@ class Product extends Model implements IProduct {
             + "&idsubfamilia=" + subFamId
         url += "&codigoSucursal=" + await ModelConfig.get("sucursal")
         url += "&puntoVenta=" + await ModelConfig.get("puntoVenta")
+        url += "&idEmpresa=" + await ModelConfig.get("idEmpresa")
 
         await EndPoint.sendGet(url, (responseData, response) => {
             callbackOk(responseData.productos, response);
@@ -287,6 +270,7 @@ class Product extends Model implements IProduct {
             + "/api/ProductosTmp/ProductosVentaRapidaGet"
         url += "?codigoSucursal=" + await ModelConfig.get("sucursal")
         url += "&puntoVenta=" + await ModelConfig.get("puntoVenta")
+        url += "&idEmpresa=" + await ModelConfig.get("idEmpresa")
 
 
         await EndPoint.sendGet(url, (responseData, response) => {
@@ -300,6 +284,7 @@ class Product extends Model implements IProduct {
 
         if (!product.codigoSucursal) product.codigoSucursal = await ModelConfig.get("sucursal")
         if (!product.puntoVenta) product.puntoVenta = await ModelConfig.get("puntoVenta")
+        if (!product.idEmpresa) product.idEmpresa = await ModelConfig.get("idEmpresa")
 
         await EndPoint.sendPost(url, product, (responseData, response) => {
             callbackOk(responseData, response);
@@ -313,6 +298,7 @@ class Product extends Model implements IProduct {
 
         if (!product.codigoSucursal) product.codigoSucursal = await ModelConfig.get("sucursal")
         if (!product.puntoVenta) product.puntoVenta = await ModelConfig.get("puntoVenta")
+        if (!product.idEmpresa) product.idEmpresa = await ModelConfig.get("idEmpresa")
         await EndPoint.sendPut(url, product, (responseData, response) => {
             callbackOk(responseData, response);
         }, callbackWrong)
@@ -325,6 +311,7 @@ class Product extends Model implements IProduct {
 
         if (!product.codigoSucursal) product.codigoSucursal = await ModelConfig.get("sucursal")
         if (!product.puntoVenta) product.puntoVenta = await ModelConfig.get("puntoVenta")
+        if (!product.idEmpresa) product.idEmpresa = await ModelConfig.get("idEmpresa")
 
         await EndPoint.sendDelete(url, {
             params: product
@@ -340,6 +327,7 @@ class Product extends Model implements IProduct {
 
         if (!product.codigoSucursal) product.codigoSucursal = await ModelConfig.get("sucursal")
         if (!product.puntoVenta) product.puntoVenta = await ModelConfig.get("puntoVenta")
+        if (!product.idEmpresa) product.idEmpresa = await ModelConfig.get("idEmpresa")
 
         // await EndPoint.sendPut(url, product, (responseData, response) => {
         //     callbackOk(responseData, response);
@@ -359,6 +347,7 @@ class Product extends Model implements IProduct {
 
         if (!product.codigoSucursal) product.codigoSucursal = await ModelConfig.get("sucursal")
         if (!product.puntoVenta) product.puntoVenta = await ModelConfig.get("puntoVenta")
+        if (!product.idEmpresa) product.idEmpresa = await ModelConfig.get("idEmpresa")
 
         await EndPoint.sendPost(url, product, (responseData, response) => {
             callbackOk(responseData, response);
@@ -371,8 +360,7 @@ class Product extends Model implements IProduct {
             + "/api/ProductosTmp/GetProductoTipos"
         url += "?codigoSucursal=" + await ModelConfig.get("sucursal")
         url += "&puntoVenta=" + await ModelConfig.get("puntoVenta")
-
-
+        url += "&idEmpresa=" + await ModelConfig.get("idEmpresa")
 
         await EndPoint.sendGet(url, (responseData, response) => {
             callbackOk(responseData.productoTipos, response);

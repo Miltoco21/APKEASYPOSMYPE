@@ -93,23 +93,23 @@ export const SelectedOptionsProvider = ({ children }) => {
   const [apretoEnterEnBuscar, setApretoEnterEnBuscar] = useState(null);
 
   const focusSearchInput = () => {
-    console.log("focusSearchInput")
+    // console.log("focusSearchInput")
     System.intentarFoco(searchInputRef, () => { })
   };
 
-  const showAlert = (title, text) => {
+  const showAlert = (title, text, forceAlert = false) => {
     if (!text) {
       text = title;
       title = "Atención";
     }
 
-    // Para Android: usar ToastAndroid
-    if (Platform.OS === 'android') {
-      //ToastAndroid.show(text, ToastAndroid.SHORT);
+    if (forceAlert) {
+      Alert.alert(title, text);
+    } else if (Platform.OS === 'android') {
+      // Para Android: usar ToastAndroid
       ToastAndroid.show(text, ToastAndroid.LONG);
-    }
-    // Para iOS: mantener el Alert.alert tradicional
-    else {
+    } else {
+      // Para iOS: mantener el Alert.alert tradicional
       Alert.alert(title, text);
     }
   };
@@ -126,10 +126,10 @@ export const SelectedOptionsProvider = ({ children }) => {
     // console.log("tieneUltimaVenta", tieneUltimaVenta)
     if (tieneUltimaVenta) {
       const dt = await LastSale.loadFromSesion()
-      console.log("dt", Object.keys(dt))
+      // console.log("dt", Object.keys(dt))
       if (dt) {
         if (!ultimoVuelto) {
-          console.log("dt.data.vuelto", dt.data.vuelto)
+          // console.log("dt.data.vuelto", dt.data.vuelto)
           setUltimoVuelto(dt.data.vuelto)
         }
         setAskLastSale(dt)

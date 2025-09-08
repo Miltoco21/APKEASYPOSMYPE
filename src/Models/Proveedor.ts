@@ -6,7 +6,7 @@ import ModelConfig from './ModelConfig.js';
 import EndPoint from './EndPoint.js';
 
 
-class Proveedor extends Model{
+class Proveedor extends Model {
   codigoProveedor: number
   razonSocial: string
   giro: string
@@ -23,74 +23,75 @@ class Proveedor extends Model{
   telefonoResponsable: string
   sucursal: string
 
-  compraDeudaIds:any
-  montoPagado:any
-  metodoPago:any
+  compraDeudaIds: any
+  montoPagado: any
+  metodoPago: any
 
   static instance: Proveedor | null = null;
 
-    static getInstance():Proveedor{
-        if(Proveedor.instance == null){
-            Proveedor.instance = new Proveedor();
-        }
-
-        return Proveedor.instance;
+  static getInstance(): Proveedor {
+    if (Proveedor.instance == null) {
+      Proveedor.instance = new Proveedor();
     }
-    
-  async getAllFromServer(callbackOk, callbackWrong){
-    const configs = ModelConfig.get()
+
+    return Proveedor.instance;
+  }
+
+  async getAllFromServer(callbackOk, callbackWrong) {
+    const configs = await ModelConfig.get()
     var url = configs.urlBase
-    +"/api/Proveedores/GetProveedorCompra"
-    
-    EndPoint.sendGet(url,(responseData, response)=>{
-      callbackOk(responseData.proveedorCompra.proveedorCompraCabeceras,response)
-    },callbackWrong)
+      + "/api/Proveedores/GetProveedorCompra"
+
+    EndPoint.sendGet(url, (responseData, response) => {
+      callbackOk(responseData.proveedorCompra.proveedorCompraCabeceras, response)
+    }, callbackWrong)
   }
 
 
-  async getAllDeudas(callbackOk, callbackWrong){
-    const configs = ModelConfig.get()
+  async getAllDeudas(callbackOk, callbackWrong) {
+    const configs = await ModelConfig.get()
     var url = configs.urlBase
-    +"/api/Proveedores/GetProveedorCompra"
-    EndPoint.sendGet(url,(responseData, response)=>{
-      callbackOk(responseData.proveedorCompra.proveedorCompraCabeceras,response)
-    },callbackWrong)  
+      + "/api/Proveedores/GetProveedorCompra"
+    EndPoint.sendGet(url, (responseData, response) => {
+      callbackOk(responseData.proveedorCompra.proveedorCompraCabeceras, response)
+    }, callbackWrong)
   }
 
-  filterByCodigo(all, funcCadaItem){
+  filterByCodigo(all, funcCadaItem) {
     var result = []
     var me = this;
-    result = all.filter((item)=>{
+    result = all.filter((item) => {
       const coinciden = item.codigoProveedor == me.codigoProveedor
-      if(coinciden && funcCadaItem!=undefined) funcCadaItem(item)
+      if (coinciden && funcCadaItem != undefined) funcCadaItem(item)
       return coinciden
     })
     return result
   }
 
 
-  async pagarDeuda(callbackOk, callbackWrong){
+  async pagarDeuda(callbackOk, callbackWrong) {
     const data = this.getFillables()
-    if(data.fechaIngreso == undefined){ console.log("faltan completar fechaIngreso");return }
-    if(data.codigoUsuario == undefined){ console.log("faltan completar codigoUsuario");return }
-    
-    if(!data.codigoSucursal) data.codigoSucursal = ModelConfig.get("sucursal")
-    if(!data.puntoVenta) data.puntoVenta = ModelConfig.get("puntoVenta")
+    if (data.fechaIngreso == undefined) { console.log("faltan completar fechaIngreso"); return }
+    if (data.codigoUsuario == undefined) { console.log("faltan completar codigoUsuario"); return }
 
-    if(this.compraDeudaIds == undefined){ console.log("faltan completar compraDeudaIds");return }
-    if(data.montoPagado == undefined){ console.log("faltan completar montoPagado");return }
-    if(data.metodoPago == undefined){ console.log("faltan completar metodoPago");return }
+    if (!data.codigoSucursal) data.codigoSucursal = await ModelConfig.get("sucursal")
+    if (!data.puntoVenta) data.puntoVenta = await ModelConfig.get("puntoVenta")
+    if (!data.idEmpresa) data.idEmpresa = await ModelConfig.get("idEmpresa")
+
+    if (this.compraDeudaIds == undefined) { console.log("faltan completar compraDeudaIds"); return }
+    if (data.montoPagado == undefined) { console.log("faltan completar montoPagado"); return }
+    if (data.metodoPago == undefined) { console.log("faltan completar metodoPago"); return }
 
     data.compraDeudaIds = this.compraDeudaIds
-    
-    const configs = ModelConfig.get()
-    var url = configs.urlBase + 
-    "/api/Proveedores/AddProveedorCompraPagar"
-    
-    
-    EndPoint.sendPost(url,data,(responseData, response)=>{
-      callbackOk(responseData,response);
-    },callbackWrong)
+
+    const configs = await ModelConfig.get()
+    var url = configs.urlBase +
+      "/api/Proveedores/AddProveedorCompraPagar"
+
+
+    EndPoint.sendPost(url, data, (responseData, response) => {
+      callbackOk(responseData, response);
+    }, callbackWrong)
   }
 };
 

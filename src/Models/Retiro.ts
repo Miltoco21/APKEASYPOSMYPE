@@ -8,7 +8,7 @@ import ModelConfig from './ModelConfig.js';
 import EndPoint from './EndPoint.js';
 
 
-class Retiro extends Model implements MovimientoCaja{
+class Retiro extends Model implements MovimientoCaja {
   codigoUsuario: number;
   codigoSucursal: number;
   puntoVenta: string;
@@ -22,13 +22,13 @@ class Retiro extends Model implements MovimientoCaja{
   motivo: string | null | undefined;
   rutProveedor: string | null | undefined;
   idUsuario: string | null | undefined;
-  
+
   static TIPO = "EGRESO"
 
 
 
-  async retiroDeCaja(callbackOk, callbackWrong){
-    if(!this.motivo){
+  async retiroDeCaja(callbackOk, callbackWrong) {
+    if (!this.motivo) {
       console.log("Retiro. retiroDeCaja. Falta motivo");
       callbackWrong("Falta motivo");
       return
@@ -41,21 +41,22 @@ class Retiro extends Model implements MovimientoCaja{
     delete data.motivo
 
 
-    const configs = ModelConfig.get()
+    const configs = await ModelConfig.get()
     var url = configs.urlBase
-    +"/api/Cajas/AddCajaFlujo"
+      + "/api/Cajas/AddCajaFlujo"
 
-    if(!data.codigoSucursal) data.codigoSucursal = ModelConfig.get("sucursal")
-    if(!data.puntoVenta) data.puntoVenta = ModelConfig.get("puntoVenta")
+    if (!data.codigoSucursal) data.codigoSucursal = await ModelConfig.get("sucursal")
+    if (!data.puntoVenta) data.puntoVenta = await ModelConfig.get("puntoVenta")
+    if (!data.idEmpresa) data.idEmpresa = await ModelConfig.get("idEmpresa")
 
-    EndPoint.sendPost(url,data,(responseData, response)=>{
-      callbackOk(responseData,response);
-    },callbackWrong)
+    EndPoint.sendPost(url, data, (responseData, response) => {
+      callbackOk(responseData, response);
+    }, callbackWrong)
   }
 
 
-  async anticipoTrabajador(callbackOk, callbackWrong){
-    if(this.codigoUsuario == null){
+  async anticipoTrabajador(callbackOk, callbackWrong) {
+    if (this.codigoUsuario == null) {
       console.log("Retiro. pago de factura. Falta codigoUsuario");
       return
     }
@@ -63,16 +64,17 @@ class Retiro extends Model implements MovimientoCaja{
     this.detalleTipo = "ANTICIPOTRABAJADOR"
 
     const data = this.getFillables()
-    const configs = ModelConfig.get()
+    const configs = await ModelConfig.get()
     var url = configs.urlBase
-    +"/api/Cajas/AddCajaFlujo"
+      + "/api/Cajas/AddCajaFlujo"
 
-    if(!data.codigoSucursal) data.codigoSucursal = ModelConfig.get("sucursal")
-    if(!data.puntoVenta) data.puntoVenta = ModelConfig.get("puntoVenta")
-    
-    EndPoint.sendPost(url,data,(responseData, response)=>{
-      callbackOk(responseData,response);
-    },callbackWrong)
+    if (!data.codigoSucursal) data.codigoSucursal = await ModelConfig.get("sucursal")
+    if (!data.puntoVenta) data.puntoVenta = await ModelConfig.get("puntoVenta")
+    if (!data.idEmpresa) data.idEmpresa = await ModelConfig.get("idEmpresa")
+
+    EndPoint.sendPost(url, data, (responseData, response) => {
+      callbackOk(responseData, response);
+    }, callbackWrong)
   }
 };
 

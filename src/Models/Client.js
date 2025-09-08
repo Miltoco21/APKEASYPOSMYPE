@@ -57,22 +57,28 @@ class Client{
     puntoVenta
   },callbackOk, callbackWrong){
       
-    const configs = ModelConfig.get()
+    const configs = await ModelConfig.get()
     var url = configs.urlBase
     + `/api/Clientes/GetClientesByNombreApellido?nombreApellido=${searchText}`
     if(!codigoSucursal){
-      url += "&codigoSucursal=" + ModelConfig.get("sucursal")
+      url += "&codigoSucursal=" + await ModelConfig.get("sucursal")
     }else{
       url += "&codigoSucursal=" + codigoSucursal
     }
 
     if(!puntoVenta){
-      url += "&puntoVenta=" + ModelConfig.get("puntoVenta")
+      url += "&puntoVenta=" + await ModelConfig.get("puntoVenta")
+      url += "&idEmpresa=" + await ModelConfig.get("idEmpresa")
     }else{
       url += "&puntoVenta=" + puntoVenta
     }
+    if(!idEmpresa){
+      url += "&idEmpresa=" + await ModelConfig.get("idEmpresa")
+    }else{
+      url += "&idEmpresa=" + idEmpresa
+    }
 
-    EndPoint.sendGet(url,(responseData, response)=>{
+    await EndPoint.sendGet(url,(responseData, response)=>{
       if (Array.isArray(response.data.clienteSucursal)) {
         callbackOk(responseData.clienteSucursal);
       } else {
@@ -82,11 +88,12 @@ class Client{
   }
 
   async getAllFromServer(callbackOk, callbackWrong){
-    const configs = ModelConfig.get()
+    const configs = await ModelConfig.get()
     var url = configs.urlBase + "/api/Clientes/GetAllClientes"
     
-    url += "?codigoSucursal=" + ModelConfig.get("sucursal")
-    url += "&puntoVenta=" + ModelConfig.get("puntoVenta")
+    url += "?codigoSucursal=" + await ModelConfig.get("sucursal")
+    url += "&puntoVenta=" + await ModelConfig.get("puntoVenta")
+    url += "&idEmpresa=" + await ModelConfig.get("idEmpresa")
           
     EndPoint.sendGet(url,(responseData, response)=>{
       callbackOk(responseData.cliente);
@@ -117,14 +124,15 @@ class Client{
       console.log("Client. getDeudasByMyId. No se asigno un id para buscar deudas del cliente");
       return
     }
-    const configs = ModelConfig.get()
+    const configs = await ModelConfig.get()
     var url = configs.urlBase
     + "/api/Clientes/GetClientesDeudasByIdCliente"
-    + "?codigoClienteSucursal=" + ModelConfig.get("sucursal")
+    + "?codigoClienteSucursal=" + await ModelConfig.get("sucursal")
     + "&codigoCliente=" + this.id
 
-    url += "&codigoSucursal=" + ModelConfig.get("sucursal")
-    url += "&puntoVenta=" + ModelConfig.get("puntoVenta")
+    url += "&codigoSucursal=" + await ModelConfig.get("sucursal")
+    url += "&puntoVenta=" + await ModelConfig.get("puntoVenta")
+    url += "&idEmpresa=" + await ModelConfig.get("idEmpresa")
 
     EndPoint.sendGet(url,(responseData, response)=>{
       callbackOk(responseData.clienteDeuda);
@@ -137,12 +145,13 @@ class Client{
         return
     }
     
-    const configs = ModelConfig.get()
+    const configs = await ModelConfig.get()
     var url = configs.urlBase
     +"/api/Clientes/PostClientePagarDeudaByIdClienteFlujoCaja"
 
-    if(!data.codigoSucursal) data.codigoSucursal = ModelConfig.get("sucursal")
-    if(!data.puntoVenta) data.puntoVenta = ModelConfig.get("puntoVenta")
+    if(!data.codigoSucursal) data.codigoSucursal = await ModelConfig.get("sucursal")
+    if(!data.puntoVenta) data.puntoVenta = await ModelConfig.get("puntoVenta")
+    if(!data.idEmpresa) data.idEmpresa = await ModelConfig.get("idEmpresa")
 
     EndPoint.sendPost(url,this.data,(responseData, response)=>{
       callbackOk(responseData);
@@ -161,15 +170,16 @@ class Client{
     }
 
     if(!this.puntoVenta && !this.puntoVenta){
-        this.puntoVenta = ModelConfig.get("puntoVenta") 
+        this.puntoVenta = await ModelConfig.get("puntoVenta") 
     }
 
-    const configs = ModelConfig.get()
+    const configs = await ModelConfig.get()
     var url = configs.urlBase
     +"/api/Clientes/GetClienteUltimaVentaByIdCliente" + 
     "?codigoClienteSucursal=" + this.codigoClienteSucursal + 
     "&codigoCliente=" +this.codigoCliente +
     "&puntoVenta=" +this.puntoVenta
+    "&idEmpresa=" +this.idEmpresa
 
     EndPoint.sendGet(url,(responseData, response)=>{
       const { ticketBusqueda } = response.data; // Extraer la sección de ticket de la respuesta
@@ -195,11 +205,12 @@ class Client{
   }
 
   async getRegions (callbackOk,callbackWrong){
-    const configs = ModelConfig.get()
+    const configs = await ModelConfig.get()
     var url = configs.urlBase
     +"/api/RegionComuna/GetAllRegiones"
-    url += "?codigoSucursal=" + ModelConfig.get("sucursal")
-    url += "&puntoVenta=" + ModelConfig.get("puntoVenta")
+    url += "?codigoSucursal=" + await ModelConfig.get("sucursal")
+    url += "&puntoVenta=" + await ModelConfig.get("puntoVenta")
+    url += "&idEmpresa=" + await ModelConfig.get("idEmpresa")
 
     EndPoint.sendGet(url,(responseData, response)=>{
       callbackOk(response.data.regiones)
@@ -209,12 +220,13 @@ class Client{
 
   async getComunasFromRegion(regionId, callbackOk, callbackWrong){
    
-    const configs = ModelConfig.get()
+    const configs = await ModelConfig.get()
     var url = configs.urlBase
     +"/api/RegionComuna/GetComunaByIDRegion?IdRegion=" + regionId
 
-    url += "&codigoSucursal=" + ModelConfig.get("sucursal")
-    url += "&puntoVenta=" + ModelConfig.get("puntoVenta")
+    url += "&codigoSucursal=" + await ModelConfig.get("sucursal")
+    url += "&puntoVenta=" + await ModelConfig.get("puntoVenta")
+    url += "&idEmpresa=" + await ModelConfig.get("idEmpresa")
 
     EndPoint.sendGet(url,(responseData, response)=>{
       callbackOk(response.data.comunas)
@@ -224,23 +236,24 @@ class Client{
 
   async create(data,callbackOk,callbackWrong){
     data.usaCuentaCorriente = 0
-    const configs = ModelConfig.get()
+    const configs = await ModelConfig.get()
     var url = configs.urlBase
     +"/api/Clientes/AddCliente"
-    if(!data.codigoSucursal) data.codigoSucursal = ModelConfig.get("sucursal")
-    if(!data.puntoVenta) data.puntoVenta = ModelConfig.get("puntoVenta")
+    if(!data.codigoSucursal) data.codigoSucursal = await ModelConfig.get("sucursal")
+    if(!data.puntoVenta) data.puntoVenta = await ModelConfig.get("puntoVenta")
     EndPoint.sendPost(url,data,(responseData, response)=>{
       callbackOk(responseData,response);
     },callbackWrong)
   };
 
   async existByRut(rut,callbackOk,callbackWrong){
-    const configs = ModelConfig.get()
+    const configs = await ModelConfig.get()
     var url = configs.urlBase
     +"/api/Clientes/GetClientesByRut?rut=" + rut
 
-    url += "&codigoSucursal=" + ModelConfig.get("sucursal")
-    url += "&puntoVenta=" + ModelConfig.get("puntoVenta")
+    url += "&codigoSucursal=" + await ModelConfig.get("sucursal")
+    url += "&puntoVenta=" + await ModelConfig.get("puntoVenta")
+    url += "&idEmpresa=" + await ModelConfig.get("idEmpresa")
 
     EndPoint.sendGet(url,(responseData, response)=>{
       callbackOk(responseData,response);

@@ -8,17 +8,18 @@ import EndPoint from './EndPoint.js';
 
 
 class TicketPreventa extends Model {
-  async hacerTicket(data,callbackOk, callbackWrong){
-    const configs = ModelConfig.get()
+  async hacerTicket(data, callbackOk, callbackWrong) {
+    const configs = await ModelConfig.get()
     var url = configs.urlBase
-    +"/api/Ventas/PreVentaAdd"
+      + "/api/Ventas/PreVentaAdd"
 
-    if(!data.codigoSucursal) data.codigoSucursal = ModelConfig.get("sucursal")
-    if(!data.puntoVenta) data.puntoVenta = ModelConfig.get("puntoVenta")
+    if (!data.codigoSucursal) data.codigoSucursal = await ModelConfig.get("sucursal")
+    if (!data.puntoVenta) data.puntoVenta = await ModelConfig.get("puntoVenta")
+    if (!data.idEmpresa) data.idEmpresa = await ModelConfig.get("idEmpresa")
 
-    EndPoint.sendPost(url,data,(responseData, response)=>{
-      callbackOk(responseData,response);
-    },callbackWrong)
+    await EndPoint.sendPost(url, data, (responseData, response) => {
+      callbackOk(responseData, response);
+    }, callbackWrong)
   }
 };
 

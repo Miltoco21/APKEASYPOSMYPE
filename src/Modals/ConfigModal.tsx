@@ -103,7 +103,7 @@ const BaseConfigModal = ({
       setModoAvion(!emitirBoleta)
     }
 
-    await ModelConfig.change("urlBase", urlBase);
+    // await ModelConfig.change("urlBase", urlBase);
     await ModelConfig.change("pedirDatosTransferencia", pedirDatosTransferencia)
     await ModelConfig.change("pagarConCuentaCorriente", pagarConCuentaCorriente)
     await ModelConfig.change("cantidadProductosBusquedaRapida", cantBusqRap)
@@ -113,8 +113,8 @@ const BaseConfigModal = ({
 
     await ModelConfig.change("agruparProductoLinea", agruparProductoLinea)
 
-    await ModelConfig.change("sucursal", sucursal)
-    await ModelConfig.change("puntoVenta", puntoVenta)
+    // await ModelConfig.change("sucursal", sucursal)
+    // await ModelConfig.change("puntoVenta", puntoVenta)
     await ModelConfig.change("impresoraBluetooth", impresoraBluetooth)
     await ModelConfig.change("usarImpresoraBluetooth", usaImpresora)
 
@@ -222,29 +222,6 @@ const BaseConfigModal = ({
             <Text style={styles.modalTitle}>
               <Ionicons name="settings" size={13} color="#0c3259" /> Configuración
             </Text>
-
-            <Grid>
-              <InputPage
-                inputState={[urlBase, setUrlBase]}
-                label={"Url Base"}
-              />
-            </Grid>
-
-
-            <Grid>
-              <InputNumber
-                inputState={[sucursal, setSucursal]}
-                label={"Sucursal"}
-              />
-            </Grid>
-
-            <Grid>
-              <InputNumber
-                inputState={[puntoVenta, setPuntoVenta]}
-                label={"Caja"}
-              />
-            </Grid>
-
 
             {/* <Grid item xs={12} md={12} lg={12}>
               <InputCheckboxAutorizar

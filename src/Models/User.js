@@ -56,7 +56,7 @@ class User extends Singleton {
     }
 
     setUserCodeFrom = (input) => {
-        if (input.indexOf("-") == -1) {
+        if ((input + "").indexOf("-") == -1) {
             this.codigoUsuario = parseInt(input);
         } else {
             this.codigoUsuario = 0;
@@ -68,7 +68,7 @@ class User extends Singleton {
         this.clave = input
     }
 
-    async doLoginInServerEasyPos(callbackOk, callbackWrong) {
+    async doLoginInServer(callbackOk, callbackWrong) {
         // console.log("haciendo doLoginInServer")
         const configs = await ModelConfig.get()
         var url = configs.urlBase
@@ -82,9 +82,10 @@ class User extends Singleton {
 
         if (!data.codigoSucursal) data.codigoSucursal = await ModelConfig.get("sucursal")
         if (!data.puntoVenta) data.puntoVenta = await ModelConfig.get("puntoVenta")
+        if (!data.idEmpresa) data.idEmpresa = await ModelConfig.get("idEmpresa")
 
-        Log("data a enviar", data)
-        console.log("url", url)
+        // Log("data a enviar", data)
+        // console.log("url", url)
 
         await EndPoint.sendPost(url, data, (responseData, response) => {
             if (response.data.responseUsuario
@@ -104,7 +105,7 @@ class User extends Singleton {
     }
 
 
-    async doLoginInServer(callbackOk, callbackWrong) {
+    async checkLicenciaLogin(callbackOk, callbackWrong) {
         var url = "https://softus.com.ar/easypos"
             + "/check-buyed-licence"
 
@@ -115,16 +116,15 @@ class User extends Singleton {
         }
         if (!data.user) data.user = this.codigoUsuario
 
-        Log("this", this)
-        Log("data a enviar", data)
-        console.log("url", url)
-
+        // Log("this", this)
+        // Log("data a enviar", data)
+        // console.log("url", url)
 
         var me = this
         await EndPoint.sendPost(url, data, (responseData, response) => {
-            Log("response", response)
+            // Log("response", response)
             if (response.data.status) {
-                me.doLoginInServerEasyPos(callbackOk, callbackWrong)
+                callbackOk(response)
             } else {
                 callbackWrong("Datos incorrectos");
             }
@@ -142,6 +142,7 @@ class User extends Singleton {
 
         if (!data.codigoSucursal) data.codigoSucursal = await ModelConfig.get("sucursal")
         if (!data.puntoVenta) data.puntoVenta = await ModelConfig.get("puntoVenta")
+        if (!data.idEmpresa) data.idEmpresa = await ModelConfig.get("idEmpresa")
 
 
         // console.log("doLogoutInServer")
@@ -158,8 +159,8 @@ class User extends Singleton {
         var url = configs.urlBase
             + "/api/Usuarios/GetAllUsuarios"
 
-        url += "?codigoSucursal=" + ModelConfig.get("sucursal")
-        url += "&puntoVenta=" + ModelConfig.get("puntoVenta")
+        url += "?codigoSucursal=" + await ModelConfig.get("sucursal")
+        url += "&puntoVenta=" + await ModelConfig.get("puntoVenta")
 
         await EndPoint.sendGet(url, (responseData, response) => {
             callbackOk(responseData.usuarios, response);
@@ -167,14 +168,14 @@ class User extends Singleton {
     }
 
     async getUsuariosDeudas(callbackOk, callbackWrong) {
-        const configs = ModelConfig.get()
+        const configs = await ModelConfig.get()
         var url = configs.urlBase
             + "/api/Usuarios/GetUsuariosDeudas"
 
-        url += "?codigoSucursal=" + ModelConfig.get("sucursal")
-        url += "&puntoVenta=" + ModelConfig.get("puntoVenta")
+        url += "?codigoSucursal=" + await ModelConfig.get("sucursal")
+        url += "&puntoVenta=" + await ModelConfig.get("puntoVenta")
 
-        EndPoint.sendGet(url, (responseData, response) => {
+        await EndPoint.sendGet(url, (responseData, response) => {
             callbackOk(responseData.usuarioDeudas, response);
         }, callbackWrong)
     }
@@ -205,14 +206,15 @@ class User extends Singleton {
 
         data.deudaIds = this.deudaIds
 
-        const configs = ModelConfig.get()
+        const configs = await ModelConfig.get()
         var url = configs.urlBase
             + "/api/Usuarios/PostUsuarioPagarDeudaByIdUsuario"
 
         if (!data.codigoSucursal) data.codigoSucursal = ModelConfig.get("sucursal")
         if (!data.puntoVenta) data.puntoVenta = ModelConfig.get("puntoVenta")
+        if (!data.idEmpresa) data.idEmpresa = ModelConfig.get("idEmpresa")
 
-        EndPoint.sendPost(url, data, (responseData, response) => {
+        await EndPoint.sendPost(url, data, (responseData, response) => {
             callbackOk(responseData, response);
         }, callbackWrong)
     }

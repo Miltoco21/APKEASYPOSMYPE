@@ -60,6 +60,7 @@ class Preventa extends Model {
         
         if(!data.codigoSucursal) data.codigoSucursal = ModelConfig.get("sucursal")
         if(!data.puntoVenta) data.puntoVenta = ModelConfig.get("puntoVenta")
+        if(!data.idEmpresa) data.idEmpresa = ModelConfig.get("idEmpresa")
 
 
         EndPoint.sendPost(url,data,(responseData, response)=>{

@@ -16,6 +16,7 @@ class CerrarCaja extends Model {
 
     if (!data.codigoSucursal) data.codigoSucursal = await ModelConfig.get("sucursal")
     if (!data.puntoVenta) data.puntoVenta = await ModelConfig.get("puntoVenta")
+    if (!data.idEmpresa) data.idEmpresa = await ModelConfig.get("idEmpresa")
 
       EndPoint.sendPost(url, data, (responseData, response) => {
       callbackOk(responseData, response);

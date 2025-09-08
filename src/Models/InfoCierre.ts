@@ -9,20 +9,21 @@ import EndPoint from '../Models/EndPoint';
 
 
 class InfoCierre extends Model {
-    info: any;
+  info: any;
 
 
-  async obtenerDeServidor(idUsuario,callbackOk, callbackWrong){
+  async obtenerDeServidor(idUsuario, callbackOk, callbackWrong) {
     const configs = await ModelConfig.get()
     var url = configs.urlBase + "/api/Cajas/GetArqueoCajaByIdUsuario?idusuario=" + idUsuario
 
-    url += "&codigoSucursal=" + ModelConfig.get("sucursal")
-    url += "&puntoVenta=" + ModelConfig.get("puntoVenta")
+    url += "&codigoSucursal=" + await ModelConfig.get("sucursal")
+    url += "&puntoVenta=" + await ModelConfig.get("puntoVenta")
+    url += "&idEmpresa=" + await ModelConfig.get("idEmpresa")
 
-    EndPoint.sendGet(url,(responseData, response)=>{
-      callbackOk(responseData,response);
+    EndPoint.sendGet(url, (responseData, response) => {
+      callbackOk(responseData, response);
       this.info = response.data;
-    },callbackWrong)
+    }, callbackWrong)
   }
 };
 

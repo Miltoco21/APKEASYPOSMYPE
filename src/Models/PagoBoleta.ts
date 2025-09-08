@@ -77,6 +77,7 @@ class PagoBoleta extends Model implements IPagoBoleta {
     if (!data.codigoSucursal) data.codigoSucursal = await ModelConfig.get("sucursal")
     if (!data.codigoClienteSucursal) data.codigoClienteSucursal = "0"
     if (!data.puntoVenta) data.puntoVenta = await ModelConfig.get("puntoVenta")
+    if (!data.idEmpresa) data.idEmpresa = await ModelConfig.get("idEmpresa")
 
     Log("url", url)
     // Log("datos a enviar", data)

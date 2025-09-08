@@ -22,6 +22,7 @@ import User from "src/Models/User";
 import Log from "src/Models/Log";
 import ModelConfig from "src/Models/ModelConfig";
 import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
+import Sucursal from "src/Models/Sucursal";
 
 
 export default function Login() {
@@ -65,18 +66,7 @@ export default function Login() {
     user.setUserCodeFrom(rutOrCode)
     user.setPassword(password)
 
-    showLoading("Ingresando al sistema...")
-    await user.doLoginInServer((info) => {
-      updateUserData(info.responseUsuario);
-
-      // console.log("devuelve el login de la api", info.responseUsuario)
-
-
-
-      hideLoading()
-      router.navigate("./Home");
-    }, async (error) => {
-
+    const callbackwrong = async (error) => {
       // console.log("error", error)
       hideLoading()
       // showAlert(error)
@@ -84,6 +74,8 @@ export default function Login() {
       console.log("error", error)
       if (
         error === "El Usuario tiene una Sesión activa."
+        || (error + "").toLocaleLowerCase().indexOf("la caja tiene un turno iniciado") > -1
+        || (error + "").toLocaleLowerCase().indexOf("EL Usuario(Cajero)") > -1
         && !reintentarPorSesionActiva
       ) {
         setReintentarPorSesionActiva(true)
@@ -91,8 +83,51 @@ export default function Login() {
         showAlert(error)
         // hideLoading()
       }
+    }
 
-    })
+    showLoading("Ingresando al sistema...")
+    await user.checkLicenciaLogin(async (respLic) => {
+      // Log("respLic", respLic)
+
+      await ModelConfig.change("urlBase", respLic.data.license.url)
+      await ModelConfig.change("idEmpresa", respLic.data.license.idEmpresa)
+      // console.log("buscando sucursal")
+      await Sucursal.getAll((sucs) => {
+        // Log("sucs", sucs)
+        sucs.forEach(async (s) => {
+          if (s.descripcionSucursal == "mype " + respLic.data.license.user_rut) {
+            // Log("se encontro la sucursal", s)
+
+            // Log("datos a usar", {
+            //   "sucursal": s.idSucursal,
+            //   "sucursalNombre": s.descripcionSucursal,
+            //   "puntoVenta": s.puntoVenta[0].idCaja,
+            //   "puntoVentaNombre": s.puntoVenta[0].sPuntoVenta
+            // })
+            await ModelConfig.change("sucursal", s.idSucursal + "")
+            await ModelConfig.change("sucursalNombre", s.descripcionSucursal)
+
+            const pv = s.puntoVenta[0].idCaja + ""
+            // console.log("punto de venta antes de guardar ", pv)
+            await ModelConfig.change("puntoVenta", pv)
+
+            // console.log("punto de venta quedo ", await ModelConfig.get("puntoVenta"))
+
+            await ModelConfig.change("puntoVentaNombre", s.puntoVenta[0].sPuntoVenta)
+
+            await user.doLoginInServer((info) => {
+              info.responseUsuario.pass = user.clave
+              updateUserData(info.responseUsuario);
+              hideLoading()
+              router.navigate("./Home");
+            }, callbackwrong)
+          }
+        })
+      }, (er) => {
+        console.log("sucursales er", er)
+        showAlert("No se pudo cargar bien la sucursal y caja.")
+      })
+    }, callbackwrong)
   };
 
 
@@ -116,9 +151,11 @@ export default function Login() {
           // console.log("listo 2 el logout..intentamos hacer login")
           hideLoading()
           handleLogin()
+          setReintentarPorSesionActiva(false)
         }, async (error) => {
           hideLoading()
           showAlert("No se pudo cerrar sesion anterior", error)
+          setReintentarPorSesionActiva(false)
           // console.log("no se pudo 2 hacer logout..", error)
           // showAlert(error)
 
@@ -134,10 +171,12 @@ export default function Login() {
       await user.doLogoutInServer(async (response) => {
         // console.log("listo el logout..intentamos hacer login")
         hideLoading()
+        setReintentarPorSesionActiva(false)
         handleLogin()
       }, async (error) => {
         hideLoading()
         // console.log("no se pudo hacer logout..", error)
+        setReintentarPorSesionActiva(false)
         // showAlert(error)
 
         // }
@@ -195,7 +234,7 @@ export default function Login() {
 
 
   const permisosBluetooth = async (quePermiso) => {
-    await pedirPermiso(quePermiso, () => {}, async () => {
+    await pedirPermiso(quePermiso, () => { }, async () => {
       // Alert.alert('Se necesita el permiso del bluetooh');
       if (await ModelConfig.get("usarImpresoraBluetooth")) {
         setTimeout(async () => {
@@ -212,9 +251,22 @@ export default function Login() {
       permisosBluetooth(PERMISSIONS.ANDROID.BLUETOOTH_ADVERTISE)
     }
 
-    const logueado = await User.getInstance().getFromSesion()
+    const userModel = new User();
+
+    const logueado = await userModel.getFromSesion()
     if (logueado && !Array.isArray(logueado)) {
-      router.navigate("./Home");
+      var user = new User();
+      user.setRutFrom(logueado.rut)
+      user.setPassword(logueado.pass)
+      await user.checkLicenciaLogin(async (respLic) => {
+        Log("respLic", respLic)
+        await ModelConfig.change("urlBase", respLic.data.license.url)
+        router.navigate("./Home");
+      }, (ero) => {
+        showAlert("Licencia", "La licencia no es correcta", true)
+        userModel.sesion.truncate();
+      })
+
     }
 
     // Log("cargado",cargado)
@@ -266,14 +318,14 @@ export default function Login() {
           keyboardType="numeric"
           secureTextEntry={!showPassword}
         />
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={togglePasswordVisibility}
           style={styles.eyeIcon}
         >
-          <Ionicons 
-            name={showPassword ? "eye-off" : "eye"} 
-            size={24} 
-            color="#666" 
+          <Ionicons
+            name={showPassword ? "eye-off" : "eye"}
+            size={24}
+            color="#666"
           />
         </TouchableOpacity>
       </View>

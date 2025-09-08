@@ -9,62 +9,64 @@ import axios from 'axios';
 import EndPoint from './EndPoint';
 
 
-class Envase{
-    sesion: StorageSesion;
+class Envase {
+  sesion: StorageSesion;
 
-    constructor(){
-      this.sesion = new StorageSesion("Envase");
-    }
-
-  fill(values){
-      for(var campo in values){
-          const valor = values[campo]
-          this[campo] = valor;
-      }
+  constructor() {
+    this.sesion = new StorageSesion("Envase");
   }
 
-  getFillables(){
-      var values:any = {};
-      for(var prop in this){
-          if(typeof(this[prop]) != 'object'
-              && this[prop] != undefined
-          ){
-              values[prop] = this[prop]
-          }
+  fill(values) {
+    for (var campo in values) {
+      const valor = values[campo]
+      this[campo] = valor;
+    }
+  }
+
+  getFillables() {
+    var values: any = {};
+    for (var prop in this) {
+      if (typeof (this[prop]) != 'object'
+        && this[prop] != undefined
+      ) {
+        values[prop] = this[prop]
       }
-      return values
+    }
+    return values
   }
 
   static async buscar({
     folio,
     qr
-  },callbackOk, callbackWrong){
-    const configs = ModelConfig.get()
+  }, callbackOk, callbackWrong) {
+    const configs = await ModelConfig.get()
     var url = configs.urlBase
-    +"/api/ProductosTmp/GetEnvases?"
-    + "nfolio=" + folio
-    + "&qr=" + qr
+      + "/api/ProductosTmp/GetEnvases?"
+      + "nfolio=" + folio
+      + "&qr=" + qr
 
     url += "&codigoSucursal=" + ModelConfig.get("sucursal")
     url += "&puntoVenta=" + ModelConfig.get("puntoVenta")
+    url += "&idEmpresa=" + ModelConfig.get("idEmpresa")
 
-    EndPoint.sendGet(url,(responseData, response)=>{
-      callbackOk(responseData,response);
-    },callbackWrong)
+    EndPoint.sendGet(url, (responseData, response) => {
+      callbackOk(responseData, response);
+    }, callbackWrong)
   }
 
 
-  static async devolver(data,callbackOk, callbackWrong){
-    const configs = ModelConfig.get()
+  static async devolver(data, callbackOk, callbackWrong) {
+    const configs = await ModelConfig.get()
     var url = configs.urlBase
-    +"/api/ProductosTmp/PostEnvasesByNFolio"
-    
-    if(!data.codigoSucursal) data.codigoSucursal = ModelConfig.get("sucursal")
-    if(!data.puntoVenta) data.puntoVenta = ModelConfig.get("puntoVenta")
+      + "/api/ProductosTmp/PostEnvasesByNFolio"
 
-    EndPoint.sendPost(url,data,(responseData, response)=>{
-      callbackOk(responseData,response);
-    },callbackWrong)
+    if (!data.codigoSucursal) data.codigoSucursal = ModelConfig.get("sucursal")
+    if (!data.puntoVenta) data.puntoVenta = ModelConfig.get("puntoVenta")
+    if (!data.idEmpresa) data.idEmpresa = ModelConfig.get("idEmpresa")
+
+    EndPoint.sendPost(url, data, (responseData, response) => {
+      callbackOk(responseData, response);
+    }, callbackWrong)
   }
 };
 
