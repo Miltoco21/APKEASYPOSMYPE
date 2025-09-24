@@ -132,7 +132,7 @@
 // });
 
 // export default AbrirCaja;
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useRef, useEffect } from "react";
 import { StyleSheet, View, KeyboardAvoidingView, Platform } from 'react-native';
 import { Portal, Modal, Text, Button, TextInput } from 'react-native-paper';
 import { SelectedOptionsContext } from "../Context/SelectedOptionsProvider";
@@ -153,6 +153,8 @@ const AbrirCaja = ({ openDialog, setOpenDialog }) => {
   } = useContext(SelectedOptionsContext);
 
   const [openAmount, setOpenAmount] = useState(0);
+
+  const inputRef = useRef(null)
 
   const handlerSaveAction = () => {
     if (openAmount === 0) {
@@ -200,6 +202,20 @@ const AbrirCaja = ({ openDialog, setOpenDialog }) => {
     );
   };
 
+
+  useEffect(() => {
+    // console.log("inicia abrir caja..openDialog", openDialog)
+    // console.log("inicia abrir caja..inputRef", inputRef)
+    if (openDialog) {
+      // console.log("inicia abrir caja")
+      setTimeout(() => {
+        // console.log("abrir caja intenta foco")
+        System.intentarFoco(inputRef)
+      }, 300);
+    }
+
+  }, [openDialog])
+
   return (
     <Portal>
       <Modal
@@ -217,13 +233,21 @@ const AbrirCaja = ({ openDialog, setOpenDialog }) => {
             Ingrese el monto inicial para abrir la caja
           </Text>
 
+
           <TextInput
+            ref={inputRef}
             mode="outlined"
             label="Monto Inicial"
             keyboardType="numeric"
             value={openAmount.toString()}
             onChangeText={(text) => setOpenAmount(Number(text))}
             style={styles.input}
+            returnKeyType="default"
+
+            onSubmitEditing={(e) => {
+              console.log("apreto enter")
+              handlerSaveAction()
+            }}
           />
           <Button
             mode="contained"

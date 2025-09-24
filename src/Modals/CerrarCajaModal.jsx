@@ -24,6 +24,7 @@ import System from '../Helpers/System';
 import Log from 'src/Models/Log';
 import { useRouter } from "expo-router";
 import PrinterBluetooth from 'src/Models/PrinterBluetooth';
+import User from 'src/Models/User';
 
 const CierreCajaModal = ({
   visible,
@@ -156,6 +157,7 @@ const CierreCajaModal = ({
         PrinterBluetooth.prepareBluetooth(() => {
           PrinterBluetooth.printAll(data, res);
         })
+        User.logged = false
 
         clearSessionData();
         router.navigate("./Login");

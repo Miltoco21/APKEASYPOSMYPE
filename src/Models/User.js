@@ -8,6 +8,8 @@ class User extends Singleton {
 
     sesion = null
 
+    static logged = false
+
     constructor() {
         super()
         this.sesion = new StorageSesion("User");
@@ -114,10 +116,10 @@ class User extends Singleton {
             user: this.rut,
             pass: this.clave,
         }
-        if (!data.user) data.user = this.codigoUsuario
 
         // Log("this", this)
-        // Log("data a enviar", data)
+        if (!data.user && this.codigoUsuario) data.user = this.codigoUsuario
+        // Log("checkLicenciaLogin data a enviar", data)
         // console.log("url", url)
 
         var me = this

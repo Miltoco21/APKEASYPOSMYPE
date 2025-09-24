@@ -96,16 +96,20 @@ const BoxProducts = () => {
   useEffect(() => {
     // System.intentarFoco(searchInputRef)
     Keyboard.addListener("keyboardDidHide", () => {
-      setTieneFocoTeclado(false)
+      if (User.logged) {
+        setTieneFocoTeclado(false)
+      }
       console.log("quitando teclado")
     })
 
     Keyboard.addListener("keyboardDidShow", async () => {
-      setTieneFocoTeclado(true)
+      if (User.logged) {
+        setTieneFocoTeclado(true)
+      }
       console.log("muestra teclado")
     })
 
-    ProductCodeStack.processFunction = procesarBusqueda
+    if (ProductCodeStack.processFunction) ProductCodeStack.processFunction = procesarBusqueda
   }, [])
 
 

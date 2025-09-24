@@ -78,10 +78,13 @@ export default function Login() {
         || (error + "").toLocaleLowerCase().indexOf("EL Usuario(Cajero)") > -1
         && !reintentarPorSesionActiva
       ) {
-        setReintentarPorSesionActiva(true)
+        hideLoading()
+        setTimeout(() => {
+          setReintentarPorSesionActiva(true)
+        }, 300);
       } else {
         showAlert(error)
-        // hideLoading()
+        hideLoading()
       }
     }
 
@@ -117,6 +120,7 @@ export default function Login() {
 
             await user.doLoginInServer((info) => {
               info.responseUsuario.pass = user.clave
+              User.logged = true
               updateUserData(info.responseUsuario);
               hideLoading()
               router.navigate("./Home");
@@ -126,6 +130,7 @@ export default function Login() {
       }, (er) => {
         console.log("sucursales er", er)
         showAlert("No se pudo cargar bien la sucursal y caja.")
+        hideLoading()
       })
     }, callbackwrong)
   };
@@ -194,30 +199,6 @@ export default function Login() {
     try {
 
       const checkResult = await check(cual);
-      // console.log("checkResult", checkResult)
-      // if (checkResult === RESULTS.UNAVAILABLE) {
-      //   console.log("version vieja")
-      //   console.log("pidiendo permiso ", cual)
-      //   var granted = await PermissionsAndroid.request(
-      //     cual,
-      //     {
-      //       title: 'Permiso ' + cual,
-      //       message:
-      //         'Se requiere permiso: ' + cual,
-      //       buttonNeutral: 'Ask Me Later',
-      //       buttonNegative: 'Cancel',
-      //       buttonPositive: 'OK',
-      //     },
-      //   );
-      //   console.log("resultado de la solicitud", granted)
-      //   if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-      //     callbackok()
-      //   } else {
-      //     callbackwrong(cual + ' denied');
-      //   }
-      //   return
-      // }
-
       if (checkResult !== RESULTS.GRANTED) {
         const requestResult = await request(cual);
         if (requestResult === RESULTS.GRANTED) {
@@ -256,13 +237,16 @@ export default function Login() {
     const logueado = await userModel.getFromSesion()
     if (logueado && !Array.isArray(logueado)) {
       var user = new User();
-      user.setRutFrom(logueado.rut)
+      user.rut = logueado.rut
       user.setPassword(logueado.pass)
+      showLoading("Recuperando sesion")
       await user.checkLicenciaLogin(async (respLic) => {
-        Log("respLic", respLic)
+        // Log("respLic", respLic)
         await ModelConfig.change("urlBase", respLic.data.license.url)
+        hideLoading()
         router.navigate("./Home");
       }, (ero) => {
+        hideLoading()
         showAlert("Licencia", "La licencia no es correcta", true)
         userModel.sesion.truncate();
       })
